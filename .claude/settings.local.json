@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./scripts/claude/setup_task.sh:*)",
+      "Bash(./scripts/claude/run_task.sh D006)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs: README.md更新 - ワークフローセクション追加、進捗更新\n\n- 開発ワークフローセクションを拡充\n- docs/WORKFLOW.mdへのリンク追加\n- 進捗を5/46タスク完了に更新\n- リポジトリURLを追加\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs\\(spec\\): SPEC.md作成 - 技術仕様書（63KB）\n\nPersonal Mapping Siteの技術仕様書を作成:\n- プロジェクト概要と機能要件\n- データモデル設計（User, Location, Visit, Trip）\n- API仕様（REST API設計）\n- 技術スタック選定根拠\n- インフラ構成（Render/Railway）\n- セキュリティ・認証設計\n\nタスク: #D001\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs\\(guide\\): CLAUDE.md作成 - Claude Code開発ガイド\n\nClaude Code用の開発ガイドを作成:\n- コーディング規約（TypeScript/Python）\n- プロジェクト構造（Frontend/Backend）\n- Service層パターンの解説\n- テスト戦略とカバレッジ目標\n- 実装ワークフロー\n- JSDoc/Docstring必須ルール\n\nタスク: #D002\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)"
+    ]
+  }
+}
