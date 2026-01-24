@@ -1,0 +1,1849 @@
+openapi: 3.0.3
+info:
+  title: Personal Mapping Site API
+  description: |
+    個人用マッピングサイトのREST API仕様。
+    場所のブックマーク、訪問記録、旅行計画を管理します。
+  version: 1.0.0
+  contact:
+    name: API Support
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: 開発環境
+  - url: https://api.example.com/api/v1
+    description: 本番環境
+
+tags:
+  - name: Auth
+    description: 認証関連
+  - name: Locations
+    description: 場所（ブックマーク）管理
+  - name: Visits
+    description: 訪問記録管理
+  - name: PlannedTrips
+    description: 旅行計画管理
+  - name: ActualTrips
+    description: 実際の旅行記録管理
+  - name: Categories
+    description: カテゴリ管理
+  - name: Sharing
+    description: 共有機能
+  - name: Dashboard
+    description: ダッシュボード
+
+paths:
+  # ============================================
+  # 認証エンドポイント
+  # ============================================
+  /auth/register/:
+    post:
+      tags: [Auth]
+      summary: 新規ユーザー登録
+      operationId: authRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login/:
+    post:
+      tags: [Auth]
+      summary: ログイン
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout/:
+    post:
+      tags: [Auth]
+      summary: ログアウト
+      operationId: authLogout
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh]
+              properties:
+                refresh:
+                  type: string
+                  description: リフレッシュトークン
+      responses:
+        '205':
+          description: ログアウト成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh/:
+    post:
+      tags: [Auth]
+      summary: トークン更新
+      operationId: authRefresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh]
+              properties:
+                refresh:
+                  type: string
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/google/:
+    post:
+      tags: [Auth]
+      summary: Google OAuth認証
+      operationId: authGoogle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [access_token]
+              properties:
+                access_token:
+                  type: string
+                  description: GoogleのOAuthアクセストークン
+      responses:
+        '200':
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/github/:
+    post:
+      tags: [Auth]
+      summary: GitHub OAuth認証
+      operationId: authGithub
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: GitHubの認証コード
+      responses:
+        '200':
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/me/:
+    get:
+      tags: [Auth]
+      summary: 現在のユーザー情報取得
+      operationId: authMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============================================
+  # 場所（Locations）エンドポイント
+  # ============================================
+  /locations/:
+    get:
+      tags: [Locations]
+      summary: 場所一覧取得
+      operationId: locationsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+        - name: category
+          in: query
+          schema:
+            type: integer
+          description: カテゴリID
+        - name: tags
+          in: query
+          schema:
+            type: string
+          description: タグ（カンマ区切り）
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [want_to_visit, not_interested]
+          description: ステータス
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: テキスト検索
+        - name: ordering
+          in: query
+          schema:
+            type: string
+            enum: [created_at, -created_at, name, -name, visited_at, -visited_at]
+          description: ソート順
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Locations]
+      summary: 場所作成
+      operationId: locationsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /locations/{id}/:
+    get:
+      tags: [Locations]
+      summary: 場所詳細取得
+      operationId: locationsRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Locations]
+      summary: 場所更新（完全）
+      operationId: locationsUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationCreate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [Locations]
+      summary: 場所更新（部分）
+      operationId: locationsPartialUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationPatch'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Locations]
+      summary: 場所削除
+      operationId: locationsDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /locations/nearby/:
+    get:
+      tags: [Locations]
+      summary: 近傍検索
+      operationId: locationsNearby
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 緯度
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 経度
+        - name: radius
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 検索半径（km）
+        - name: category
+          in: query
+          schema:
+            type: integer
+          description: カテゴリID
+        - name: tags
+          in: query
+          schema:
+            type: string
+          description: タグ（カンマ区切り）
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationWithDistance'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /locations/recommendations/:
+    get:
+      tags: [Locations]
+      summary: おすすめ取得
+      operationId: locationsRecommendations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 緯度
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 経度
+        - name: radius
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: 検索半径（km）
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: 取得件数
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationWithDistance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============================================
+  # 訪問（Visits）エンドポイント
+  # ============================================
+  /visits/:
+    get:
+      tags: [Visits]
+      summary: 訪問一覧取得
+      operationId: visitsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+        - name: location
+          in: query
+          schema:
+            type: integer
+          description: 場所ID
+        - name: trip
+          in: query
+          schema:
+            type: integer
+          description: 旅行ID
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 開始日
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 終了日
+        - name: rating
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+          description: 評価
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Visits]
+      summary: 訪問作成
+      operationId: visitsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visit'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /visits/{id}/:
+    get:
+      tags: [Visits]
+      summary: 訪問詳細取得
+      operationId: visitsRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visit'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Visits]
+      summary: 訪問更新
+      operationId: visitsUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitCreate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visit'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Visits]
+      summary: 訪問削除
+      operationId: visitsDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # 旅行計画（Planned Trips）エンドポイント
+  # ============================================
+  /trips/planned/:
+    get:
+      tags: [PlannedTrips]
+      summary: 計画一覧取得
+      operationId: plannedTripsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTripListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [PlannedTrips]
+      summary: 計画作成
+      operationId: plannedTripsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlannedTripCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTrip'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /trips/planned/{id}/:
+    get:
+      tags: [PlannedTrips]
+      summary: 計画詳細取得
+      operationId: plannedTripsRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTripDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [PlannedTrips]
+      summary: 計画更新
+      operationId: plannedTripsUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlannedTripCreate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTrip'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [PlannedTrips]
+      summary: 計画削除
+      operationId: plannedTripsDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/planned/{id}/items/:
+    post:
+      tags: [PlannedTrips]
+      summary: 計画にアイテム追加
+      operationId: plannedTripsAddItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlannedTripItemCreate'
+      responses:
+        '201':
+          description: 追加成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTripItem'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/planned/{id}/items/{item_id}/:
+    put:
+      tags: [PlannedTrips]
+      summary: アイテム更新
+      operationId: plannedTripsUpdateItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlannedTripItemUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTripItem'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [PlannedTrips]
+      summary: アイテム削除
+      operationId: plannedTripsDeleteItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/planned/{id}/reorder/:
+    patch:
+      tags: [PlannedTrips]
+      summary: アイテム順序変更
+      operationId: plannedTripsReorder
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [item_ids]
+              properties:
+                item_ids:
+                  type: array
+                  items:
+                    type: integer
+                  description: 新しい順序のアイテムID配列
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlannedTripDetail'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/planned/{id}/copy-to-actual/:
+    post:
+      tags: [PlannedTrips]
+      summary: 計画を実績にコピー
+      operationId: plannedTripsCopyToActual
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date:
+                  type: string
+                  format: date
+                  description: 実際の開始日（省略時は計画の日付を使用）
+                end_date:
+                  type: string
+                  format: date
+                  description: 実際の終了日（省略時は計画の日付を使用）
+      responses:
+        '201':
+          description: コピー成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualTrip'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # 実際の旅行（Actual Trips）エンドポイント
+  # ============================================
+  /trips/actual/:
+    get:
+      tags: [ActualTrips]
+      summary: 実際の旅行一覧取得
+      operationId: actualTripsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualTripListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [ActualTrips]
+      summary: 実際の旅行作成
+      operationId: actualTripsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualTripCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualTrip'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /trips/actual/{id}/:
+    get:
+      tags: [ActualTrips]
+      summary: 実際の旅行詳細取得
+      operationId: actualTripsRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualTripDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [ActualTrips]
+      summary: 実際の旅行更新
+      operationId: actualTripsUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualTripCreate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualTrip'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [ActualTrips]
+      summary: 実際の旅行削除
+      operationId: actualTripsDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # カテゴリエンドポイント
+  # ============================================
+  /categories/:
+    get:
+      tags: [Categories]
+      summary: カテゴリツリー取得
+      operationId: categoriesList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryTree'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories/{id}/:
+    get:
+      tags: [Categories]
+      summary: カテゴリ詳細取得
+      operationId: categoriesRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /categories/{id}/children/:
+    get:
+      tags: [Categories]
+      summary: 子カテゴリ取得
+      operationId: categoriesChildren
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # 共有エンドポイント
+  # ============================================
+  /sharing/location-lists/:
+    post:
+      tags: [Sharing]
+      summary: 共有リスト作成
+      operationId: sharingCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedLocationListCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedLocationList'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /sharing/location-lists/{uuid}/:
+    get:
+      tags: [Sharing]
+      summary: 共有リスト取得（公開）
+      operationId: sharingRead
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedLocationListPublic'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # ダッシュボードエンドポイント
+  # ============================================
+  /dashboard/stats/:
+    get:
+      tags: [Dashboard]
+      summary: 統計情報取得
+      operationId: dashboardStats
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /dashboard/recommendations/:
+    get:
+      tags: [Dashboard]
+      summary: パーソナライズされたおすすめ取得
+      operationId: dashboardRecommendations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+# ============================================
+# コンポーネント
+# ============================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: リソースID
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      description: ページ番号
+
+    PageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+      description: 1ページあたりの件数
+
+  responses:
+    ValidationError:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    # ============================================
+    # 共通スキーマ
+    # ============================================
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: 入力データが無効です
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+    GeoPoint:
+      type: object
+      required: [type, coordinates]
+      properties:
+        type:
+          type: string
+          enum: [Point]
+        coordinates:
+          type: array
+          items:
+            type: number
+            format: double
+          minItems: 2
+          maxItems: 2
+          description: "[経度, 緯度]"
+          example: [139.7016, 35.6595]
+
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: 総件数
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: 次ページURL
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          description: 前ページURL
+
+    # ============================================
+    # 認証スキーマ
+    # ============================================
+    UserRegister:
+      type: object
+      required: [email, username, password, password_confirm]
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          minLength: 3
+          maxLength: 150
+        password:
+          type: string
+          format: password
+          minLength: 8
+        password_confirm:
+          type: string
+          format: password
+
+    UserLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthTokens:
+      type: object
+      required: [access, refresh]
+      properties:
+        access:
+          type: string
+          description: アクセストークン
+        refresh:
+          type: string
+          description: リフレッシュトークン
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        oauth_provider:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # ============================================
+    # カテゴリスキーマ
+    # ============================================
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        icon:
+          type: string
+        full_path:
+          type: string
+          description: "完全パス: '飲食 / カフェ'"
+        parent_id:
+          type: integer
+          nullable: true
+
+    CategoryTree:
+      allOf:
+        - $ref: '#/components/schemas/Category'
+        - type: object
+          properties:
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/CategoryTree'
+
+    # ============================================
+    # 場所スキーマ
+    # ============================================
+    LocationCreate:
+      type: object
+      required: [name, point]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        point:
+          $ref: '#/components/schemas/GeoPoint'
+        address:
+          type: string
+        category_id:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [want_to_visit, not_interested]
+          nullable: true
+        notes:
+          type: string
+        website:
+          type: string
+          format: uri
+        phone:
+          type: string
+          maxLength: 20
+
+    LocationPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        point:
+          $ref: '#/components/schemas/GeoPoint'
+        address:
+          type: string
+        category_id:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [want_to_visit, not_interested]
+          nullable: true
+        notes:
+          type: string
+        website:
+          type: string
+          format: uri
+        phone:
+          type: string
+          maxLength: 20
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        point:
+          $ref: '#/components/schemas/GeoPoint'
+        address:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [want_to_visit, not_interested]
+          nullable: true
+        notes:
+          type: string
+        website:
+          type: string
+          format: uri
+        phone:
+          type: string
+        visit_count:
+          type: integer
+        average_rating:
+          type: number
+          format: float
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LocationWithDistance:
+      allOf:
+        - $ref: '#/components/schemas/Location'
+        - type: object
+          properties:
+            distance:
+              type: number
+              format: float
+              description: 中心点からの距離（km）
+
+    LocationListResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginationMeta'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Location'
+
+    # ============================================
+    # 訪問スキーマ
+    # ============================================
+    VisitCreate:
+      type: object
+      required: [location_id, visited_at]
+      properties:
+        location_id:
+          type: integer
+        visited_at:
+          type: string
+          format: date-time
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        review:
+          type: string
+        actual_trip_id:
+          type: integer
+          nullable: true
+
+    Visit:
+      type: object
+      properties:
+        id:
+          type: integer
+        location:
+          $ref: '#/components/schemas/Location'
+        visited_at:
+          type: string
+          format: date-time
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        review:
+          type: string
+        actual_trip_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    VisitListResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginationMeta'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Visit'
+
+    # ============================================
+    # 旅行計画スキーマ
+    # ============================================
+    PlannedTripCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+
+    PlannedTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        item_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PlannedTripDetail:
+      allOf:
+        - $ref: '#/components/schemas/PlannedTrip'
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlannedTripItem'
+
+    PlannedTripItemCreate:
+      type: object
+      required: [location_id]
+      properties:
+        location_id:
+          type: integer
+        scheduled_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        order:
+          type: integer
+          default: 0
+        notes:
+          type: string
+
+    PlannedTripItemUpdate:
+      type: object
+      properties:
+        scheduled_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        order:
+          type: integer
+        notes:
+          type: string
+
+    PlannedTripItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        location:
+          $ref: '#/components/schemas/Location'
+        scheduled_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        order:
+          type: integer
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    PlannedTripListResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginationMeta'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlannedTrip'
+
+    # ============================================
+    # 実際の旅行スキーマ
+    # ============================================
+    ActualTripCreate:
+      type: object
+      required: [name, start_date, end_date]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        planned_trip_id:
+          type: integer
+          nullable: true
+        overall_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        overall_review:
+          type: string
+
+    ActualTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        planned_trip_id:
+          type: integer
+          nullable: true
+        overall_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        overall_review:
+          type: string
+        visit_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ActualTripDetail:
+      allOf:
+        - $ref: '#/components/schemas/ActualTrip'
+        - type: object
+          properties:
+            visits:
+              type: array
+              items:
+                $ref: '#/components/schemas/Visit'
+            planned_trip:
+              $ref: '#/components/schemas/PlannedTrip'
+              nullable: true
+
+    ActualTripListResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginationMeta'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/ActualTrip'
+
+    # ============================================
+    # 共有スキーマ
+    # ============================================
+    SharedLocationListCreate:
+      type: object
+      required: [name, location_ids]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        location_ids:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 有効期限（省略時は無期限）
+
+    SharedLocationList:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        share_url:
+          type: string
+          format: uri
+        location_count:
+          type: integer
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    SharedLocationListPublic:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              point:
+                $ref: '#/components/schemas/GeoPoint'
+              address:
+                type: string
+              category:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+        created_at:
+          type: string
+          format: date-time
+
+    # ============================================
+    # ダッシュボードスキーマ
+    # ============================================
+    DashboardStats:
+      type: object
+      properties:
+        total_locations:
+          type: integer
+        total_visits:
+          type: integer
+        total_trips:
+          type: integer
+        top_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                $ref: '#/components/schemas/Category'
+              count:
+                type: integer
+        recent_visits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Visit'
+        active_trips:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlannedTrip'
