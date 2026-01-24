@@ -1,0 +1,8 @@
+# Include base requirements
+-r base.txt
+
+# WSGI Server
+gunicorn==22.0.0
+
+# Sentry (Error Tracking)
+sentry-sdk==2.5.1
