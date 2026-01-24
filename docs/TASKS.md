@@ -125,7 +125,7 @@
   - [ ] isort設定
   - [ ] pre-commit install確認
 
-### ⬜ #D008 OpenAPI完全版作成
+### 🔄 #D008 OpenAPI完全版作成
 - **優先度:** 最高
 - **見積:** 2h
 - **依存:** #D001
