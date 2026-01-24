@@ -4,9 +4,7 @@ on:
   push:
     paths:
       - 'docs/api/openapi.yml'
-  pull_request:
-    paths:
-      - 'docs/api/openapi.yml'
+      - '.github/workflows/openapi-validate.yml'
 
 jobs:
   validate:
