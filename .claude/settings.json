@@ -1,0 +1,16 @@
+{
+  "project": {
+    "name": "personal-mapping-site",
+    "description": "Google Mapsのブックマーク機能を拡張した個人向けマッピングサービス"
+  },
+  "instructions": {
+    "primary": "CLAUDE.md",
+    "workflow": "docs/WORKFLOW.md",
+    "spec": "SPEC.md"
+  },
+  "paths": {
+    "tasks": "docs/TASKS.md",
+    "taskLogs": "docs/tasks/",
+    "scripts": "scripts/claude/"
+  }
+}
