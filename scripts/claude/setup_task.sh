@@ -220,13 +220,27 @@ EOF
         echo "(手動でSPEC.mdから該当セクションを抽出してください)" >> "${task_dir}/spec_excerpt.md"
     fi
 
-    # 4. ブランチ作成
+    # 4. ブランチ作成（常にdevelopまたはmainから分岐）
     if [[ -n "$branch_name" ]]; then
         echo "4. ブランチ作成..."
+
+        # ベースブランチを決定（develop優先、なければmain）
+        local base_branch="develop"
+        if ! git rev-parse --verify "$base_branch" >/dev/null 2>&1; then
+            base_branch="main"
+        fi
+
+        # リモートから最新を取得
+        echo "   ベースブランチ: ${base_branch}"
+        git fetch origin "$base_branch" 2>/dev/null || true
+
         if git rev-parse --verify "$branch_name" >/dev/null 2>&1; then
             echo "   ブランチ ${branch_name} は既に存在します。チェックアウトします。"
             git checkout "$branch_name"
         else
+            # ベースブランチから新規ブランチを作成
+            git checkout "$base_branch"
+            git pull origin "$base_branch" 2>/dev/null || true
             git checkout -b "$branch_name"
         fi
     fi
