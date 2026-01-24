@@ -84,11 +84,35 @@
 
 ---
 
+## 追加修正: GitHub Actions CI トリガー条件
+
+### 問題
+`package.json` や `requirements/*.txt` の変更でCIがトリガーされ、
+ソースコードがない状態でCI失敗
+
+### 原因
+- `frontend/**` → package.jsonの変更でもトリガー
+- `backend/**` → requirements/*.txtの変更でもトリガー
+
+### 修正内容
+
+| ファイル | 変更前 | 変更後 |
+|----------|--------|--------|
+| `frontend-ci.yml` | `frontend/**` | `frontend/src/**/*.{ts,tsx,js,jsx,css}` + 設定ファイル |
+| `backend-ci.yml` | `backend/**` | `backend/**/*.py` + `pyproject.toml`, `.flake8` |
+
+### コミット
+- `fe8c002` fix(ci): GitHub Actionsトリガー条件を拡張子で限定
+
+---
+
 ## 成果物
 - `backend/requirements/base.txt`
 - `backend/requirements/local.txt`
 - `backend/requirements/production.txt`
 - `frontend/package.json`
+- `.github/workflows/frontend-ci.yml` (修正)
+- `.github/workflows/backend-ci.yml` (修正)
 
 ## 次のステップ
 - #001 プロジェクト初期化で実際にインストール
