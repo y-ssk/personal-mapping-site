@@ -4,7 +4,14 @@ on:
   push:
     branches: [main, develop, 'feature/**']
     paths:
-      - 'frontend/**'
+      - 'frontend/src/**/*.ts'
+      - 'frontend/src/**/*.tsx'
+      - 'frontend/src/**/*.js'
+      - 'frontend/src/**/*.jsx'
+      - 'frontend/src/**/*.css'
+      - 'frontend/vite.config.ts'
+      - 'frontend/tsconfig.json'
+      - 'frontend/package-lock.json'
       - '.github/workflows/frontend-ci.yml'
 
 jobs:

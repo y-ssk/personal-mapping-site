@@ -4,7 +4,9 @@ on:
   push:
     branches: [main, develop, 'feature/**']
     paths:
-      - 'backend/**'
+      - 'backend/**/*.py'
+      - 'backend/pyproject.toml'
+      - 'backend/.flake8'
       - '.github/workflows/backend-ci.yml'
 
 jobs:

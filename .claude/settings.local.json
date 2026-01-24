@@ -17,7 +17,8 @@
       "Bash(chmod:*)",
       "Bash(pre-commit:*)",
       "Bash(python3:*)",
-      "Bash(./scripts/claude/review_changes.sh:*)"
+      "Bash(./scripts/claude/review_changes.sh:*)",
+      "Bash(./scripts/tasks/update_task.sh:*)"
     ]
   }
 }
