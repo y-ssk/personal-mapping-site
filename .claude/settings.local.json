@@ -12,7 +12,12 @@
       "Bash(gh pr create:*)",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(./scripts/claude/run_task.sh:*)",
+      "Bash(chmod:*)",
+      "Bash(pre-commit:*)",
+      "Bash(python3:*)",
+      "Bash(./scripts/claude/review_changes.sh:*)"
     ]
   }
 }
