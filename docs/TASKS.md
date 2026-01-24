@@ -233,6 +233,27 @@
 
 ---
 
+## バグ修正・改善 [0/1]
+
+### ⬜ #F001 review_changes.sh修正 - untracked対応
+- **優先度:** 最高
+- **見積:** 0.5h
+- **ブランチ:** fix/review-changes-untracked
+- **発生タスク:** #D007
+- **成果物:**
+  - `scripts/claude/review_changes.sh`
+- **再現手順:**
+  1. 新規ファイルを作成するタスクを実行
+  2. `./scripts/claude/review_changes.sh <task-id>` を実行
+  3. 新規ファイル（untracked）の内容が表示されない
+- **期待動作:** untracked ファイルの内容も表示される
+- **チェックリスト:**
+  - [ ] untracked ファイル検出機能追加
+  - [ ] untracked ファイル内容表示機能追加
+  - [ ] 動作確認（新規ファイル作成タスクで検証）
+
+---
+
 ## フェーズ1: 環境構築 [0/5]
 
 ### ⬜ #001 プロジェクト初期化

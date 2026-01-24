@@ -9,7 +9,15 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs\\(guide\\): CLAUDE.md作成 - Claude Code開発ガイド\n\nClaude Code用の開発ガイドを作成:\n- コーディング規約（TypeScript/Python）\n- プロジェクト構造（Frontend/Backend）\n- Service層パターンの解説\n- テスト戦略とカバレッジ目標\n- 実装ワークフロー\n- JSDoc/Docstring必須ルール\n\nタスク: #D002\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(./scripts/claude/run_task.sh:*)",
+      "Bash(chmod:*)",
+      "Bash(pre-commit:*)",
+      "Bash(python3:*)",
+      "Bash(./scripts/claude/review_changes.sh:*)"
     ]
   }
 }
