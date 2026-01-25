@@ -7,7 +7,7 @@ RAILWAY_MIGRATION.md作成
 'なし'
 
 ## タスク情報
-### ⬜ #D012 RAILWAY_MIGRATION.md作成
+### ✅ #D012 RAILWAY_MIGRATION.md作成
 - **優先度:** 低
 - **見積:** 1h
 - **トリガー:** Render→Railway移行時
