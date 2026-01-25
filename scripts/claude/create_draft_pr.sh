@@ -195,12 +195,119 @@ generate_pr_title() {
         return
     fi
 
-    # ブランチ名からタイトルを推測
-    local title
-    title=$(echo "$current_branch" | sed 's/feature\///' | sed 's/-/ /g' | sed 's/_/ /g')
+    # ブランチ名からtype, scope, descriptionを推測
+    local type=""
+    local scope=""
+    local description=""
+    local task_id=""
 
-    # 先頭を大文字に
-    title="$(echo "${title:0:1}" | tr '[:lower:]' '[:upper:]')${title:1}"
+    # typeの決定（ブランチプレフィックスから）
+    case "$current_branch" in
+        docs/*)
+            type="docs"
+            ;;
+        feature/*)
+            type="feat"
+            ;;
+        fix/*)
+            type="fix"
+            ;;
+        scripts/*)
+            type="chore"
+            ;;
+        chore/*)
+            type="chore"
+            ;;
+        *)
+            type="chore"
+            ;;
+    esac
+
+    # ブランチ名からサフィックスを取得
+    local branch_suffix
+    branch_suffix=$(echo "$current_branch" | sed 's|^[^/]*/||')
+
+    # scopeの推測
+    case "$branch_suffix" in
+        *setup*|*local*|*render*|*railway*|*deploy*)
+            scope="setup"
+            ;;
+        *api*|*openapi*)
+            scope="api"
+            ;;
+        *lint*|*format*)
+            scope="lint"
+            ;;
+        *deps*|*dependencies*)
+            scope="deps"
+            ;;
+        *auth*)
+            scope="auth"
+            ;;
+        *location*)
+            scope="locations"
+            ;;
+        *visit*)
+            scope="visits"
+            ;;
+        *trip*)
+            scope="trips"
+            ;;
+        *tasks*|*scripts*|*claude*)
+            scope="tasks"
+            ;;
+        *)
+            scope=""
+            ;;
+    esac
+
+    # タスクIDの取得（TASK_IDS配列またはtasks/ディレクトリから）
+    if [[ ${#TASK_IDS[@]} -gt 0 ]]; then
+        task_id="${TASK_IDS[0]}"
+    else
+        # tasks/ディレクトリからタスクIDを探す
+        for dir in "${PROJECT_ROOT}"/tasks/*/; do
+            if [[ -d "$dir" ]]; then
+                local tid
+                tid=$(basename "$dir")
+                # ブランチ名に関連するタスクか確認
+                local task_branch
+                task_branch=$(grep -l "ブランチ:.*${current_branch}" "${dir}TASK.md" 2>/dev/null || true)
+                if [[ -n "$task_branch" ]]; then
+                    task_id="$tid"
+                    break
+                fi
+            fi
+        done
+    fi
+
+    # descriptionの取得（TASKS.mdから）
+    if [[ -n "$task_id" ]]; then
+        description=$(grep -A1 "^### .* #${task_id}" "${PROJECT_ROOT}/docs/TASKS.md" 2>/dev/null | head -1 | sed 's/^### [^#]* #[A-Z0-9]* //' | sed 's/^### [✅🔄⬜🚫⏸️]* #[A-Z0-9]* //' || true)
+        # タイトル行からdescriptionを抽出
+        if [[ -z "$description" ]]; then
+            description=$(grep "^### .* #${task_id}" "${PROJECT_ROOT}/docs/TASKS.md" 2>/dev/null | sed "s/^### [✅🔄⬜🚫⏸️]* #${task_id} //" || true)
+        fi
+    fi
+
+    # descriptionがなければブランチ名から生成
+    if [[ -z "$description" ]]; then
+        description=$(echo "$branch_suffix" | sed 's/-/ /g' | sed 's/_/ /g')
+        description="$(echo "${description:0:1}" | tr '[:lower:]' '[:upper:]')${description:1}"
+    fi
+
+    # タイトルを組み立て
+    local title
+    if [[ -n "$scope" ]]; then
+        title="${type}(${scope}): ${description}"
+    else
+        title="${type}: ${description}"
+    fi
+
+    # タスクIDを末尾に追加
+    if [[ -n "$task_id" ]]; then
+        title="${title} #${task_id}"
+    fi
 
     echo "$title"
 }
