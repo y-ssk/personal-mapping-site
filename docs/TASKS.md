@@ -180,7 +180,7 @@
   5. 次のステップ
   ```
 
-### ⬜ #D011 RENDER_DEPLOYMENT.md作成
+### ✅ #D011 RENDER_DEPLOYMENT.md作成
 - **優先度:** 中
 - **見積:** 1h
 - **トリガー:** MVP完成後
