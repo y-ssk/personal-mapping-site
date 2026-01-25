@@ -18,7 +18,9 @@
       "Bash(pre-commit:*)",
       "Bash(python3:*)",
       "Bash(./scripts/claude/review_changes.sh:*)",
-      "Bash(./scripts/tasks/update_task.sh:*)"
+      "Bash(./scripts/tasks/update_task.sh:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr edit:*)"
     ]
   }
 }
