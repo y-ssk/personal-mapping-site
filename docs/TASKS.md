@@ -188,7 +188,7 @@
 - **ブランチ:** docs/render-deploy
 - **成果物:** `docs/setup/RENDER_DEPLOYMENT.md`
 
-### ⬜ #D012 RAILWAY_MIGRATION.md作成
+### ✅ #D012 RAILWAY_MIGRATION.md作成
 - **優先度:** 低
 - **見積:** 1h
 - **トリガー:** Render→Railway移行時
