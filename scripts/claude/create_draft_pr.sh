@@ -222,10 +222,12 @@ main() {
     local current_branch
     current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    # ベースブランチ（developまたはmain）
+    # ベースブランチ（常にdevelop）
     local base_branch="develop"
     if ! git rev-parse --verify "$base_branch" >/dev/null 2>&1; then
-        base_branch="main"
+        echo "エラー: developブランチが存在しません" >&2
+        echo "先にdevelopブランチを作成してください" >&2
+        exit 1
     fi
 
     # PRタイトル生成
