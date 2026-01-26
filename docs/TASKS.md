@@ -285,8 +285,8 @@
   - [x] Reactプロジェクト作成（Vite）
   - [x] Docker設定確認
   - [x] 依存パッケージインストール
-  - [ ] 初回起動確認（Docker起動後に確認）
-  - [ ] 管理画面アクセス確認（Docker起動後に確認）
+  - [x] 初回起動確認
+  - [x] 管理画面アクセス確認
 - **成果物:**
   - `backend/config/`
   - `backend/manage.py`

@@ -84,11 +84,12 @@
 - [x] カスタムUserモデル定義済み
 - [x] email認証設定済み
 
-### 未確認項目（Docker起動後に確認）
-- [ ] docker compose up -d で起動
-- [ ] マイグレーション実行
-- [ ] 管理画面アクセス
-- [ ] フロントエンド表示
+### Docker起動確認（完了）
+- [x] docker compose up -d で起動
+- [x] マイグレーション実行
+- [x] スーパーユーザー作成（admin@example.com / admin123）
+- [x] 管理画面アクセス（http://localhost:8000/admin/）
+- [x] フロントエンド表示（http://localhost:5173）
 
 ## 成果物
 - `docker-compose.yml`
