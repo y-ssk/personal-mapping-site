@@ -15,9 +15,10 @@ WSL上で実行するか、Claude Code上で実行するかを明確に区別し
 [3] Claude Code実行 → Claude Code
 [4] 変更レビュー    → WSL（対話形式）
 [5] コミット&Push   → WSL または Claude Code
-[6] Draft PR作成    → WSL または Claude Code
-[7] TASKS.md更新    → Claude Code
-[8] ログ記録        → Claude Code
+[6] Test Plan実行   → Claude Code ★PR作成前に必須
+[7] Draft PR作成    → WSL または Claude Code
+[8] TASKS.md更新    → Claude Code
+[9] ログ記録        → Claude Code
 ```
 
 ---
@@ -136,7 +137,40 @@ Claude Codeで以下を入力:
 
 ---
 
-### Step 6: Draft PR作成
+### Step 6: Test Plan実行
+
+**実行環境:** Claude Code
+
+**重要:** PR作成前にTest Planを実行し、確認結果をPR本文に記載する。
+
+**ドキュメント系タスクの確認項目:**
+- リンク先が存在するか
+- SPEC.mdの該当セクションと整合しているか
+- コード例がある場合、構文が正しいか
+
+**スクリプト系タスクの確認項目:**
+- `--help` が動作するか
+- `--dry-run` が動作するか
+- 前提条件チェックが機能するか
+- 関連ドキュメントとの整合性
+
+**実行例:**
+```bash
+# リンク確認
+ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
+
+# スクリプト動作確認
+./scripts/deploy/migrate_to_railway.sh --help
+./scripts/deploy/migrate_to_railway.sh --dry-run
+```
+
+**CI/CD自動化の判断:**
+- 実装タスクの場合、CI/CDで自動テストが必要かをこのステップで判断
+- 必要な場合はGitHub Actionsのワークフローに追加
+
+---
+
+### Step 7: Draft PR作成
 
 **実行環境:** WSL または Claude Code
 
@@ -149,15 +183,27 @@ Claude Codeで以下を入力:
 ```
 > Draft PRを作成してください。
 > タスク#<task-id>の内容に基づいてPR説明を生成してください。
+> Test Plan確認結果をPR本文に記載してください。
 ```
 
 **前提条件:**
 - GitHub CLI (gh) がインストール済み
 - `gh auth login` で認証済み
+- **Step 6のTest Planが完了していること**
+
+**PR本文のTest Planセクション形式:**
+```markdown
+## Test plan
+
+### 確認結果
+- [x] 項目1 - 確認内容
+- [x] 項目2 - 確認内容
+- [ ] 項目3 - 未確認（理由）
+```
 
 ---
 
-### Step 7: TASKS.md更新
+### Step 8: TASKS.md更新
 
 **実行環境:** Claude Code
 
@@ -174,7 +220,7 @@ Claude Codeで以下を入力:
 
 ---
 
-### Step 8: ログ記録
+### Step 9: ログ記録
 
 **実行環境:** Claude Code
 
@@ -357,9 +403,10 @@ fix/<スクリプト名>-<内容>
 3. > tasks/D006/claude_prompt.md を読んでタスクを実行してください
 4. （実装完了後）
 5. > 変更をコミットしてpushしてください
-6. > Draft PRを作成してください
-7. > docs/TASKS.mdのタスク#D006を完了にしてください
-8. > tasks/D006/LOG.md を作成して実行ログを記録してください
+6. > Test Planを実行して確認結果を記録してください
+7. > Draft PRを作成してください。Test Plan確認結果をPR本文に記載してください
+8. > docs/TASKS.mdのタスク#D006を完了にしてください
+9. > tasks/D006/LOG.md を作成して実行ログを記録してください
 ```
 
 ### WSL中心で実行（Claude Codeは実装のみ）
