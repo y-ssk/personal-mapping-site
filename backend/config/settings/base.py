@@ -83,8 +83,8 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.backends.context_processors.debug',
-                'django.template.backends.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -195,4 +195,5 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_HTTPONLY': False,
+    'TOKEN_MODEL': None,
 }
