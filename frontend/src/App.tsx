@@ -1,7 +1,7 @@
 /**
- * Main application component.
+ * メインアプリケーションコンポーネント。
  *
- * Provides routing and layout structure for the Personal Mapping Site.
+ * Personal Mapping Siteのルーティングとレイアウト構造を提供する。
  */
 import { Routes, Route } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ function App() {
 }
 
 /**
- * Home page component.
+ * ホームページコンポーネント。
  */
 function HomePage() {
   return (
@@ -35,10 +35,10 @@ function HomePage() {
       <div className="rounded-lg border-4 border-dashed border-gray-200 p-8">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-700">
-            Welcome to Personal Mapping Site
+            Personal Mapping Siteへようこそ
           </h2>
           <p className="mt-2 text-gray-500">
-            Your personal location management and travel planning application.
+            あなたの場所管理と旅行計画アプリケーションです。
           </p>
         </div>
       </div>

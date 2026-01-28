@@ -1,18 +1,18 @@
 """
-Core abstract models for Personal Mapping Site.
+Personal Mapping Siteの共通抽象モデル。
 
-Provides base models with common fields and functionality.
+共通フィールドと機能を持つベースモデルを提供する。
 """
 from django.db import models
 
 
 class TimestampedModel(models.Model):
     """
-    Abstract base model with created_at and updated_at timestamps.
+    作成日時と更新日時を持つ抽象ベースモデル。
 
     Attributes:
-        created_at: Timestamp when the record was created.
-        updated_at: Timestamp when the record was last updated.
+        created_at: レコードが作成された日時。
+        updated_at: レコードが最後に更新された日時。
     """
 
     created_at = models.DateTimeField(auto_now_add=True)

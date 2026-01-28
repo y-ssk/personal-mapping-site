@@ -1,7 +1,7 @@
 """
-Custom User model for Personal Mapping Site.
+Personal Mapping Siteのカスタムユーザーモデル。
 
-Uses email as the primary identifier instead of username.
+usernameの代わりにemailを主要な識別子として使用する。
 """
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
@@ -9,26 +9,26 @@ from django.db import models
 
 class UserManager(BaseUserManager):
     """
-    Custom user manager where email is the unique identifier.
+    emailを一意の識別子とするカスタムユーザーマネージャー。
     """
 
     def create_user(self, email, password=None, **extra_fields):
         """
-        Create and save a regular user with the given email and password.
+        指定されたemailとpasswordで通常ユーザーを作成・保存する。
 
         Args:
-            email: User's email address (required).
-            password: User's password.
-            **extra_fields: Additional fields for user model.
+            email: ユーザーのメールアドレス（必須）。
+            password: ユーザーのパスワード。
+            **extra_fields: ユーザーモデルの追加フィールド。
 
         Returns:
-            User: Created user instance.
+            User: 作成されたユーザーインスタンス。
 
         Raises:
-            ValueError: If email is not provided.
+            ValueError: emailが指定されていない場合。
         """
         if not email:
-            raise ValueError('The Email field must be set')
+            raise ValueError('メールアドレスは必須です')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -37,35 +37,35 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None, **extra_fields):
         """
-        Create and save a superuser with the given email and password.
+        指定されたemailとpasswordでスーパーユーザーを作成・保存する。
 
         Args:
-            email: User's email address (required).
-            password: User's password.
-            **extra_fields: Additional fields for user model.
+            email: ユーザーのメールアドレス（必須）。
+            password: ユーザーのパスワード。
+            **extra_fields: ユーザーモデルの追加フィールド。
 
         Returns:
-            User: Created superuser instance.
+            User: 作成されたスーパーユーザーインスタンス。
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
+            raise ValueError('スーパーユーザーはis_staff=Trueである必要があります')
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+            raise ValueError('スーパーユーザーはis_superuser=Trueである必要があります')
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
     """
-    Custom User model using email as the primary identifier.
+    emailを主要な識別子とするカスタムユーザーモデル。
 
     Attributes:
-        email: Unique email address for authentication.
-        username: Optional username (not required for authentication).
-        display_name: User's display name shown in the application.
+        email: 認証用の一意のメールアドレス。
+        username: オプションのユーザー名（認証には不要）。
+        display_name: アプリケーションで表示されるユーザーの表示名。
     """
 
     username = models.CharField(max_length=150, blank=True)

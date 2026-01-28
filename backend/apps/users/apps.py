@@ -1,11 +1,11 @@
 """
-App configuration for users app.
+usersアプリの設定。
 """
 from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    """Users app configuration."""
+    """usersアプリの設定クラス。"""
 
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.users'

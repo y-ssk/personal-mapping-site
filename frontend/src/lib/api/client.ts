@@ -1,14 +1,14 @@
 /**
- * Axios HTTP client configuration.
+ * Axios HTTPクライアント設定。
  *
- * Provides a configured Axios instance for API communication.
+ * API通信用に設定されたAxiosインスタンスを提供する。
  */
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 /**
- * Configured Axios instance for API requests.
+ * APIリクエスト用に設定されたAxiosインスタンス。
  */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -17,7 +17,7 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+// リクエストインターセプター: 認証トークンを追加
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -31,12 +31,12 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// レスポンスインターセプター: エラーハンドリング
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized - redirect to login or refresh token
+      // 認証エラー時: ログインページへリダイレクトまたはトークンリフレッシュ
       localStorage.removeItem('access_token');
     }
     return Promise.reject(error);
