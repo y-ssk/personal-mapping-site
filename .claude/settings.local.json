@@ -20,7 +20,26 @@
       "Bash(./scripts/claude/review_changes.sh:*)",
       "Bash(./scripts/tasks/update_task.sh:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr edit:*)"
+      "Bash(gh pr edit:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(gh pr list:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(./scripts/deploy/migrate_to_railway.sh:*)",
+      "Bash(echo \"=== D013 Test Plan実行 ===\" echo \"\" echo \"1. リンク先確認:\" echo \"  LOCAL_SETUP.md:\" if [[ -f \"docs/setup/LOCAL_SETUP.md\" ]])",
+      "Bash(then echo \"    ✅ 存在\")",
+      "Bash(else echo \"    ❌ 存在しない\")",
+      "Bash(fi echo \"  RENDER_DEPLOYMENT.md:\" if [[ -f \"docs/setup/RENDER_DEPLOYMENT.md\" ]])",
+      "Bash(fi echo \"  RAILWAY_MIGRATION.md:\" if [[ -f \"docs/setup/RAILWAY_MIGRATION.md\" ]])",
+      "Bash(fi echo \"\" echo \"2. SPEC.md準拠確認 \\(§ 5.4 地図\\):\" grep -A 5 \"5.4 地図\" SPEC.md)",
+      "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/docker-compose.yml\" ]])",
+      "Bash(fi)",
+      "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/backend/Dockerfile\" ]])",
+      "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/frontend/Dockerfile\" ]])",
+      "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/.env.example\" ]])",
+      "Bash(docker compose up:*)",
+      "Bash(docker compose:*)"
     ]
   }
 }

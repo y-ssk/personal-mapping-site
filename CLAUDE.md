@@ -32,6 +32,86 @@
 - 複雑なロジックにはコメント
 - APIが変われば必ずOpenAPI更新
 
+**5. コメント・ドキュメントは日本語**
+- コードコメントは日本語で記述
+- JSDoc/Docstringは日本語で記述
+- CLIヘルプメッセージは日本語で記述
+- エラーメッセージは日本語で記述
+- 英語を使用するのはi18n対応時のみ
+
+**6. マジックナンバー禁止**
+- 数値リテラルは必ず定数として定義
+- 定数名は意味がわかる名前にする
+- フロントエンド・バックエンド共通ルール
+
+```typescript
+// ❌ 悪い例
+if (radius > 100) { ... }
+const timeout = 5 * 60 * 1000;
+
+// ✅ 良い例
+const MAX_RADIUS_KM = 100;
+const STALE_TIME_MS = 5 * 60 * 1000;  // 5分
+
+if (radius > MAX_RADIUS_KM) { ... }
+const timeout = STALE_TIME_MS;
+```
+
+```python
+# ❌ 悪い例
+if radius_km > 100:
+    raise ValueError("半径が大きすぎます")
+
+# ✅ 良い例
+MAX_RADIUS_KM = 100
+
+if radius_km > MAX_RADIUS_KM:
+    raise ValueError(f"半径は{MAX_RADIUS_KM}km以下にしてください")
+```
+
+**7. エラーメッセージの一元管理**
+- エラーメッセージはべた書きせず、まとまった単位で管理
+- 機能ごとに定数ファイルを作成
+- フロントエンド・バックエンド共通ルール
+
+```typescript
+// ❌ 悪い例
+throw new Error('認証に失敗しました');
+toast.error('場所の保存に失敗しました');
+
+// ✅ 良い例: features/auth/constants/messages.ts
+export const AUTH_MESSAGES = {
+  LOGIN_FAILED: '認証に失敗しました',
+  SESSION_EXPIRED: 'セッションが切れました。再ログインしてください',
+  UNAUTHORIZED: 'この操作を行う権限がありません',
+} as const;
+
+// 使用側
+throw new Error(AUTH_MESSAGES.LOGIN_FAILED);
+```
+
+```python
+# ❌ 悪い例
+raise ValidationError("半径が大きすぎます")
+raise PermissionDenied("この場所を編集する権限がありません")
+
+# ✅ 良い例: apps/locations/constants.py
+class LocationMessages:
+    """場所関連のエラーメッセージ"""
+    RADIUS_TOO_LARGE = "半径は{max_km}km以下にしてください"
+    NOT_FOUND = "指定された場所が見つかりません"
+    PERMISSION_DENIED = "この場所を編集する権限がありません"
+
+# 使用側
+raise ValidationError(
+    LocationMessages.RADIUS_TOO_LARGE.format(max_km=MAX_RADIUS_KM)
+)
+```
+
+**ファイル配置:**
+- フロントエンド: `features/<機能>/constants/messages.ts`
+- バックエンド: `apps/<機能>/constants.py`
+
 ---
 
 ## 📁 プロジェクト構造
