@@ -97,6 +97,76 @@
 - `frontend/src/` - Reactプロジェクト
 - `.env.example`
 
+## コーディング規約の追加（2025-01-29）
+
+### 追加したルール
+
+CLAUDE.mdに以下のルールを追加:
+
+#### 5. コメント・ドキュメントは日本語
+- コードコメントは日本語で記述
+- JSDoc/Docstringは日本語で記述
+- CLIヘルプメッセージは日本語で記述
+- エラーメッセージは日本語で記述
+- 英語を使用するのはi18n対応時のみ
+
+#### 6. マジックナンバー禁止
+- 数値リテラルは必ず定数として定義
+- 定数名は意味がわかる名前にする
+- フロントエンド・バックエンド共通ルール
+
+#### 7. エラーメッセージの一元管理
+- エラーメッセージはべた書きせず、まとまった単位で管理
+- 機能ごとに定数ファイルを作成
+- フロントエンド: `lib/constants/` または `features/<機能>/constants/`
+- バックエンド: `apps/<機能>/constants.py`
+
+### 作成した定数ファイル
+
+#### Frontend (`frontend/src/lib/constants/`)
+
+| ファイル | 内容 |
+|----------|------|
+| `api.ts` | HTTPステータスコード（`HTTP_STATUS`）、APIエラーメッセージ（`API_MESSAGES`） |
+| `storage.ts` | ローカルストレージキー（`STORAGE_KEYS`） |
+| `query.ts` | 時間定数（`TIME_MS`）、TanStack Query設定（`QUERY_DEFAULTS`） |
+| `index.ts` | 一括エクスポート |
+
+#### Backend (`backend/apps/users/constants.py`)
+
+| クラス | 内容 |
+|--------|------|
+| `UserErrorMessages` | ユーザー関連のエラーメッセージ |
+
+### 修正したファイル
+
+#### Frontend
+| ファイル | 修正内容 |
+|----------|----------|
+| `client.ts` | `401` → `HTTP_STATUS.UNAUTHORIZED`、`'access_token'` → `STORAGE_KEYS.ACCESS_TOKEN` |
+| `authStore.ts` | `'access_token'` → `STORAGE_KEYS.ACCESS_TOKEN` |
+| `main.tsx` | `5 * 60 * 1000` → `QUERY_DEFAULTS.STALE_TIME`、`1` → `QUERY_DEFAULTS.RETRY_COUNT` |
+
+#### Backend
+| ファイル | 修正内容 |
+|----------|----------|
+| `wsgi.py` | docstringを日本語化 |
+| `urls.py` | docstringとコメントを日本語化 |
+| `settings/base.py` | 全コメントを日本語化 |
+| `settings/local.py` | docstringとコメントを日本語化 |
+| `settings/production.py` | docstringとコメントを日本語化 |
+| `apps/users/models.py` | エラーメッセージを `UserErrorMessages` 定数参照に変更 |
+
+### 関連コミット
+
+```
+66d787b docs: マジックナンバー禁止ルールを追加
+92dbd63 docs: エラーメッセージ一元管理ルールを追加
+cd298a0 refactor: マジックナンバー・べた書き文字列を定数化
+d3e93c9 docs: バックエンド設定ファイルのコメントを日本語化
+125fb84 refactor: バックエンドのエラーメッセージを定数化
+```
+
 ## 次のステップ
 1. `docker compose up -d` で起動確認
 2. `docker compose exec backend python manage.py migrate` でマイグレーション
