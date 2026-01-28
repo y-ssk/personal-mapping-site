@@ -87,7 +87,7 @@
 ### Docker起動確認（完了）
 - [x] docker compose up -d で起動
 - [x] マイグレーション実行
-- [x] スーパーユーザー作成（admin@example.com / admin123）
+- [x] スーパーユーザー作成（手順: docs/setup/LOCAL_SETUP.md参照）
 - [x] 管理画面アクセス（http://localhost:8000/admin/）
 - [x] フロントエンド表示（http://localhost:5173）
 
