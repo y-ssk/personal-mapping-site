@@ -39,6 +39,36 @@
 - エラーメッセージは日本語で記述
 - 英語を使用するのはi18n対応時のみ
 
+**6. マジックナンバー禁止**
+- 数値リテラルは必ず定数として定義
+- 定数名は意味がわかる名前にする
+- フロントエンド・バックエンド共通ルール
+
+```typescript
+// ❌ 悪い例
+if (radius > 100) { ... }
+const timeout = 5 * 60 * 1000;
+
+// ✅ 良い例
+const MAX_RADIUS_KM = 100;
+const STALE_TIME_MS = 5 * 60 * 1000;  // 5分
+
+if (radius > MAX_RADIUS_KM) { ... }
+const timeout = STALE_TIME_MS;
+```
+
+```python
+# ❌ 悪い例
+if radius_km > 100:
+    raise ValueError("半径が大きすぎます")
+
+# ✅ 良い例
+MAX_RADIUS_KM = 100
+
+if radius_km > MAX_RADIUS_KM:
+    raise ValueError(f"半径は{MAX_RADIUS_KM}km以下にしてください")
+```
+
 ---
 
 ## 📁 プロジェクト構造
