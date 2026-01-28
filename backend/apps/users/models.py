@@ -6,6 +6,8 @@ usernameの代わりにemailを主要な識別子として使用する。
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
+from apps.users.constants import UserErrorMessages
+
 
 class UserManager(BaseUserManager):
     """
@@ -28,7 +30,7 @@ class UserManager(BaseUserManager):
             ValueError: emailが指定されていない場合。
         """
         if not email:
-            raise ValueError('メールアドレスは必須です')
+            raise ValueError(UserErrorMessages.EMAIL_REQUIRED)
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -51,9 +53,9 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError('スーパーユーザーはis_staff=Trueである必要があります')
+            raise ValueError(UserErrorMessages.SUPERUSER_MUST_BE_STAFF)
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('スーパーユーザーはis_superuser=Trueである必要があります')
+            raise ValueError(UserErrorMessages.SUPERUSER_MUST_BE_SUPERUSER)
 
         return self.create_user(email, password, **extra_fields)
 
