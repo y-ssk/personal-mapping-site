@@ -5,6 +5,8 @@
  */
 import { create } from 'zustand';
 
+import { STORAGE_KEYS } from '@/lib/constants';
+
 interface User {
   id: number;
   email: string;
@@ -35,7 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }),
   setLoading: (isLoading) => set({ isLoading }),
   logout: () => {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     set({
       user: null,
       isAuthenticated: false,
