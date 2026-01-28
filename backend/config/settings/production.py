@@ -1,5 +1,5 @@
 """
-Django settings for production.
+本番環境用Django設定。
 """
 from .base import *  # noqa: F401, F403
 
@@ -8,7 +8,7 @@ from decouple import config
 
 DEBUG = False
 
-# Database - PostgreSQL with PostGIS
+# データベース - PostgreSQL with PostGIS
 DATABASE_URL = config('DATABASE_URL')
 
 DATABASES = {
@@ -19,7 +19,7 @@ DATABASES = {
 }
 
 
-# Security settings
+# セキュリティ設定
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -28,5 +28,5 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 
-# Email - Configure for production
+# メール - 本番環境用SMTP設定
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

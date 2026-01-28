@@ -1,25 +1,21 @@
 """
-Django base settings for Personal Mapping Site.
+Personal Mapping Siteの基本Django設定。
 
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/5.0/ref/settings/
+全環境で共通の設定を定義する。
 """
 import os
 from pathlib import Path
 
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# プロジェクトのベースディレクトリ
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# セキュリティ警告: 本番環境ではシークレットキーを秘密にすること
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# セキュリティ警告: 本番環境ではDEBUGをFalseにすること
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config(
@@ -29,7 +25,7 @@ ALLOWED_HOSTS = config(
 )
 
 
-# Application definition
+# アプリケーション定義
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -95,13 +91,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-# Configure in local.py or production.py
+# データベース
+# local.py または production.py で設定
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+# パスワードバリデーション
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -118,31 +112,28 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+# 国際化設定
 LANGUAGE_CODE = 'ja'
 TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# 静的ファイル（CSS、JavaScript、画像）
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+# デフォルト主キーフィールドタイプ
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Custom User Model
+# カスタムユーザーモデル
 AUTH_USER_MODEL = 'users.User'
 
 
-# Django REST Framework
+# Django REST Framework設定
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -162,7 +153,7 @@ REST_FRAMEWORK = {
 }
 
 
-# drf-spectacular settings
+# drf-spectacular設定（OpenAPIスキーマ生成）
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Personal Mapping Site API',
     'DESCRIPTION': 'Personal location management and travel planning API',
@@ -171,7 +162,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 
-# CORS settings
+# CORS設定
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
     default='http://localhost:5173',
@@ -179,7 +170,7 @@ CORS_ALLOWED_ORIGINS = config(
 )
 
 
-# allauth settings
+# allauth設定（認証バックエンド）
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -191,7 +182,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 
-# dj-rest-auth settings
+# dj-rest-auth設定（REST API認証）
 REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_HTTPONLY': False,

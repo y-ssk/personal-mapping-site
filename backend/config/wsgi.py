@@ -1,10 +1,7 @@
 """
-WSGI config for Personal Mapping Site.
+Personal Mapping SiteのWSGI設定。
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
+WSGIアプリケーションを``application``というモジュールレベル変数として公開する。
 """
 import os
 

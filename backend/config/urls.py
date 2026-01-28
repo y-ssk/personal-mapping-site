@@ -1,5 +1,5 @@
 """
-URL configuration for Personal Mapping Site.
+Personal Mapping SiteのURL設定。
 """
 from django.conf import settings
 from django.contrib import admin
@@ -12,16 +12,16 @@ from drf_spectacular.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # API Documentation
+    # APIドキュメント
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
-    # Authentication
+    # 認証
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
 ]
 
-# Debug toolbar (only in debug mode)
+# デバッグツールバー（デバッグモード時のみ）
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
