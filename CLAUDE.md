@@ -3,7 +3,7 @@
 ## ドキュメント情報
 - **対象:** Claude Code (Opus)
 - **目的:** 実装時の明確な指針提供
-- **最終更新:** 2025-01-23
+- **最終更新:** 2025-01-29
 
 ---
 
@@ -716,6 +716,58 @@ docker-compose exec frontend npm run type-check
 - [DRF](https://www.django-rest-framework.org/)
 - [React](https://ja.react.dev/)
 - [TanStack Query](https://tanstack.com/query/latest)
+
+---
+
+## 🎯 Claude Code Skills
+
+### 利用可能なスキル
+
+| コマンド | 説明 | 使用例 |
+|----------|------|--------|
+| `/task <id>` | タスク実行 | `/task D007` |
+| `/workflow` | ワークフロー確認 | `/workflow` |
+| `/log <id>` | ログ記録 | `/log D007` |
+| `/spec <section>` | SPEC.md参照 | `/spec 4.3.1` |
+| `/guide [keyword]` | コーディング規約参照 | `/guide constants` |
+| `/progress` | 進捗サマリー表示 | `/progress` |
+| `/setup <env>` | 環境構築ガイド | `/setup local` |
+| `/checklist <id>` | チェックリスト管理 | `/checklist D007` |
+| `/review` | 変更レビュー | `/review` |
+| `/pr <id>` | PR作成 | `/pr D007` |
+
+### スキル追加ルール
+
+**8. 頻出処理のスキル化**
+
+タスク実行中に以下の条件を満たす処理を検出した場合、スキル追加を提案する：
+
+1. **検出条件**
+   - 同じ処理が3回以上繰り返されている
+   - 複数のタスクで共通して使用される可能性が高い
+   - コマンド化することで効率が上がる
+
+2. **確認フロー**
+   ```
+   この処理をスキルとして追加しますか？
+   処理内容: <処理の説明>
+   コマンド案: /<command-name>
+
+   追加する場合は 'y' と回答してください (y/N):
+   ```
+
+3. **追加時のルール**
+   - 既存スキルと重複しないこと（重複チェック必須）
+   - `.claude/commands/<command>.md` に作成
+   - CLAUDE.mdのスキル一覧に追加
+   - docs/TASKS.mdにタスクとして記録
+
+4. **重複チェック**
+   - 既存スキルの機能と重複する場合は追加しない
+   - 類似機能がある場合は既存スキルの拡張を検討
+
+5. **詳細ルール**
+   - スキル管理の詳細は [docs/SKILL.md](docs/SKILL.md) を参照
 
 ---
 
