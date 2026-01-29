@@ -20,4 +20,4 @@
 1. 変更をコミットしてpushしてください
 2. Draft PRを作成してください
 3. docs/TASKS.mdのタスク#$ARGUMENTSを完了にしてください
-4. docs/tasks/$ARGUMENTS.log を作成して実行ログを記録してください
+4. tasks/$ARGUMENTS/LOG.md を作成して実行ログを記録してください
