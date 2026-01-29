@@ -4,7 +4,7 @@
 - **タスク名:** データベース初期設定
 - **実行日:** 2026-01-30
 - **ブランチ:** feature/db-setup
-- **PR:** （作成予定）
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/13
 
 ## 実行プロンプト
 
