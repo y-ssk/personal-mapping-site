@@ -2,7 +2,7 @@
 
 タスクID: $ARGUMENTS
 
-docs/tasks/$ARGUMENTS.log ファイルを作成して、以下の内容を記録してください:
+tasks/$ARGUMENTS/LOG.md ファイルを作成して、以下の内容を記録してください:
 
 ## 記録する内容
 
