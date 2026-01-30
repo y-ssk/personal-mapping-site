@@ -1,0 +1,377 @@
+[
+  {
+    "model": "locations.category",
+    "pk": 1,
+    "fields": {
+      "name": "飲食",
+      "slug": "food-drink",
+      "parent": null,
+      "icon": "utensils",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 14,
+      "tree_id": 1,
+      "level": 0
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 2,
+    "fields": {
+      "name": "レストラン",
+      "slug": "restaurant",
+      "parent": 1,
+      "icon": "restaurant",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 2,
+      "rght": 9,
+      "tree_id": 1,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 3,
+    "fields": {
+      "name": "イタリアン",
+      "slug": "italian",
+      "parent": 2,
+      "icon": "pizza",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 3,
+      "rght": 4,
+      "tree_id": 1,
+      "level": 2
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 4,
+    "fields": {
+      "name": "和食",
+      "slug": "japanese",
+      "parent": 2,
+      "icon": "rice",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 5,
+      "rght": 6,
+      "tree_id": 1,
+      "level": 2
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 5,
+    "fields": {
+      "name": "中華",
+      "slug": "chinese",
+      "parent": 2,
+      "icon": "bowl",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 7,
+      "rght": 8,
+      "tree_id": 1,
+      "level": 2
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 6,
+    "fields": {
+      "name": "カフェ",
+      "slug": "cafe",
+      "parent": 1,
+      "icon": "coffee",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 10,
+      "rght": 11,
+      "tree_id": 1,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 7,
+    "fields": {
+      "name": "バー",
+      "slug": "bar",
+      "parent": 1,
+      "icon": "beer",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 12,
+      "rght": 13,
+      "tree_id": 1,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 8,
+    "fields": {
+      "name": "観光",
+      "slug": "tourism",
+      "parent": null,
+      "icon": "camera",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 12,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 9,
+    "fields": {
+      "name": "美術館",
+      "slug": "art-museum",
+      "parent": 8,
+      "icon": "palette",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 2,
+      "rght": 7,
+      "tree_id": 2,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 10,
+    "fields": {
+      "name": "現代美術",
+      "slug": "modern-art",
+      "parent": 9,
+      "icon": "artwork",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 3,
+      "rght": 4,
+      "tree_id": 2,
+      "level": 2
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 11,
+    "fields": {
+      "name": "古典美術",
+      "slug": "classical-art",
+      "parent": 9,
+      "icon": "artwork",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 5,
+      "rght": 6,
+      "tree_id": 2,
+      "level": 2
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 12,
+    "fields": {
+      "name": "神社・寺院",
+      "slug": "shrine-temple",
+      "parent": 8,
+      "icon": "torii",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 8,
+      "rght": 9,
+      "tree_id": 2,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 13,
+    "fields": {
+      "name": "自然",
+      "slug": "nature",
+      "parent": 8,
+      "icon": "tree",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 10,
+      "rght": 11,
+      "tree_id": 2,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 14,
+    "fields": {
+      "name": "ショッピング",
+      "slug": "shopping",
+      "parent": null,
+      "icon": "shopping-bag",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 8,
+      "tree_id": 3,
+      "level": 0
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 15,
+    "fields": {
+      "name": "デパート",
+      "slug": "department-store",
+      "parent": 14,
+      "icon": "building",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 3,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 16,
+    "fields": {
+      "name": "モール",
+      "slug": "mall",
+      "parent": 14,
+      "icon": "store",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 3,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 17,
+    "fields": {
+      "name": "専門店",
+      "slug": "specialty-shop",
+      "parent": 14,
+      "icon": "shop",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 6,
+      "rght": 7,
+      "tree_id": 3,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 18,
+    "fields": {
+      "name": "宿泊",
+      "slug": "accommodation",
+      "parent": null,
+      "icon": "bed",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 8,
+      "tree_id": 4,
+      "level": 0
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 19,
+    "fields": {
+      "name": "ホテル",
+      "slug": "hotel",
+      "parent": 18,
+      "icon": "hotel",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 4,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 20,
+    "fields": {
+      "name": "旅館",
+      "slug": "ryokan",
+      "parent": 18,
+      "icon": "japanese-inn",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 4,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 21,
+    "fields": {
+      "name": "ゲストハウス",
+      "slug": "guesthouse",
+      "parent": 18,
+      "icon": "house",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 6,
+      "rght": 7,
+      "tree_id": 4,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 22,
+    "fields": {
+      "name": "交通",
+      "slug": "transportation",
+      "parent": null,
+      "icon": "train",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 6,
+      "tree_id": 5,
+      "level": 0
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 23,
+    "fields": {
+      "name": "駅",
+      "slug": "station",
+      "parent": 22,
+      "icon": "train-station",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 5,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 24,
+    "fields": {
+      "name": "空港",
+      "slug": "airport",
+      "parent": 22,
+      "icon": "plane",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 5,
+      "level": 1
+    }
+  },
+  {
+    "model": "locations.category",
+    "pk": 25,
+    "fields": {
+      "name": "その他",
+      "slug": "other",
+      "parent": null,
+      "icon": "ellipsis",
+      "created_at": "2026-01-01T00:00:00Z",
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 6,
+      "level": 0
+    }
+  }
+]

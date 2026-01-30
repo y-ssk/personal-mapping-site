@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'corsheaders',
     'drf_spectacular',
+    'mptt',  # 階層カテゴリ用
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -52,6 +53,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'apps.users',
+    'apps.locations',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
