@@ -4,7 +4,7 @@
 - **タスク名:** カテゴリマスタデータ作成
 - **実行日:** 2026-01-30
 - **ブランチ:** feature/category-master
-- **PR:** （作成予定）
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/14
 
 ## 実行プロンプト
 
