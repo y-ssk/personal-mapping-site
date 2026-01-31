@@ -46,5 +46,6 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-json
+        exclude: ^frontend/tsconfig.*\.json$
       - id: check-added-large-files
         args: ['--maxkb=1000']

@@ -1,28 +1,23 @@
 """
 Categoryモデルのテスト。
 """
+
 import pytest
+
 from apps.locations.models import Category
 
 
 @pytest.fixture
 def root_category(db):
     """ルートカテゴリのフィクスチャ。"""
-    return Category.objects.create(
-        name='飲食',
-        slug='food-drink',
-        icon='utensils'
-    )
+    return Category.objects.create(name="飲食", slug="food-drink", icon="utensils")
 
 
 @pytest.fixture
 def child_category(db, root_category):
     """子カテゴリのフィクスチャ。"""
     return Category.objects.create(
-        name='レストラン',
-        slug='restaurant',
-        parent=root_category,
-        icon='restaurant'
+        name="レストラン", slug="restaurant", parent=root_category, icon="restaurant"
     )
 
 
@@ -30,10 +25,7 @@ def child_category(db, root_category):
 def grandchild_category(db, child_category):
     """孫カテゴリのフィクスチャ。"""
     return Category.objects.create(
-        name='イタリアン',
-        slug='italian',
-        parent=child_category,
-        icon='pizza'
+        name="イタリアン", slug="italian", parent=child_category, icon="pizza"
     )
 
 
@@ -44,8 +36,8 @@ class TestCategoryModel:
     def test_create_root_category(self, root_category):
         """ルートカテゴリを作成できる。"""
         assert root_category.pk is not None
-        assert root_category.name == '飲食'
-        assert root_category.slug == 'food-drink'
+        assert root_category.name == "飲食"
+        assert root_category.slug == "food-drink"
         assert root_category.parent is None
         assert root_category.level == 0
 
@@ -63,19 +55,19 @@ class TestCategoryModel:
 
     def test_str_returns_name(self, root_category):
         """__str__がカテゴリ名を返す。"""
-        assert str(root_category) == '飲食'
+        assert str(root_category) == "飲食"
 
     def test_get_full_path_root(self, root_category):
         """ルートカテゴリのget_full_pathが正しいパスを返す。"""
-        assert root_category.get_full_path() == '飲食'
+        assert root_category.get_full_path() == "飲食"
 
     def test_get_full_path_child(self, child_category):
         """子カテゴリのget_full_pathが正しいパスを返す。"""
-        assert child_category.get_full_path() == '飲食 / レストラン'
+        assert child_category.get_full_path() == "飲食 / レストラン"
 
     def test_get_full_path_grandchild(self, grandchild_category):
         """孫カテゴリのget_full_pathが正しいパスを返す。"""
-        assert grandchild_category.get_full_path() == '飲食 / レストラン / イタリアン'
+        assert grandchild_category.get_full_path() == "飲食 / レストラン / イタリアン"
 
     def test_get_ancestors(self, grandchild_category, child_category, root_category):
         """get_ancestorsが祖先カテゴリを返す。"""
@@ -95,10 +87,7 @@ class TestCategoryModel:
         """直接の子カテゴリを取得できる。"""
         # 別の子カテゴリを追加
         cafe = Category.objects.create(
-            name='カフェ',
-            slug='cafe',
-            parent=root_category,
-            icon='coffee'
+            name="カフェ", slug="cafe", parent=root_category, icon="coffee"
         )
         children = list(root_category.get_children())
         assert len(children) == 2
@@ -108,11 +97,7 @@ class TestCategoryModel:
     def test_slug_unique(self, root_category):
         """slugが一意である。"""
         with pytest.raises(Exception):
-            Category.objects.create(
-                name='重複テスト',
-                slug='food-drink',  # 既存のslug
-                icon='test'
-            )
+            Category.objects.create(name="重複テスト", slug="food-drink", icon="test")  # 既存のslug
 
     def test_is_leaf_node(self, root_category, grandchild_category):
         """is_leaf_nodeが正しく判定する。"""

@@ -3,6 +3,7 @@ Personal Mapping Siteの共通抽象モデル。
 
 共通フィールドと機能を持つベースモデルを提供する。
 """
+
 from django.db import models
 
 
