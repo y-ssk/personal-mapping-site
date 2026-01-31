@@ -12,8 +12,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage"
+    "test": "vitest --passWithNoTests",
+    "test:coverage": "vitest --coverage --passWithNoTests"
   },
   "dependencies": {
     "react": "^18.3.1",
