@@ -1,6 +1,6 @@
 # ローカル開発環境セットアップガイド
 
-**最終更新:** 2025-01-25
+**最終更新:** 2026-02-01
 
 このドキュメントでは、Personal Mapping Siteのローカル開発環境を構築する手順を説明します。
 
@@ -262,12 +262,13 @@ docker compose restart frontend
 **解決策:**
 ```bash
 # 使用中のポートを確認
-lsof -i :5173
-lsof -i :8000
-lsof -i :5432
+lsof -i :5173  # Frontend
+lsof -i :8000  # Backend
 
 # 該当プロセスを終了するか、docker-compose.ymlでポートを変更
 ```
+
+**補足:** データベース（PostgreSQL）はコンテナ間通信のみ（`expose`）のため、ホストの5432ポートとは競合しません。
 
 ### Q6: 権限エラー（Permission denied）
 
@@ -280,6 +281,75 @@ ls -la
 
 # 権限を修正
 sudo chown -R $USER:$USER .
+```
+
+### Q7: node_modulesが消える・依存関係エラー
+
+**症状:** `npm install` 後にモジュールが見つからない
+
+**解決策:**
+```bash
+# docker-compose.ymlでnode_modulesをボリュームマウント対象外にしている
+# コンテナ内でインストールし直す
+docker compose exec frontend npm install
+
+# それでも解決しない場合はボリュームを再作成
+docker compose down
+docker volume rm personal-mapping-site_node_modules 2>/dev/null || true
+docker compose up -d --build frontend
+```
+
+### Q8: マイグレーションエラー
+
+**症状:** `relation does not exist` または `column does not exist`
+
+**解決策:**
+```bash
+# マイグレーションの状態を確認
+docker compose exec backend python manage.py showmigrations
+
+# マイグレーションをリセット（開発環境のみ）
+docker compose exec backend python manage.py migrate --fake-initial
+
+# それでも解決しない場合はDBを再作成
+docker compose down -v
+docker compose up -d
+docker compose exec backend python manage.py migrate
+```
+
+### Q9: 環境変数が反映されない
+
+**症状:** 設定を変更したのに反映されない
+
+**解決策:**
+```bash
+# docker-compose.ymlで環境変数を直接設定している場合
+# .envファイルは参照されません
+# docker-compose.ymlの environment セクションを編集
+
+# コンテナを再起動して反映
+docker compose down
+docker compose up -d
+```
+
+**補足:** 現在のdocker-compose.ymlは環境変数を直接設定しています。`.env`ファイルはテンプレートとして参照用です。
+
+### Q10: WSL2でファイル変更が反映されない
+
+**症状:** Windowsホストでファイルを編集しても反映されない
+
+**解決策:**
+```bash
+# WSL2内でファイルを編集することを推奨
+# /mnt/c/... ではなく、WSL2のファイルシステムで作業
+
+# WSL2内にリポジトリをクローン
+cd ~
+git clone https://github.com/y-ssk/personal-mapping-site.git
+
+# ViteのポーリングモードはデフォルトでON
+# 反映が遅い場合はコンテナを再起動
+docker compose restart frontend
 ```
 
 ---
