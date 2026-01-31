@@ -70,3 +70,32 @@ docker-compose.ymlの特徴:
 - DBは`expose`のみでホストからは直接アクセス不可
 - 環境変数はdocker-compose.yml内で直接設定
 - .envファイルはテンプレート/参照用
+
+---
+
+## 追加修正（2026-02-01）
+
+### 問題
+
+PRのベースブランチが`main`になっていた（正しくは`develop`）
+
+### 原因
+
+- `.claude/commands/pr.md`にはルールが記載されていた
+- しかしCLAUDE.mdやWORKFLOW.mdには明記されていなかった
+- Claude Codeが`/pr`スキルを使わず直接`gh pr create`を実行した際にルールを見落とした
+
+### 対応
+
+1. CLAUDE.mdに「12. PRのベースブランチは常にdevelop」ルールを追加
+2. WORKFLOW.mdのStep 7にベースブランチの明記を追加
+3. PR #16のbase branchを`main`→`develop`に変更
+
+### 変更ファイル
+
+- `CLAUDE.md`（ルール12追加）
+- `docs/WORKFLOW.md`（Step 7更新）
+
+### コミット
+
+- 本追加修正分は別コミットで記録
