@@ -78,7 +78,21 @@ check for added large files..............................................Passed
 - `CLAUDE.md` - Dockerルール追加
 - 複数ファイル - trailing whitespace修正
 
+## 追加修正（2026-02-01）
+
+### Frontend CI追加修正
+1. **テストなし時のCI失敗**
+   - 問題: テストファイルが存在しない場合、vitestが exit code 1 で終了
+   - 修正: `package.json` に `--passWithNoTests` オプション追加
+
+2. **CIトリガー漏れ**
+   - 問題: `frontend-ci.yml` のパスに `package.json` が含まれていない
+   - 修正: トリガーパスに `frontend/package.json` を追加
+
+### 最終確認
+- コミット: ba0cad5, 16678bd, 285900a
+
 ## 結果
-- Backend CI: ✅ 通過見込み
-- Frontend CI: ✅ 通過見込み
+- Backend CI: ✅ 通過確認
+- Frontend CI: ✅ 通過確認
 - pre-commit: ✅ 動作確認完了

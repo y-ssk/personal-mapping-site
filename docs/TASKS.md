@@ -56,7 +56,7 @@
 - **完了日:** 2025-01-24
 - **成果物:** `docs/AGENTS.md`
 
-### 🔄 #D004 TASKS.md作成
+### ✅ #D004 TASKS.md作成
 - **優先度:** 最高
 - **担当:** Claude
 - **見積:** 1h
@@ -450,7 +450,7 @@
   - `backend/apps/locations/models.py`（Category）
   - `backend/apps/locations/fixtures/categories.json`
 
-### 🔄 #004 CI/CD パイプライン動作確認
+### ✅ #004 CI/CD パイプライン動作確認
 - **優先度:** 高
 - **見積:** 1h
 - **依存:** #001, #D006
