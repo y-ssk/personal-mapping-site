@@ -11,6 +11,7 @@ on:
       - 'frontend/src/**/*.css'
       - 'frontend/vite.config.ts'
       - 'frontend/tsconfig.json'
+      - 'frontend/package.json'
       - 'frontend/package-lock.json'
       - '.github/workflows/frontend-ci.yml'
 
