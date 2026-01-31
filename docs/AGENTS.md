@@ -214,27 +214,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: |
           cd backend
           pip install -r requirements/local.txt
-      
+
       - name: Black
         run: |
           cd backend
           black --check .
-      
+
       - name: flake8
         run: |
           cd backend
           flake8 .
-      
+
       - name: isort
         run: |
           cd backend
@@ -242,7 +242,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgis/postgis:15-3.3
@@ -257,39 +257,39 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y gdal-bin libgdal-dev
-      
+
       - name: Install Python dependencies
         run: |
           cd backend
           pip install -r requirements/local.txt
-      
+
       - name: Run migrations
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         run: |
           cd backend
           python manage.py migrate
-      
+
       - name: Run tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         run: |
           cd backend
           pytest --cov=apps --cov-report=term --cov-report=xml
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -313,29 +313,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-      
+
       - name: Install dependencies
         run: |
           cd frontend
           npm ci
-      
+
       - name: ESLint
         run: |
           cd frontend
           npm run lint
-      
+
       - name: Prettier
         run: |
           cd frontend
           npm run format:check
-      
+
       - name: TypeScript
         run: |
           cd frontend
@@ -345,24 +345,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-      
+
       - name: Install dependencies
         run: |
           cd frontend
           npm ci
-      
+
       - name: Run tests
         run: |
           cd frontend
           npm test -- --coverage
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -388,15 +388,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Install validator
         run: npm install -g @apidevtools/swagger-cli
-      
+
       - name: Validate OpenAPI spec
         run: swagger-cli validate docs/api/openapi.yml
 ```
@@ -414,20 +414,20 @@ repos:
     hooks:
       - id: black
         files: ^backend/
-  
+
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
         files: ^backend/
         args: ['--config=backend/.flake8']
-  
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
       - id: isort
         files: ^backend/
-  
+
   # TypeScript/JavaScript
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.56.0
@@ -438,13 +438,13 @@ repos:
           - eslint@8.56.0
           - '@typescript-eslint/eslint-plugin'
           - '@typescript-eslint/parser'
-  
+
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
       - id: prettier
         files: ^frontend/.*\.(ts|tsx|js|jsx|json|css|md)$
-  
+
   # 一般
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0

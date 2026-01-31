@@ -167,6 +167,24 @@ tasks/003/NOTES.md
 │   └── 拡張方法
 ```
 
+**11. Dockerコンテナ上で実行**
+- Lint、テスト、フォーマット等の動作確認は必ずDockerコンテナ上で行う
+- ホスト環境のツールバージョンとの差異を防ぐため
+- `docker compose exec backend <command>` または `docker compose exec frontend <command>` を使用
+
+```bash
+# ✅ 良い例: Dockerコンテナ上で実行
+docker compose exec backend black --check .
+docker compose exec backend pytest
+docker compose exec frontend npm run lint
+docker compose exec frontend npm test
+
+# ❌ 悪い例: ホスト環境で実行
+black --check backend/
+pytest backend/
+npm run lint
+```
+
 ---
 
 ## 📁 プロジェクト構造
@@ -279,15 +297,15 @@ type LocationStatus = 'want_to_visit' | 'not_interested';
 ```typescript
 /**
  * 指定半径内の場所を検索する
- * 
+ *
  * PostGISを使用した地理空間クエリ。結果は距離順。
- * 
+ *
  * @param point - 中心座標 (緯度, 経度)
  * @param radiusKm - 検索半径（km、最大100km）
  * @param filters - オプションのフィルタ
  * @returns 距離情報付き場所の配列
  * @throws {Error} radiusKmが最大値を超える場合
- * 
+ *
  * @example
  * ```typescript
  * const locations = await findNearbyLocations(
@@ -319,7 +337,7 @@ export function LocationCard({ location, onEdit }: LocationCardProps) {
   const handleClick = () => {
     onEdit?.(location);
   };
-  
+
   return (
     <div onClick={handleClick}>
       <h3>{location.name}</h3>
@@ -347,7 +365,7 @@ export function useLocations(filters?: LocationFilters) {
 // hooks/useCreateLocation.ts
 export function useCreateLocation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (data: LocationCreate) => locationApi.create(data),
     onSuccess: () => {
@@ -392,24 +410,24 @@ def find_nearby_locations(
 ) -> QuerySet[Location]:
     """
     PostGISを使用して指定半径内の場所を検索。
-    
+
     この関数はPostGISの距離演算子を使用して地理空間検索を実行。
     結果は中心点からの距離順にソート。
-    
+
     Args:
         point: 検索の中心点（PostGIS Point、SRID 4326）。
                例: Point(139.7671, 35.6812, srid=4326)
         radius_km: 検索半径（km）。最大は100km。
         category: 結果をフィルタするカテゴリslug。
                   例: 'cafe', 'restaurant'
-    
+
     Returns:
         'distance'フィールドが注釈されたLocationのQuerySet。
         中心点からの近い順にソート済み。
-    
+
     Raises:
         ValueError: radius_kmが負数またはMAX_RADIUS_KMを超える場合。
-    
+
     Example:
         >>> center = Point(139.7671, 35.6812, srid=4326)
         >>> cafes = find_nearby_locations(center, 5.0, category='cafe')
@@ -418,7 +436,7 @@ def find_nearby_locations(
     """
     if radius_km <= 0 or radius_km > MAX_RADIUS_KM:
         raise ValueError(f"半径は0から{MAX_RADIUS_KM}kmの間")
-    
+
     # 実装
 ```
 
@@ -431,7 +449,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     場所のCRUDエンドポイント。
     ビジネスロジックはLocationServiceに委譲。
     """
-    
+
     @action(detail=False, methods=['get'])
     def nearby(self, request):
         """近傍検索エンドポイント"""
@@ -440,7 +458,7 @@ class LocationViewSet(viewsets.ModelViewSet):
         lng = float(request.query_params['lng'])
         radius = float(request.query_params['radius'])
         category = request.query_params.get('category')
-        
+
         # 2. サービス呼び出し
         point = Point(lng, lat, srid=4326)
         service = LocationService()
@@ -450,7 +468,7 @@ class LocationViewSet(viewsets.ModelViewSet):
             radius_km=radius,
             category=category
         )
-        
+
         # 3. シリアライズして返す
         serializer = self.get_serializer(locations, many=True)
         return Response(serializer.data)
@@ -458,7 +476,7 @@ class LocationViewSet(viewsets.ModelViewSet):
 # services.py - ビジネスロジック
 class LocationService:
     """場所関連のビジネスロジック"""
-    
+
     def find_nearby(
         self,
         user: User,
@@ -470,7 +488,7 @@ class LocationService:
         # バリデーション
         if radius_km > MAX_RADIUS_KM:
             raise ValidationError(f"半径は{MAX_RADIUS_KM}km以下")
-        
+
         # PostGISクエリ
         locations = Location.objects.filter(
             user=user,
@@ -478,11 +496,11 @@ class LocationService:
         ).annotate(
             distance=Distance('point', point)
         ).order_by('distance')
-        
+
         # カテゴリフィルタ
         if category:
             locations = locations.filter(category__slug=category)
-        
+
         return locations
 ```
 
@@ -537,13 +555,13 @@ class TestLocationService:
     ):
         """半径内の場所を正しく検索できる"""
         service = LocationService()
-        
+
         results = service.find_nearby(user, tokyo_center, radius_km=5.0)
-        
+
         assert results.count() == 3
         assert all(loc.distance.km <= 5.0 for loc in results)
         assert results[0].distance < results[1].distance
-    
+
     def test_find_nearby_excludes_other_users(
         self, user, other_user, tokyo_center
     ):
@@ -555,10 +573,10 @@ class TestLocationService:
             point=tokyo_center,
             category=Category.objects.first()
         )
-        
+
         service = LocationService()
         results = service.find_nearby(user, tokyo_center, radius_km=5.0)
-        
+
         # userの場所のみ
         assert all(loc.user == user for loc in results)
 ```
@@ -588,7 +606,7 @@ describe('useLocations', () => {
     const { result } = renderHook(() => useLocations(), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    
+
     expect(result.current.data).toBeDefined();
     expect(result.current.data?.length).toBeGreaterThan(0);
   });

@@ -248,7 +248,7 @@ class RecommendationService:
         unvisited = self._filter_unvisited(nearby, user)
         scored = self._calculate_scores(unvisited, preferences)
         return self._top_results(scored, limit=10)
-    
+
     # 各メソッドは単一責任
     # HTTP層なしでテスト可能
     # 管理コマンド、Celeryタスクで再利用可能
@@ -384,11 +384,11 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     # OAuth
     oauth_provider = models.CharField(max_length=50, null=True, blank=True)
     oauth_id = models.CharField(max_length=255, null=True, blank=True)
-    
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 ```
@@ -400,7 +400,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 class Category(MPTTModel):
     """階層カテゴリ（django-mptt使用）
-    
+
     例:
     - 飲食 > レストラン > イタリアン
     - 観光 > 美術館 > 現代美術
@@ -416,7 +416,7 @@ class Category(MPTTModel):
     )
     icon = models.CharField(max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def get_full_path(self):
         """完全パス: '飲食 / レストラン / イタリアン'"""
         ancestors = self.get_ancestors(include_self=True)
@@ -433,42 +433,42 @@ class Location(models.Model):
     """場所（ブックマーク）"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='locations')
     name = models.CharField(max_length=255)
-    
+
     # 地理空間（PostGIS）
     point = models.PointField(srid=4326)  # WGS84座標系
     address = models.TextField(blank=True)
-    
+
     # 分類
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     tags = models.JSONField(default=list, blank=True)
-    
+
     # ステータス
     STATUS_CHOICES = [
         ('want_to_visit', '行きたい'),
         ('not_interested', '興味なし'),
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, null=True, blank=True)
-    
+
     # メタデータ
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['user', 'category']),
             models.Index(fields=['user', 'status']),
         ]
-    
+
     @property
     def visit_count(self):
         """訪問回数"""
         return self.visits.count()
-    
+
     @property
     def average_rating(self):
         """平均評価"""
@@ -483,7 +483,7 @@ class Visit(models.Model):
     """訪問記録（1回の訪問）"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='visits')
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='visits')
-    
+
     # 訪問詳細
     visited_at = models.DateTimeField()  # 日時精度は保持、UI側で柔軟に表示
     rating = models.IntegerField(
@@ -492,7 +492,7 @@ class Visit(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     review = models.TextField(blank=True)  # 長文レビュー
-    
+
     # 旅行との紐付け（任意）
     actual_trip = models.ForeignKey(
         'ActualTrip',
@@ -501,10 +501,10 @@ class Visit(models.Model):
         blank=True,
         related_name='visits'
     )
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['-visited_at']
         indexes = [
@@ -518,7 +518,7 @@ class Visit(models.Model):
 ```python
 class PlannedTrip(models.Model):
     """旅行計画
-    
+
     柔軟な詳細度をサポート:
     - アイデア段階（日付未定）
     - 大まかな計画（日付範囲のみ）
@@ -527,14 +527,14 @@ class PlannedTrip(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='planned_trips')
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    
+
     # 日付範囲（任意）
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['-created_at']
 ```
@@ -544,7 +544,7 @@ class PlannedTrip(models.Model):
 ```python
 class PlannedTripItem(models.Model):
     """計画内の場所アイテム
-    
+
     3つの状態をサポート:
     1. 候補: order=0, scheduled_datetime=null
     2. 順序付き: order>0, scheduled_datetime=null
@@ -552,14 +552,14 @@ class PlannedTripItem(models.Model):
     """
     trip = models.ForeignKey(PlannedTrip, on_delete=models.CASCADE, related_name='items')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    
+
     # スケジューリング（すべて任意）
     scheduled_datetime = models.DateTimeField(null=True, blank=True)
     order = models.PositiveIntegerField(default=0)
-    
+
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         ordering = ['order', 'scheduled_datetime']
         indexes = [
@@ -576,11 +576,11 @@ class ActualTrip(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='actual_trips')
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    
+
     # 実際の日付（必須）
     start_date = models.DateField()
     end_date = models.DateField()
-    
+
     # 元の計画へのリンク（任意）
     planned_trip = models.OneToOneField(
         PlannedTrip,
@@ -589,7 +589,7 @@ class ActualTrip(models.Model):
         blank=True,
         related_name='actual_trip'
     )
-    
+
     # 旅行全体のレビュー
     overall_rating = models.IntegerField(
         null=True,
@@ -597,10 +597,10 @@ class ActualTrip(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     overall_review = models.TextField(blank=True)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['-start_date']
 ```
@@ -894,8 +894,8 @@ interface MapService {
 }
 
 // 実装を切り替えるだけ
-const mapService: MapService = USE_GOOGLE_MAPS 
-  ? new GoogleMapsService() 
+const mapService: MapService = USE_GOOGLE_MAPS
+  ? new GoogleMapsService()
   : new LeafletMapService();
 ```
 
@@ -983,7 +983,7 @@ const mapService: MapService = USE_GOOGLE_MAPS
 
 インフラ:
   開発: Docker Compose (ローカル)
-  MVP: 
+  MVP:
     - Frontend: Vercel (無料)
     - Backend: Render Web Service (無料)
     - Database: Render PostgreSQL (無料)
@@ -1134,7 +1134,7 @@ Railway + Redis:
 
 **推定ダウンタイム:** 10分以内
 
-**ロールバック:** 
+**ロールバック:**
 - RenderとRailwayを並行稼働
 - 問題発生時は即座にRenderに戻す
 
@@ -1206,7 +1206,7 @@ Railway + Redis:
 class LocationService:
     def find_nearby(self, user, point, radius_km):
         # 近傍検索のみ
-        
+
 class RecommendationService:
     def get_recommendations(self, user, point, radius_km):
         # おすすめ生成のみ
@@ -1257,13 +1257,13 @@ class TripService:
 ```typescript
 // ❌ 悪い例: 重複
 function LocationList() {
-  const sorted = [...locations].sort((a, b) => 
+  const sorted = [...locations].sort((a, b) =>
     a.name < b.name ? -1 : 1
   );
 }
 
 function VisitList() {
-  const sorted = [...visits].sort((a, b) => 
+  const sorted = [...visits].sort((a, b) =>
     a.location.name < b.location.name ? -1 : 1
   );
 }
@@ -1271,7 +1271,7 @@ function VisitList() {
 // ✅ 良い例: 共通化
 // lib/utils/sorting.ts
 export function sortByField<T>(items: T[], field: keyof T) {
-  return [...items].sort((a, b) => 
+  return [...items].sort((a, b) =>
     a[field] < b[field] ? -1 : 1
   );
 }
@@ -1421,16 +1421,16 @@ chore(deps): djangoを5.0.1に更新
 ```typescript
 /**
  * 指定半径内の場所を検索する
- * 
+ *
  * PostGISを使用した地理空間クエリを実行。
  * 結果は距離順にソートされる。
- * 
+ *
  * @param point - 中心座標 (緯度, 経度)
  * @param radiusKm - 検索半径（km、最大100km）
  * @param filters - オプションのフィルタ（カテゴリ、タグ等）
  * @returns 距離情報付き場所の配列を返すPromise
  * @throws {Error} radiusKmが最大値を超える場合
- * 
+ *
  * @example
  * ```typescript
  * const locations = await findNearbyLocations(
@@ -1459,25 +1459,25 @@ def find_nearby_locations(
 ) -> QuerySet[Location]:
     """
     PostGISを使用して指定半径内の場所を検索。
-    
+
     この関数はPostGISの距離演算子を使用して地理空間検索を実行する。
     結果は中心点からの距離順にソートされる。
-    
+
     Args:
         point: 検索の中心点（PostGIS Point、SRID 4326）。
                例: Point(139.7671, 35.6812, srid=4326)
         radius_km: 検索半径（km）。最大は100km。
         category: 結果をフィルタするオプションのカテゴリslug。
                   例: 'cafe', 'restaurant', 'museum'
-    
+
     Returns:
         'distance'フィールドが注釈されたLocationオブジェクトのQuerySet。
         中心点からの近い順にソート済み。
-    
+
     Raises:
         ValueError: radius_kmが負数またはMAX_RADIUS_KMを超える場合。
         ValidationError: pointが無効またはSRIDが欠落している場合。
-    
+
     Example:
         >>> from django.contrib.gis.geos import Point
         >>> center = Point(139.7671, 35.6812, srid=4326)
@@ -1487,7 +1487,7 @@ def find_nearby_locations(
         スターバックス渋谷店: 0.35km
         ブルーボトルコーヒー: 1.20km
         ...
-    
+
     Note:
         - PointはSRID 4326（WGS84座標系）を使用すること
         - 距離計算は球面幾何学を使用
@@ -1574,7 +1574,7 @@ SOCIALACCOUNT_PROVIDERS = {
 class LocationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Location.objects.filter(user=self.request.user)
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 ```
@@ -1605,7 +1605,7 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ['id', 'name', 'point', 'category', 'tags']
-    
+
     def validate_name(self, value):
         if len(value) > 255:
             raise serializers.ValidationError("名前は255文字以内")
@@ -1675,7 +1675,7 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "weekly"
-  
+
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
@@ -1778,28 +1778,28 @@ class TestLocationService:
     ):
         """半径内の場所を正しく検索できる"""
         service = LocationService()
-        
+
         results = service.find_nearby(user, tokyo_center, radius_km=5.0)
-        
+
         assert results.count() == 3  # 5km圏内は3件
         assert all(loc.distance.km <= 5.0 for loc in results)
         assert results[0].distance < results[1].distance  # 距離順
-    
+
     def test_find_nearby_with_category_filter(
         self, user, tokyo_center, sample_locations
     ):
         """カテゴリフィルタが正しく動作する"""
         service = LocationService()
-        
+
         results = service.find_nearby(
             user,
             tokyo_center,
             radius_km=10.0,
             category='cafe'
         )
-        
+
         assert all(loc.category.slug == 'cafe' for loc in results)
-    
+
     def test_find_nearby_excludes_other_users(
         self, user, other_user, tokyo_center
     ):
@@ -1811,10 +1811,10 @@ class TestLocationService:
             point=tokyo_center,
             category=Category.objects.first()
         )
-        
+
         service = LocationService()
         results = service.find_nearby(user, tokyo_center, radius_km=5.0)
-        
+
         assert all(loc.user == user for loc in results)
 ```
 
@@ -1857,21 +1857,21 @@ describe('useLocations', () => {
     const { result } = renderHook(() => useLocations(), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    
+
     expect(result.current.data).toBeDefined();
     expect(result.current.data?.length).toBeGreaterThan(0);
   });
-  
+
   it('エラーを適切に処理する', async () => {
     // APIエラーをモック
     jest.spyOn(locationApi, 'list').mockRejectedValue(
       new Error('ネットワークエラー')
     );
-    
+
     const { result } = renderHook(() => useLocations(), { wrapper });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
-    
+
     expect(result.current.error).toBeDefined();
   });
 });
@@ -1896,7 +1896,7 @@ describe('LocationCard', () => {
 
   it('場所情報を正しく表示する', () => {
     render(<LocationCard location={mockLocation} />);
-    
+
     expect(screen.getByText('スターバックス渋谷店')).toBeInTheDocument();
     expect(screen.getByText('カフェ')).toBeInTheDocument();
     expect(screen.getByText('wifi')).toBeInTheDocument();
@@ -1922,10 +1922,10 @@ class TestLocationAPI:
             'category': 1,
             'tags': ['wifi', '静か']
         })
-        
+
         assert response.status_code == 201
         assert response.data['name'] == 'テストカフェ'
-        
+
         # データベースで確認
         location = Location.objects.get(id=response.data['id'])
         assert location.point.x == 139.7671
@@ -2140,8 +2140,8 @@ Google Cloud（Maps API使用時）:
 
 ---
 
-**作成者:** Yu（ソフトウェア開発者）  
-**目的:** 仕様駆動開発（SDD）の実践  
+**作成者:** Yu（ソフトウェア開発者）
+**目的:** 仕様駆動開発（SDD）の実践
 **ステータス:** 実装準備完了
 
 ---

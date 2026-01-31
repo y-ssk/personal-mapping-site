@@ -1,6 +1,7 @@
 """
 locationsアプリの管理画面設定。
 """
+
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 
@@ -17,13 +18,13 @@ class CategoryAdmin(DraggableMPTTAdmin):
     """
 
     list_display = (
-        'tree_actions',
-        'indented_title',
-        'slug',
-        'icon',
-        'created_at',
+        "tree_actions",
+        "indented_title",
+        "slug",
+        "icon",
+        "created_at",
     )
-    list_display_links = ('indented_title',)
-    prepopulated_fields = {'slug': ('name',)}
-    search_fields = ('name', 'slug')
-    ordering = ('tree_id', 'lft')
+    list_display_links = ("indented_title",)
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name", "slug")
+    ordering = ("tree_id", "lft")

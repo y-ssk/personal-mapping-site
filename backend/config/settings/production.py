@@ -1,21 +1,19 @@
 """
 本番環境用Django設定。
 """
-from .base import *  # noqa: F401, F403
 
 import dj_database_url
 from decouple import config
 
+from .base import *  # noqa: F401, F403
+
 DEBUG = False
 
 # データベース - PostgreSQL with PostGIS
-DATABASE_URL = config('DATABASE_URL')
+DATABASE_URL = config("DATABASE_URL")
 
 DATABASES = {
-    'default': dj_database_url.parse(
-        DATABASE_URL,
-        engine='django.contrib.gis.db.backends.postgis'
-    )
+    "default": dj_database_url.parse(DATABASE_URL, engine="django.contrib.gis.db.backends.postgis")
 }
 
 
@@ -29,4 +27,4 @@ SECURE_HSTS_PRELOAD = True
 
 
 # メール - 本番環境用SMTP設定
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

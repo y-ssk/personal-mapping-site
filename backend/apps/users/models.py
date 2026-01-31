@@ -3,6 +3,7 @@ Personal Mapping Siteのカスタムユーザーモデル。
 
 usernameの代わりにemailを主要な識別子として使用する。
 """
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
@@ -49,12 +50,12 @@ class UserManager(BaseUserManager):
         Returns:
             User: 作成されたスーパーユーザーインスタンス。
         """
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
-        if extra_fields.get('is_staff') is not True:
+        if extra_fields.get("is_staff") is not True:
             raise ValueError(UserErrorMessages.SUPERUSER_MUST_BE_STAFF)
-        if extra_fields.get('is_superuser') is not True:
+        if extra_fields.get("is_superuser") is not True:
             raise ValueError(UserErrorMessages.SUPERUSER_MUST_BE_SUPERUSER)
 
         return self.create_user(email, password, **extra_fields)
@@ -74,15 +75,15 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     display_name = models.CharField(max_length=100, blank=True)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
 
     class Meta:
-        db_table = 'users'
-        verbose_name = 'ユーザー'
-        verbose_name_plural = 'ユーザー'
+        db_table = "users"
+        verbose_name = "ユーザー"
+        verbose_name_plural = "ユーザー"
 
     def __str__(self):
         return self.email
