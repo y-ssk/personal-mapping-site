@@ -10,15 +10,16 @@ WSL上で実行するか、Claude Code上で実行するかを明確に区別し
 ## 概要フロー
 
 ```
-[1] タスク準備      → WSL または Claude Code
-[2] プロンプト生成  → WSL または Claude Code
-[3] Claude Code実行 → Claude Code
-[4] 変更レビュー    → WSL（対話形式）
-[5] コミット&Push   → WSL または Claude Code
-[6] Test Plan実行   → Claude Code ★PR作成前に必須
-[7] Draft PR作成    → WSL または Claude Code
-[8] TASKS.md更新    → Claude Code
-[9] ログ記録        → Claude Code
+[1] タスク準備         → WSL または Claude Code
+[2] プロンプト生成     → WSL または Claude Code
+[2.5] 実装前設計レビュー → Claude Code ★実装タスクのみ
+[3] Claude Code実行    → Claude Code
+[4] 変更レビュー       → WSL（対話形式）
+[5] コミット&Push      → WSL または Claude Code
+[6] Test Plan実行      → Claude Code ★PR作成前に必須
+[7] Draft PR作成       → WSL または Claude Code
+[8] TASKS.md更新       → Claude Code
+[9] ログ記録           → Claude Code
 ```
 
 ---
@@ -63,6 +64,43 @@ WSL上で実行するか、Claude Code上で実行するかを明確に区別し
 - `tasks/<task-id>/TASK.md` を読み込み
 - Claude Code用プロンプト生成
 - `tasks/<task-id>/claude_prompt.md` に出力
+
+---
+
+### Step 2.5: 実装前設計レビュー
+
+**実行環境:** Claude Code
+
+**対象:** 実装系タスク（3桁数字タスク: 001, 002, ...）
+
+**目的:**
+- SPEC.md/CLAUDE.md準拠の事前確認
+- 設計判断の明確化
+- 未定義事項の早期検出
+- 手戻りの削減
+
+**手順:**
+1. `/task <id>` 実行時にsenior-architect-reviewerが自動的に呼び出される
+2. SPEC.md/CLAUDE.md整合性チェック実施
+3. レビュー結果が表示される
+4. 対応方針を選択:
+
+| 入力 | 意味 |
+|------|------|
+| **Y** | 指摘事項をすべてタスクに盛り込む |
+| **P 1,3** | 番号指定で一部のみ盛り込む |
+| **S** | スキップして実装開始 |
+| **Q <質問>** | 追加の質問をする |
+| **A** | タスク実行を中止 |
+
+**スキップ条件:**
+以下のタスクは実装前設計レビューをスキップ可能:
+- ドキュメント系タスク（D001-D017）
+- 軽微なバグ修正（F001等）
+- 技術的負債タスク（TECH-XXX）
+
+**記録:**
+- レビュー結果は `tasks/<id>/LOG.md` に「実装前設計レビュー」セクションとして記録
 
 ---
 

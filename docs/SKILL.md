@@ -15,7 +15,7 @@ Claude Code Skillsは、スラッシュコマンド（`/command`）で呼び出�
 
 | コマンド | 説明 | ファイル | 移行元 |
 |----------|------|----------|--------|
-| `/task <id>` | タスク実行 | `.claude/commands/task.md` | - |
+| `/task <id>` | タスク実行（実装前設計レビュー含む） | `.claude/commands/task.md` | - |
 | `/workflow` | ワークフロー確認 | `.claude/commands/workflow.md` | - |
 | `/log <id>` | ログ記録 | `.claude/commands/log.md` | - |
 | `/spec <section>` | SPEC.md参照 | `.claude/commands/spec.md` | - |
@@ -25,6 +25,43 @@ Claude Code Skillsは、スラッシュコマンド（`/command`）で呼び出�
 | `/checklist <id>` | チェックリスト管理 | `.claude/commands/checklist.md` | `check_item.sh` |
 | `/review` | 変更レビュー | `.claude/commands/review.md` | `review_changes.sh` |
 | `/pr <id>` | PR作成 | `.claude/commands/pr.md` | `create_draft_pr.sh` |
+
+---
+
+## スキル詳細
+
+### /task - タスク実行
+
+実装タスクの場合、実装前にsenior-architect-reviewerによる設計レビューを自動実行します。
+
+**フロー:**
+```
+/task <id>
+    ↓
+setup_task.sh実行
+    ↓
+run_task.sh実行（プロンプト生成）
+    ↓
+【実装前設計レビュー】← 実装タスクのみ
+    ↓
+レビュー結果表示 → 対応方針選択（Y/P/S/Q/A）
+    ↓
+実装開始
+```
+
+**選択肢:**
+| 入力 | 意味 |
+|------|------|
+| Y | 指摘事項をすべてタスクに盛り込む |
+| P 1,3 | 番号指定で一部のみ盛り込む |
+| S | スキップして実装開始 |
+| Q <質問> | 追加の質問をする |
+| A | タスク実行を中止 |
+
+**スキップ対象:**
+- ドキュメント系タスク（D001-D017）
+- バグ修正タスク（F001等）
+- 技術的負債タスク（TECH-XXX）
 
 ---
 
