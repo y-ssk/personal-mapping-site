@@ -28,6 +28,9 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # メール - 開発環境ではコンソール出力
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# 開発環境ではメール確認を無効化
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
 
 # 開発環境では全ホスト許可
 ALLOWED_HOSTS = ["*"]

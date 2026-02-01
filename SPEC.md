@@ -390,7 +390,7 @@ class User(AbstractUser):
     oauth_id = models.CharField(max_length=255, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []  # email認証のためusernameは不要
 ```
 
 #### 3.3.2 Category
@@ -1564,6 +1564,45 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 ```
+
+#### 認証APIエラーレスポンス設計
+
+**設計方針:** ログインAPIの認証失敗は **400 Bad Request** を返す。
+
+**採用理由:**
+
+1. **dj-rest-authの設計思想に従う**
+   - ログインは「保護されたリソースへのアクセス」ではなく「認証情報を生成するための入力処理」
+   - 認証失敗は「入力値の検証エラー」として扱う
+   - フレームワークのデフォルト動作に従うことで、メンテナンス性を維持
+
+2. **フロントエンドUXの観点**
+   - フォームバリデーションと一貫したエラーハンドリングが可能
+   - `non_field_errors` でエラー内容を取得できる
+   - SPAのフォーム主体UIとの親和性が高い
+
+3. **セキュリティの観点**
+   - 「ユーザーが存在しない」「パスワードが違う」を区別しない
+   - 一律の汎用メッセージで情報漏洩を防ぐ
+
+**レスポンス例:**
+```json
+// 認証失敗時 (400 Bad Request)
+{
+  "non_field_errors": [
+    "Unable to log in with provided credentials."
+  ]
+}
+```
+
+**401を返すケース:**
+- トークンなしで保護されたリソースにアクセス
+- 期限切れトークンでアクセス
+- 無効なトークンでアクセス
+
+**将来の拡張時の注意:**
+OAuth連携やMFA導入時は、認証フローが変わるため
+エラーステータスの再検討が必要になる可能性がある。
 
 ### 8.2 データ保護
 

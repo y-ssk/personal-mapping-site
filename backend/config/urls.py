@@ -12,9 +12,8 @@ urlpatterns = [
     # APIドキュメント
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    # 認証
-    path("api/auth/", include("dj_rest_auth.urls")),
-    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    # 認証（SPEC.md § 4.2 準拠）
+    path("api/v1/auth/", include("apps.users.urls")),
 ]
 
 # デバッグツールバー（デバッグモード時のみ）

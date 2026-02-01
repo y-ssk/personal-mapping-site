@@ -29,3 +29,6 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
+
+# テスト環境ではメール確認を無効化
+ACCOUNT_EMAIL_VERIFICATION = "none"
