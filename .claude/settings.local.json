@@ -39,7 +39,11 @@
       "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/frontend/Dockerfile\" ]])",
       "Bash(if [[ -f \"/home/kj8sy13/multi-pj/personal-mapping-site/.env.example\" ]])",
       "Bash(docker compose up:*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run:*)",
+      "Skill(pr)",
+      "Bash(git rev-parse:*)"
     ]
   }
 }
