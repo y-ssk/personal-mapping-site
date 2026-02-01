@@ -72,9 +72,10 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
     カスタムユーザー詳細シリアライザ。
 
     GET /api/v1/auth/me/ のレスポンス用。
+    OAuth認証ユーザーかどうかの判別にoauth_providerを含む。
     """
 
     class Meta:
         model = User
-        fields = ("id", "email", "display_name", "date_joined")
-        read_only_fields = ("id", "email", "date_joined")
+        fields = ("id", "email", "display_name", "oauth_provider", "date_joined")
+        read_only_fields = ("id", "email", "oauth_provider", "date_joined")

@@ -65,15 +65,38 @@ class User(AbstractUser):
     """
     emailを主要な識別子とするカスタムユーザーモデル。
 
+    SPEC.md § 4.1.1 準拠。
+
     Attributes:
         email: 認証用の一意のメールアドレス。
         username: オプションのユーザー名（認証には不要）。
         display_name: アプリケーションで表示されるユーザーの表示名。
+        oauth_provider: OAuth認証プロバイダー（'google', 'github', None）。
+        oauth_id: OAuthプロバイダーでのユーザーID。
     """
+
+    # OAuthプロバイダー名の最大長
+    OAUTH_PROVIDER_MAX_LENGTH = 50
+    # OAuthユーザーIDの最大長
+    OAUTH_ID_MAX_LENGTH = 255
 
     username = models.CharField(max_length=150, blank=True)
     email = models.EmailField(unique=True)
     display_name = models.CharField(max_length=100, blank=True)
+
+    # OAuth関連フィールド（SPEC.md § 4.1.1）
+    oauth_provider = models.CharField(
+        max_length=OAUTH_PROVIDER_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text="OAuth認証プロバイダー（google, github等）",
+    )
+    oauth_id = models.CharField(
+        max_length=OAUTH_ID_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text="OAuthプロバイダーでのユーザーID",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
