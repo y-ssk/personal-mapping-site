@@ -93,3 +93,70 @@
 - SPEC.md セクション8.1に「認証APIエラーレスポンス設計」を追記
 - 設計方針と採用理由を明文化
 - 将来の拡張時の注意事項も記載
+
+---
+
+## エージェントレビュー（2026-02-01）
+
+### レビュー依頼
+設計・実装の両面からD006の成果物をレビュー依頼。
+
+### 設計レビュー（senior-architect-reviewer）
+
+**総合評価: 条件付き承認**
+
+#### 良い点
+- SPEC.md § 4.2の全5エンドポイント実装済み
+- JWT設定がSPEC.md § 8.1に準拠（Access 60分、Refresh 7日）
+- パスワードポリシー実装（8文字以上、バリデータ4種）
+- エラーメッセージ一元管理（constants.py）
+- 日本語Docstring完備
+- OpenAPI仕様との整合性確保
+
+#### 改善提案
+| 重要度 | 内容 | 対応方針 |
+|--------|------|----------|
+| 中 | Service層パターンの不在 | dj-rest-authで十分。OAuth実装時に検討 |
+| 低 | oauth_provider/oauth_idフィールド不足 | タスク#007で対応予定 |
+
+#### セキュリティ評価
+- JWTトークンローテーション: ✅
+- ブラックリスト機能: ✅
+- パスワードハッシュ: ✅
+- 入力バリデーション: ✅
+
+### 実装レビュー（code-reviewer）
+
+**総合評価: 条件付き承認（NEEDS_CHANGES）**
+
+#### 必須対応（Blocker）
+| 内容 | 場所 | 対応方針 |
+|------|------|----------|
+| SPEC.md 3.3.1との差異: REQUIRED_FIELDS | models.py:79 | SPEC.mdでは`['username']`、実装では`[]`。仕様を`[]`に更新（email認証のためusernameは不要） |
+
+#### 推奨対応（Should Fix）
+| 内容 | 場所 | 対応方針 |
+|------|------|----------|
+| JWT設定のマジックナンバー | base.py:206-207 | 定数化推奨。次回対応 |
+| Docstringの不足（Exampleセクション） | serializers.py複数箇所 | 次回対応 |
+| テストパスワードのハードコード | test_auth_api.py | conftest.pyに定数化推奨。次回対応 |
+| display_name max_length定数化 | serializers.py:23 | 次回対応 |
+
+#### 改善提案（Nice to Have）
+- テストURLのreverse()使用
+- CustomRegisterSerializer.saveメソッドの最適化
+- conftest.pyのsetup_siteフィクスチャ改善
+
+### レビュー結果への対応
+
+#### 即時対応
+1. SPEC.md 3.3.1のREQUIRED_FIELDSを`[]`に修正
+   - **理由**: email認証を採用しているため、usernameは必須ではない
+
+#### 次回タスクで対応
+- JWT設定の定数化
+- Docstringの完全化
+- テストパスワードの定数化
+
+### コミット
+- `6d0e74d` docs: 認証APIエラーレスポンス設計を明文化

@@ -390,7 +390,7 @@ class User(AbstractUser):
     oauth_id = models.CharField(max_length=255, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []  # email認証のためusernameは不要
 ```
 
 #### 3.3.2 Category
