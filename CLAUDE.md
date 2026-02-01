@@ -362,6 +362,41 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 
 ---
 
+## 🔍 検証ルール
+
+### 検証手段と用途
+
+| 検証手段 | 用途 | 実行タイミング |
+|----------|------|----------------|
+| pre-commit | フォーマット、lint | コミット前（自動） |
+| TypeScript型チェック | 型安全性の検証 | CI/ローカル |
+| GitHub Actions | lint, test, build, coverage | Push時（自動） |
+| OpenAPI検証 | API仕様の構文・整合性チェック | Push時（自動） |
+| テストコード | ロジック検証（pytest, vitest） | CI/ローカル |
+| 実装前設計レビュー | SPEC準拠・アーキテクチャ確認 | 実装タスク開始時 |
+| 実装後コードレビュー | 品質・テストカバレッジ検証 | タスク完了時 |
+| Test Plan手動確認 | Docker動作、UI確認等 | PR作成前 |
+
+### 使い分けフロー
+
+```
+[コード品質] → pre-commit（自動） + GitHub Actions（lint/format）
+[型安全性]   → TypeScript型チェック（CI + ローカル）
+[ロジック]   → テストコード + GitHub Actions（pytest/vitest）
+[API仕様]    → OpenAPI検証（CI）
+[設計準拠]   → 実装前: senior-architect-reviewer
+              実装後: code-reviewer + qa-test-engineer
+[手動確認]   → Test Plan実行 + qa-test-engineer
+```
+
+### カバレッジ要件（再掲）
+
+- Service層: ≥80%
+- Views: ≥60%
+- Hooks: ≥70%
+
+---
+
 ## 📁 プロジェクト構造
 
 ### フロントエンド
