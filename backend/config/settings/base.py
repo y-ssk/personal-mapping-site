@@ -4,6 +4,7 @@ Personal Mapping Siteの基本Django設定。
 全環境で共通の設定を定義する。
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
@@ -32,7 +33,11 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",  # GeoDjango
+    "django.contrib.sites",  # allauth用
 ]
+
+# サイトID（allauth用）
+SITE_ID = 1
 
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -96,12 +101,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # パスワードバリデーション
+# SPEC.md § 8.1: 最低8文字、大文字、小文字、数字を含む
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
@@ -187,4 +196,17 @@ REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
     "TOKEN_MODEL": None,
+    "REGISTER_SERIALIZER": "apps.users.serializers.CustomRegisterSerializer",
+    "USER_DETAILS_SERIALIZER": "apps.users.serializers.CustomUserDetailsSerializer",
+}
+
+
+# Simple JWT設定
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
 }

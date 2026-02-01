@@ -174,7 +174,7 @@ ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
 
 **実行環境:** WSL または Claude Code
 
-**⚠️ 重要: ベースブランチは常に `develop`**
+**⚠️ 重要: 必ず`/pr`スキルを使用する（再現性のため）**
 
 **WSLで実行:**
 ```bash
@@ -183,16 +183,18 @@ ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
 
 **Claude Codeで実行:**
 ```
-> Draft PRを作成してください。ベースブランチはdevelopです。
-> タスク#<task-id>の内容に基づいてPR説明を生成してください。
-> Test Plan確認結果をPR本文に記載してください。
+/pr <task-id>
 ```
+
+**注意:**
+- `gh pr create`を直接実行しない
+- `/pr`スキルは自動的に`--base develop`を指定する
+- 再現性確保のためスキル経由で統一する
 
 **前提条件:**
 - GitHub CLI (gh) がインストール済み
 - `gh auth login` で認証済み
 - **Step 6のTest Planが完了していること**
-- **ベースブランチは `develop`（mainへのPRは禁止）**
 
 **PR本文のTest Planセクション形式:**
 ```markdown
@@ -407,7 +409,7 @@ fix/<スクリプト名>-<内容>
 4. （実装完了後）
 5. > 変更をコミットしてpushしてください
 6. > Test Planを実行して確認結果を記録してください
-7. > Draft PRを作成してください。ベースブランチはdevelopです。Test Plan確認結果をPR本文に記載してください
+7. /pr D006
 8. > docs/TASKS.mdのタスク#D006を完了にしてください
 9. > tasks/D006/LOG.md を作成して実行ログを記録してください
 ```

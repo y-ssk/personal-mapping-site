@@ -77,8 +77,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthTokens'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/ValidationError'
 
   /auth/logout/:
     post:
@@ -87,19 +87,8 @@ paths:
       operationId: authLogout
       security:
         - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [refresh]
-              properties:
-                refresh:
-                  type: string
-                  description: リフレッシュトークン
       responses:
-        '205':
+        '200':
           description: ログアウト成功
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -1264,22 +1253,24 @@ components:
     # ============================================
     UserRegister:
       type: object
-      required: [email, username, password, password_confirm]
+      required: [email, password1, password2]
       properties:
         email:
           type: string
           format: email
-        username:
-          type: string
-          minLength: 3
-          maxLength: 150
-        password:
+        password1:
           type: string
           format: password
           minLength: 8
-        password_confirm:
+          description: パスワード
+        password2:
           type: string
           format: password
+          description: パスワード（確認）
+        display_name:
+          type: string
+          maxLength: 100
+          description: 表示名（任意）
 
     UserLogin:
       type: object
@@ -1305,23 +1296,23 @@ components:
 
     User:
       type: object
+      description: ユーザー情報（GET /auth/me/ レスポンス）
       properties:
         id:
           type: integer
+          readOnly: true
         email:
           type: string
           format: email
-        username:
+          readOnly: true
+        display_name:
           type: string
-        oauth_provider:
-          type: string
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
+          maxLength: 100
+          description: 表示名
+        date_joined:
           type: string
           format: date-time
+          readOnly: true
 
     # ============================================
     # カテゴリスキーマ

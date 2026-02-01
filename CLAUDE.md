@@ -185,24 +185,24 @@ pytest backend/
 npm run lint
 ```
 
-**12. PRのベースブランチは常にdevelop**
-- PRは必ず`develop`ブランチに向けて作成する
-- `main`ブランチへのPRは禁止（リリース時のみ例外）
-- `gh pr create`実行時は必ず`--base develop`を指定する
-- `/pr`スキル使用時は自動的にdevelopが指定される
+**12. PR作成は必ず`/pr`スキルを使用**
+- PR作成時は必ず`/pr`スキルを使用する
+- `gh pr create`を直接実行しない（再現性のため）
+- `/pr`スキルは自動的に`--base develop`を指定する
 
-```bash
+```
 # ✅ 良い例
-gh pr create --draft --base develop --title "..."
+/pr 006
 
 # ❌ 悪い例
-gh pr create --draft --base main --title "..."
-gh pr create --draft --title "..."  # baseを省略（デフォルトがmainになる可能性）
+gh pr create --draft --base develop --title "..."  # 直接実行は禁止
+gh pr create --draft --title "..."  # ベースブランチ指定漏れのリスク
 ```
 
 **理由:**
-- developブランチで統合テスト後、mainにマージするフロー
-- 自動化時のリスク軽減（mainへの直接マージ防止）
+- 再現性の確保（スキル経由で統一）
+- ベースブランチ指定漏れの防止
+- 自動化時の一貫性
 
 ---
 
