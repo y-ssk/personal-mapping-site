@@ -257,6 +257,11 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 | UXレビュー | ux-designer-reviewer | 画面遷移、操作性、ユーザー体験 |
 | テストレビュー | qa-test-engineer | 境界値、異常系、仕様準拠 |
 
+**実装エージェント:**
+| エージェント | 用途 |
+|-------------|------|
+| implementation-engineer | 設計決定後のコード実装、SPEC/CLAUDE準拠の実装 |
+
 **LOG.mdへの記録形式:**
 ```markdown
 ## エージェントレビュー（YYYY-MM-DD）
