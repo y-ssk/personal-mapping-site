@@ -9,6 +9,8 @@ from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView, LogoutView, UserDetailsView
 from django.urls import path
 
+from apps.users.views import GitHubLogin, GoogleLogin
+
 app_name = "users"
 
 urlpatterns = [
@@ -22,4 +24,8 @@ urlpatterns = [
     path("refresh/", get_refresh_view().as_view(), name="token_refresh"),
     # GET /api/v1/auth/me/ - 現在のユーザー情報
     path("me/", UserDetailsView.as_view(), name="user_details"),
+    # POST /api/v1/auth/google/ - Google OAuth（SPEC.md § 8.1.3）
+    path("google/", GoogleLogin.as_view(), name="google_login"),
+    # POST /api/v1/auth/github/ - GitHub OAuth（SPEC.md § 8.1.3）
+    path("github/", GitHubLogin.as_view(), name="github_login"),
 ]

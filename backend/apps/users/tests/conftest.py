@@ -3,6 +3,7 @@
 """
 
 import pytest
+from allauth.socialaccount.models import SocialApp
 from django.contrib.sites.models import Site
 from rest_framework.test import APIClient
 
@@ -12,10 +13,41 @@ from apps.users.models import User
 @pytest.fixture(autouse=True)
 def setup_site(db):
     """allauthに必要なSiteオブジェクトを作成する。"""
-    Site.objects.get_or_create(
+    site, _ = Site.objects.get_or_create(
         id=1,
         defaults={"domain": "testserver", "name": "Test Server"},
     )
+    return site
+
+
+@pytest.fixture
+def google_social_app(setup_site):
+    """Google OAuth用のSocialAppを作成する。"""
+    app, _ = SocialApp.objects.get_or_create(
+        provider="google",
+        defaults={
+            "name": "Google",
+            "client_id": "test-google-client-id",
+            "secret": "test-google-secret",
+        },
+    )
+    app.sites.add(setup_site)
+    return app
+
+
+@pytest.fixture
+def github_social_app(setup_site):
+    """GitHub OAuth用のSocialAppを作成する。"""
+    app, _ = SocialApp.objects.get_or_create(
+        provider="github",
+        defaults={
+            "name": "GitHub",
+            "client_id": "test-github-client-id",
+            "secret": "test-github-secret",
+        },
+    )
+    app.sites.add(setup_site)
+    return app
 
 
 @pytest.fixture

@@ -5,7 +5,6 @@ SPEC.md § 4.2 認証エンドポイントに準拠。
 """
 
 import pytest
-from django.urls import reverse
 from rest_framework import status
 
 from apps.users.models import User
@@ -248,3 +247,59 @@ class TestLogoutEndpoint:
 
         # 200または401のどちらかが返る（設定による）
         assert response.status_code in [status.HTTP_200_OK, status.HTTP_401_UNAUTHORIZED]
+
+
+@pytest.mark.django_db
+class TestGoogleOAuthEndpoint:
+    """POST /api/v1/auth/google/ のテスト。SPEC.md § 8.1.3"""
+
+    URL = "/api/v1/auth/google/"
+
+    def test_google_endpoint_exists(self, api_client, google_social_app):
+        """Google OAuthエンドポイントが存在する。"""
+        # 空のリクエストを送信（エンドポイントの存在確認）
+        response = api_client.post(self.URL, {}, format="json")
+
+        # エンドポイントが存在すれば404以外が返る
+        assert response.status_code != status.HTTP_404_NOT_FOUND
+
+    def test_google_login_without_token(self, api_client, google_social_app):
+        """トークンなしでは認証できない。"""
+        response = api_client.post(self.URL, {}, format="json")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_google_url_name_registered(self, google_social_app):
+        """Google OAuthのURL名が登録されている。"""
+        from django.urls import reverse
+
+        url = reverse("users:google_login")
+        assert url == "/api/v1/auth/google/"
+
+
+@pytest.mark.django_db
+class TestGitHubOAuthEndpoint:
+    """POST /api/v1/auth/github/ のテスト。SPEC.md § 8.1.3"""
+
+    URL = "/api/v1/auth/github/"
+
+    def test_github_endpoint_exists(self, api_client, github_social_app):
+        """GitHub OAuthエンドポイントが存在する。"""
+        # 空のリクエストを送信（エンドポイントの存在確認）
+        response = api_client.post(self.URL, {}, format="json")
+
+        # エンドポイントが存在すれば404以外が返る
+        assert response.status_code != status.HTTP_404_NOT_FOUND
+
+    def test_github_login_without_token(self, api_client, github_social_app):
+        """トークンなしでは認証できない。"""
+        response = api_client.post(self.URL, {}, format="json")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_github_url_name_registered(self, github_social_app):
+        """GitHub OAuthのURL名が登録されている。"""
+        from django.urls import reverse
+
+        url = reverse("users:github_login")
+        assert url == "/api/v1/auth/github/"

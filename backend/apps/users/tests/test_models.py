@@ -96,3 +96,33 @@ class TestUserModel:
     def test_required_fields_is_empty(self):
         """REQUIRED_FIELDSは空。"""
         assert User.REQUIRED_FIELDS == []
+
+    def test_create_user_with_oauth_fields(self):
+        """OAuthフィールド付きでユーザーを作成できる。"""
+        user = User.objects.create_user(
+            email="oauth@example.com",
+            password="TestPass123!",
+            oauth_provider="google",
+            oauth_id="123456789",
+        )
+
+        assert user.oauth_provider == "google"
+        assert user.oauth_id == "123456789"
+
+    def test_oauth_fields_are_nullable(self):
+        """OAuthフィールドはnull可能。"""
+        user = User.objects.create_user(
+            email="normal@example.com",
+            password="TestPass123!",
+        )
+
+        assert user.oauth_provider is None
+        assert user.oauth_id is None
+
+    def test_oauth_provider_max_length(self):
+        """oauth_providerの最大長は50文字。"""
+        assert User.OAUTH_PROVIDER_MAX_LENGTH == 50
+
+    def test_oauth_id_max_length(self):
+        """oauth_idの最大長は255文字。"""
+        assert User.OAUTH_ID_MAX_LENGTH == 255

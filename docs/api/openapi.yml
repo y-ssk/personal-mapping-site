@@ -122,6 +122,9 @@ paths:
     post:
       tags: [Auth]
       summary: Google OAuth認証
+      description: |
+        Googleから取得したアクセストークンまたは認可コードを使用して認証。
+        認証成功時はJWTトークンを返す。同じメールアドレスの既存アカウントがある場合は自動的にリンクされる。
       operationId: authGoogle
       requestBody:
         required: true
@@ -129,18 +132,24 @@ paths:
           application/json:
             schema:
               type: object
-              required: [access_token]
               properties:
                 access_token:
                   type: string
                   description: GoogleのOAuthアクセストークン
+                code:
+                  type: string
+                  description: Googleの認可コード（access_tokenの代わりに使用可）
+                id_token:
+                  type: string
+                  description: GoogleのIDトークン（OpenID Connect）
+              description: access_token、code、id_tokenのいずれか1つが必須
       responses:
         '200':
           description: 認証成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokens'
+                $ref: '#/components/schemas/OAuthLoginResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -148,6 +157,9 @@ paths:
     post:
       tags: [Auth]
       summary: GitHub OAuth認証
+      description: |
+        GitHubから取得したアクセストークンまたは認可コードを使用して認証。
+        認証成功時はJWTトークンを返す。同じメールアドレスの既存アカウントがある場合は自動的にリンクされる。
       operationId: authGithub
       requestBody:
         required: true
@@ -155,18 +167,21 @@ paths:
           application/json:
             schema:
               type: object
-              required: [code]
               properties:
+                access_token:
+                  type: string
+                  description: GitHubのOAuthアクセストークン
                 code:
                   type: string
-                  description: GitHubの認証コード
+                  description: GitHubの認可コード（access_tokenの代わりに使用可）
+              description: access_tokenまたはcodeのいずれか1つが必須
       responses:
         '200':
           description: 認証成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokens'
+                $ref: '#/components/schemas/OAuthLoginResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -1294,6 +1309,20 @@ components:
           type: string
           description: リフレッシュトークン
 
+    OAuthLoginResponse:
+      type: object
+      description: OAuth認証成功レスポンス
+      required: [access, refresh, user]
+      properties:
+        access:
+          type: string
+          description: JWTアクセストークン
+        refresh:
+          type: string
+          description: JWTリフレッシュトークン
+        user:
+          $ref: '#/components/schemas/User'
+
     User:
       type: object
       description: ユーザー情報（GET /auth/me/ レスポンス）
@@ -1309,6 +1338,12 @@ components:
           type: string
           maxLength: 100
           description: 表示名
+        oauth_provider:
+          type: string
+          maxLength: 50
+          nullable: true
+          readOnly: true
+          description: OAuth認証プロバイダー（google, github等）
         date_joined:
           type: string
           format: date-time
