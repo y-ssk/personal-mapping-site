@@ -1030,6 +1030,7 @@ docker-compose exec frontend npm run type-check
 | `/checklist <id>` | チェックリスト管理 | `/checklist D007` |
 | `/review` | 変更レビュー | `/review` |
 | `/pr <id>` | PR作成 | `/pr D007` |
+| `/design-review <id>` | 設計レビュー詳細解説 | `/design-review 008` |
 
 ### スキル追加ルール
 
