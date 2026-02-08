@@ -39,14 +39,15 @@ export function useLogout(): UseLogoutResult {
 
   const mutation = useMutation({
     mutationFn: async (): Promise<void> => {
-      // APIログアウト実行（トークン削除もauthApi内で行う）
-      await logout();
-
-      // Zustandストアをリセット
-      storeLogout();
-
-      // TanStack Queryのキャッシュをクリア
-      queryClient.clear();
+      try {
+        // APIログアウト実行（トークン削除もauthApi内で行う）
+        await logout();
+      } finally {
+        // APIエラーでもストアとキャッシュはクリア
+        // セキュリティ上、ローカルのログアウト処理は常に実行
+        storeLogout();
+        queryClient.clear();
+      }
     },
   });
 
