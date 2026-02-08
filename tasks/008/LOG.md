@@ -261,6 +261,15 @@ vi.mock('@/stores/authStore', () => ({
 - モックされた`AuthApiError`が正しくスローされていない
 - または、エラーがスローされる前にテストが終了している
 
+**対応:**
+- TypeScript: authApi.tsでUser, AuthTokens型をre-export
+- テスト: vi.importActualでAuthApiErrorを実際のクラスとして使用
+- 実装: useLogout.tsでtry-finallyを使用してAPIエラー時もローカルログアウト実行
+
+### CI成功（2026-02-08）
+
+**全34テストがパス** ✅
+
 ---
 
 ### 実施した修正（2026-02-08）
