@@ -238,6 +238,29 @@ vi.mock('@/stores/authStore', () => ({
 - `useLogout.test.tsx`
 - `useRegister.test.tsx`
 
+### CI再失敗（2026-02-08 3回目）
+
+**1. TypeScriptエラー（4件）**
+- `useAuth.test.ts(39)`: `authApi`から`User`がexportされていない
+- `useLogin.test.tsx(152,153,157)`: `authApi`から`AuthTokens`がexportされていない
+
+**根本原因:**
+- `User`と`AuthTokens`は`types/auth.ts`で定義されている
+- テストでは`import * as authApi`経由でアクセスしようとしている
+- `authApi.ts`はこれらの型をre-exportしていない
+
+**対応:**
+- `authApi.ts`でUserとAuthTokensをre-exportする
+- または、テストで直接`types/auth`からインポートする
+
+**2. テストエラー（6件）**
+- エラーメッセージが空文字列になっている
+- TanStack Queryのエラー処理の問題
+
+**根本原因:**
+- モックされた`AuthApiError`が正しくスローされていない
+- または、エラーがスローされる前にテストが終了している
+
 ---
 
 ### 実施した修正（2026-02-08）

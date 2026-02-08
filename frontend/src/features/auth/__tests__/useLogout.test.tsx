@@ -13,8 +13,14 @@ import type { ReactNode } from 'react';
 import * as authApi from '../api/authApi';
 import { useLogout } from '../hooks/useLogout';
 
-// authApiをモック
-vi.mock('../api/authApi');
+// authApiをモック（AuthApiErrorは実際のクラスを使用）
+vi.mock('../api/authApi', async () => {
+  const actual = await vi.importActual<typeof import('../api/authApi')>('../api/authApi');
+  return {
+    ...actual,
+    logout: vi.fn(),
+  };
+});
 
 // モック関数
 const mockStoreLogout = vi.fn();

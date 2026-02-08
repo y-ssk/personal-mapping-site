@@ -20,6 +20,9 @@ import type {
 } from '../types/auth';
 import { toUser as convertToUser } from '../types/auth';
 
+// 型のre-export（テストで使用）
+export type { User, AuthTokens } from '../types/auth';
+
 /**
  * 認証エラークラス
  */

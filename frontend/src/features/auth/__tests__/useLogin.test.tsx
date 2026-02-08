@@ -14,8 +14,15 @@ import * as authApi from '../api/authApi';
 import { useLogin } from '../hooks/useLogin';
 import { AUTH_MESSAGES } from '../constants';
 
-// authApiをモック
-vi.mock('../api/authApi');
+// authApiをモック（AuthApiErrorは実際のクラスを使用）
+vi.mock('../api/authApi', async () => {
+  const actual = await vi.importActual<typeof import('../api/authApi')>('../api/authApi');
+  return {
+    ...actual,
+    login: vi.fn(),
+    getCurrentUser: vi.fn(),
+  };
+});
 
 // モック関数を外部で定義（セレクターパターン対応）
 const mockSetUser = vi.fn();
