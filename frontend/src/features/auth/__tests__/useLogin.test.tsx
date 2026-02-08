@@ -17,11 +17,20 @@ import { AUTH_MESSAGES } from '../constants';
 // authApiをモック
 vi.mock('../api/authApi');
 
-// authStoreをモック
+// モック関数を外部で定義（セレクターパターン対応）
+const mockSetUser = vi.fn();
+
+// authStoreをモック（セレクターパターン対応）
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: vi.fn(() => ({
-    setUser: vi.fn(),
-  })),
+  useAuthStore: (selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = {
+      setUser: mockSetUser,
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+    return typeof selector === 'function' ? selector(state) : state;
+  },
 }));
 
 const mockLogin = vi.mocked(authApi.login);
@@ -79,11 +88,9 @@ describe('useLogin', () => {
   });
 
   it('ログイン失敗時（400）、認証エラーをスロー', async () => {
-    const authError = new authApi.AuthApiError(
-      AUTH_MESSAGES.LOGIN_FAILED,
-      400,
-      { non_field_errors: ['Unable to log in with provided credentials.'] }
-    );
+    const authError = new authApi.AuthApiError(AUTH_MESSAGES.LOGIN_FAILED, 400, {
+      non_field_errors: ['Unable to log in with provided credentials.'],
+    });
     mockLogin.mockRejectedValueOnce(authError);
 
     const { result } = renderHook(() => useLogin(), { wrapper });

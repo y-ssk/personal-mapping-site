@@ -6,13 +6,7 @@
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
 
 import { PrivateRoute } from '@/components/PrivateRoute';
-import {
-  LoginPage,
-  RegisterPage,
-  OAuthCallback,
-  useAuth,
-  useLogout,
-} from '@/features/auth';
+import { LoginPage, RegisterPage, OAuthCallback, useAuth, useLogout } from '@/features/auth';
 
 /**
  * メインアプリケーションコンポーネント。
@@ -95,9 +89,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           </h1>
           <div className="flex items-center gap-4">
             {user && (
-              <span className="text-sm text-gray-600">
-                {user.displayName || user.email}
-              </span>
+              <span className="text-sm text-gray-600">{user.displayName || user.email}</span>
             )}
             <button
               onClick={handleLogout}
@@ -129,9 +121,7 @@ function HomePage() {
           <h2 className="text-2xl font-semibold text-gray-700">
             ようこそ{user?.displayName ? `、${user.displayName}さん` : ''}
           </h2>
-          <p className="mt-2 text-gray-500">
-            あなたの場所管理と旅行計画アプリケーションです。
-          </p>
+          <p className="mt-2 text-gray-500">あなたの場所管理と旅行計画アプリケーションです。</p>
         </div>
       </div>
     </div>

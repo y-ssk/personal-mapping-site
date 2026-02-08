@@ -53,21 +53,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* エラーメッセージ */}
       {error && (
-        <div
-          className="rounded-md bg-red-50 p-4"
-          role="alert"
-          aria-live="polite"
-        >
+        <div className="rounded-md bg-red-50 p-4" role="alert" aria-live="polite">
           <p className="text-sm text-red-700">{error.message}</p>
         </div>
       )}
 
       {/* メールアドレス */}
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.EMAIL}
         </label>
         <input
@@ -103,10 +96,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
       {/* パスワード */}
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.PASSWORD}
         </label>
         <input
@@ -173,10 +163,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       {/* 登録リンク */}
       <div className="text-center text-sm text-gray-600">
         {AUTH_LABELS.NO_ACCOUNT}{' '}
-        <Link
-          to="/register"
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
+        <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
           {AUTH_LABELS.REGISTER_LINK}
         </Link>
       </div>

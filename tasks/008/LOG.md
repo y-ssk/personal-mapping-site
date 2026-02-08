@@ -173,6 +173,73 @@ PR #19 の Frontend CI が失敗。lint と test の両方が失敗。
    | `AUTH_MESSAGES` is defined but never used | useLogin.ts? | 削除または使用 |
    | `OAuthProvider` is defined but never used | types/auth.ts? | 削除または使用 |
 
+### CI再失敗（2026-02-08 2回目）
+
+前回の修正後もCIが失敗。
+
+**1. Prettierエラー（10ファイル）**
+- src/App.tsx
+- src/features/auth/__tests__/useAuth.test.ts
+- src/features/auth/__tests__/useLogin.test.tsx
+- src/features/auth/__tests__/useRegister.test.tsx
+- src/features/auth/components/LoginForm.tsx
+- src/features/auth/components/OAuthButtons.tsx
+- src/features/auth/components/OAuthCallback.tsx
+- src/features/auth/components/RegisterForm.tsx
+- src/features/auth/pages/LoginPage.tsx
+- src/features/auth/pages/RegisterPage.tsx
+
+**対応:** `npm run format` で自動修正
+
+**2. テストエラー（13件）**
+- `setUser is not a function` - authStoreモックが不完全
+- `storeLogout is not a function` - authStoreモックが不完全
+- エラーメッセージの期待値と実際が不一致
+
+**根本原因:**
+authStoreのモックが関数を返していない。
+```typescript
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    setUser: vi.fn(),  // ← これが関数として認識されていない
+  })),
+}));
+```
+
+**対応方針:**
+1. Prettierでフォーマット修正
+2. authStoreモックを修正
+
+### 実施した修正（2026-02-08 2回目）
+
+**1. Prettier修正**
+- `npx prettier --write` で10ファイルをフォーマット
+
+**2. authStoreモック修正**
+Zustandのセレクターパターンに対応したモックに修正:
+```typescript
+// Before（動作しない）
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({ setUser: vi.fn() })),
+}));
+
+// After（セレクターパターン対応）
+const mockSetUser = vi.fn();
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: (selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = { setUser: mockSetUser, ... };
+    return typeof selector === 'function' ? selector(state) : state;
+  },
+}));
+```
+
+修正ファイル:
+- `useLogin.test.tsx`
+- `useLogout.test.tsx`
+- `useRegister.test.tsx`
+
+---
+
 ### 実施した修正（2026-02-08）
 
 **1. テストファイルにjsdom環境設定を追加**

@@ -17,11 +17,20 @@ import { AUTH_MESSAGES } from '../constants';
 // authApiをモック
 vi.mock('../api/authApi');
 
-// authStoreをモック
+// モック関数を外部で定義（セレクターパターン対応）
+const mockSetUser = vi.fn();
+
+// authStoreをモック（セレクターパターン対応）
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: vi.fn(() => ({
-    setUser: vi.fn(),
-  })),
+  useAuthStore: (selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = {
+      setUser: mockSetUser,
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+    return typeof selector === 'function' ? selector(state) : state;
+  },
 }));
 
 const mockRegister = vi.mocked(authApi.register);
@@ -83,11 +92,9 @@ describe('useRegister', () => {
   });
 
   it('メールアドレス重複時、エラーをスロー', async () => {
-    const authError = new authApi.AuthApiError(
-      AUTH_MESSAGES.EMAIL_EXISTS,
-      400,
-      { email: ['A user with that email already exists.'] }
-    );
+    const authError = new authApi.AuthApiError(AUTH_MESSAGES.EMAIL_EXISTS, 400, {
+      email: ['A user with that email already exists.'],
+    });
     mockRegister.mockRejectedValueOnce(authError);
 
     const { result } = renderHook(() => useRegister(), { wrapper });
@@ -106,11 +113,9 @@ describe('useRegister', () => {
   });
 
   it('バリデーションエラー時、適切なエラーをスロー', async () => {
-    const authError = new authApi.AuthApiError(
-      AUTH_MESSAGES.REGISTER_FAILED,
-      400,
-      { password1: ['This password is too short.'] }
-    );
+    const authError = new authApi.AuthApiError(AUTH_MESSAGES.REGISTER_FAILED, 400, {
+      password1: ['This password is too short.'],
+    });
     mockRegister.mockRejectedValueOnce(authError);
 
     const { result } = renderHook(() => useRegister(), { wrapper });

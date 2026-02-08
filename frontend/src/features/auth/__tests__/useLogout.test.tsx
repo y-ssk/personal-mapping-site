@@ -20,11 +20,18 @@ vi.mock('../api/authApi');
 const mockStoreLogout = vi.fn();
 const mockQueryClientClear = vi.fn();
 
-// authStoreをモック
+// authStoreをモック（セレクターパターン対応）
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: vi.fn(() => ({
-    logout: mockStoreLogout,
-  })),
+  useAuthStore: (selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = {
+      logout: mockStoreLogout,
+      setUser: vi.fn(),
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+    return typeof selector === 'function' ? selector(state) : state;
+  },
 }));
 
 const mockLogout = vi.mocked(authApi.logout);

@@ -71,21 +71,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* エラーメッセージ */}
       {error && (
-        <div
-          className="rounded-md bg-red-50 p-4"
-          role="alert"
-          aria-live="polite"
-        >
+        <div className="rounded-md bg-red-50 p-4" role="alert" aria-live="polite">
           <p className="text-sm text-red-700">{error.message}</p>
         </div>
       )}
 
       {/* メールアドレス */}
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.EMAIL}
         </label>
         <input
@@ -121,10 +114,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {/* 表示名 */}
       <div>
-        <label
-          htmlFor="display_name"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.DISPLAY_NAME}
           <span className="ml-1 text-gray-400">（任意）</span>
         </label>
@@ -156,10 +146,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {/* パスワード */}
       <div>
-        <label
-          htmlFor="password1"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="password1" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.PASSWORD}
         </label>
         <input
@@ -191,10 +178,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {/* パスワード確認 */}
       <div>
-        <label
-          htmlFor="password2"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="password2" className="block text-sm font-medium text-gray-700">
           {AUTH_LABELS.PASSWORD_CONFIRM}
         </label>
         <input
@@ -204,8 +188,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           placeholder={AUTH_PLACEHOLDERS.PASSWORD}
           {...register('password2', {
             required: `${AUTH_LABELS.PASSWORD_CONFIRM}を入力してください`,
-            validate: (value) =>
-              value === password1 || AUTH_MESSAGES.PASSWORD_MISMATCH,
+            validate: (value) => value === password1 || AUTH_MESSAGES.PASSWORD_MISMATCH,
           })}
           className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-1 sm:text-sm ${
             errors.password2
@@ -259,10 +242,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* ログインリンク */}
       <div className="text-center text-sm text-gray-600">
         {AUTH_LABELS.HAVE_ACCOUNT}{' '}
-        <Link
-          to="/login"
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
+        <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
           {AUTH_LABELS.LOGIN_LINK}
         </Link>
       </div>

@@ -95,9 +95,7 @@ describe('useAuth', () => {
 
   it('トークンが無効な場合、ユーザーをnullに設定する', async () => {
     localStorageMock.getItem.mockReturnValue('invalid-token');
-    mockGetCurrentUser.mockRejectedValueOnce(
-      new authApi.AuthApiError('Unauthorized', 401)
-    );
+    mockGetCurrentUser.mockRejectedValueOnce(new authApi.AuthApiError('Unauthorized', 401));
 
     renderHook(() => useAuth());
 

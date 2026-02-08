@@ -49,10 +49,7 @@ export function OAuthCallback() {
       }
 
       // プロバイダーが無効な場合
-      if (
-        provider !== OAUTH_PROVIDERS.GOOGLE &&
-        provider !== OAUTH_PROVIDERS.GITHUB
-      ) {
+      if (provider !== OAUTH_PROVIDERS.GOOGLE && provider !== OAUTH_PROVIDERS.GITHUB) {
         setError(AUTH_MESSAGES.OAUTH_FAILED);
         setTimeout(() => navigate('/login', { replace: true }), 3000);
         return;
@@ -71,8 +68,7 @@ export function OAuthCallback() {
         // ダッシュボードへリダイレクト
         navigate('/', { replace: true });
       } catch (err) {
-        const message =
-          err instanceof AuthApiError ? err.message : AUTH_MESSAGES.OAUTH_FAILED;
+        const message = err instanceof AuthApiError ? err.message : AUTH_MESSAGES.OAUTH_FAILED;
         setError(message);
         setTimeout(() => navigate('/login', { replace: true }), 3000);
       }
@@ -89,9 +85,7 @@ export function OAuthCallback() {
             <div className="rounded-md bg-red-50 p-4">
               <p className="text-sm text-red-700">{error}</p>
             </div>
-            <p className="text-sm text-gray-500">
-              ログインページに戻ります...
-            </p>
+            <p className="text-sm text-gray-500">ログインページに戻ります...</p>
           </div>
         ) : (
           <div className="space-y-4">
