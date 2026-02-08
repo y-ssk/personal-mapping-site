@@ -42,3 +42,6 @@ npm-debug.log*
 # Temporary
 *.tmp
 *.temp
+
+# Local documentation (not tracked)
+docs/local/

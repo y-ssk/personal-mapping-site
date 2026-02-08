@@ -1869,19 +1869,22 @@ frontend/src/features/locations/
 │       └── LocationForm.test.tsx
 └── hooks/
     └── __tests__/
-        └── useLocations.test.ts
+        └── useLocations.test.tsx
 ```
 
 #### React Hookテスト例
 
 ```typescript
-// useLocations.test.ts
+// useLocations.test.tsx
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { vi, describe, it, expect } from 'vitest';
+import type { ReactNode } from 'react';
 import { useLocations } from '../useLocations';
+import * as locationApi from '../api/locationApi';
 
 describe('useLocations', () => {
-  const wrapper = ({ children }: { children: React.ReactNode }) => {
+  const wrapper = ({ children }: { children: ReactNode }) => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -1903,7 +1906,7 @@ describe('useLocations', () => {
 
   it('エラーを適切に処理する', async () => {
     // APIエラーをモック
-    jest.spyOn(locationApi, 'list').mockRejectedValue(
+    vi.spyOn(locationApi, 'list').mockRejectedValue(
       new Error('ネットワークエラー')
     );
 
