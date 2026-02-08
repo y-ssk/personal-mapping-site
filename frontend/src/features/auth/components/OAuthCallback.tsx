@@ -9,7 +9,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 
 import { googleLogin, githubLogin, AuthApiError } from '../api/authApi';
-import { AUTH_MESSAGES, OAUTH_PROVIDERS, type OAuthProvider } from '../constants';
+import { AUTH_MESSAGES, OAUTH_PROVIDERS } from '../constants';
 
 /**
  * OAuthコールバック処理コンポーネント。

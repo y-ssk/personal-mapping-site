@@ -6,7 +6,7 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
-import { AUTH_CONSTANTS, AUTH_LABELS, AUTH_MESSAGES, AUTH_PLACEHOLDERS } from '../constants';
+import { AUTH_CONSTANTS, AUTH_LABELS, AUTH_PLACEHOLDERS } from '../constants';
 import { useLogin } from '../hooks';
 import type { LoginRequest } from '../types/auth';
 

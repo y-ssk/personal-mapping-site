@@ -120,12 +120,94 @@ components/
 
 ---
 
+## CI失敗調査（2026-02-08）
+
+### 失敗概要
+
+PR #19 の Frontend CI が失敗。lint と test の両方が失敗。
+
+### テスト失敗（5件）
+
+| ファイル | 行 | エラー | 根本原因 |
+|----------|-----|--------|----------|
+| authApi.test.ts | 46 | `window is not defined` | jsdom環境未設定 |
+| useAuth.test.ts | 33 | `window is not defined` | jsdom環境未設定 |
+| useLogin.test.ts | 32 | `Expected ">" but found "client"` | .tsでJSX使用 |
+| useLogout.test.ts | 34 | `Expected ">" but found "client"` | .tsでJSX使用 |
+| useRegister.test.ts | 32 | `Expected ">" but found "client"` | .tsでJSX使用 |
+
+### 根本原因分析
+
+**1. `window is not defined`**
+- テストがNode.js環境で実行されている
+- vite.config.tsに`test.environment: 'jsdom'`を追加済みだがCIで反映されていない可能性
+- 各テストファイルに`// @vitest-environment jsdom`を追加するか、vitest.config.tsを分離する必要
+
+**2. `Expected ">" but found "client"`**
+- `.ts`ファイルでJSX構文（`<QueryClientProvider>`等）を使用
+- esbuildが`.ts`をJSXなしでトランスパイル
+- **解決策**: `.ts` → `.tsx` にリネーム
+
+### 修正方針
+
+1. **テストファイル拡張子変更**: `.ts` → `.tsx`
+   - `authApi.test.ts` → `authApi.test.tsx`
+   - `useAuth.test.ts` → `useAuth.test.tsx`
+   - `useLogin.test.tsx`（既にリネーム済み）
+   - `useLogout.test.tsx`（既にリネーム済み）
+   - `useRegister.test.tsx`（既にリネーム済み）
+
+2. **Vitest環境設定**: 各テストファイルにjsdom環境指定
+   ```typescript
+   // @vitest-environment jsdom
+   ```
+
+3. **ESLintエラー対応**（9件）:
+   | エラー | ファイル（推定） | 対応 |
+   |--------|------------------|------|
+   | `afterEach` is defined but never used | テストファイル | 削除または使用 |
+   | `act` is defined but never used | テストファイル | 削除または使用 |
+   | `STORAGE_KEYS` is defined but never used | authApi.test.ts? | 削除または使用 |
+   | Parsing error: '>' expected（3件） | .tsファイル | .tsxにリネーム |
+   | `toUser` is defined but never used | authApi.ts? | 削除または使用 |
+   | `AUTH_MESSAGES` is defined but never used | useLogin.ts? | 削除または使用 |
+   | `OAuthProvider` is defined but never used | types/auth.ts? | 削除または使用 |
+
+### 実施した修正（2026-02-08）
+
+**1. テストファイルにjsdom環境設定を追加**
+- `authApi.test.ts` - `@vitest-environment jsdom` 追加
+- `useAuth.test.ts` - `@vitest-environment jsdom` 追加
+- `useLogin.test.tsx` - `@vitest-environment jsdom` 追加
+- `useLogout.test.tsx` - `@vitest-environment jsdom` 追加
+- `useRegister.test.tsx` - `@vitest-environment jsdom` 追加
+
+**2. 未使用インポート削除**
+- `authApi.test.ts` - `afterEach` 削除
+- `useAuth.test.ts` - `act`, `STORAGE_KEYS`, `afterEach` 削除
+- `authApi.ts` - `toUser`（type import）削除
+- `OAuthCallback.tsx` - `OAuthProvider` 削除
+- `LoginForm.tsx` - `AUTH_MESSAGES` 削除
+
+---
+
+### ワークフロー改善点
+
+**問題**: Sub Agentでの調査結果を記録せずに修正に入った結果、VSCode強制終了で調査結果が消失
+
+**対策**:
+- 調査・レビュー結果は**即座にLOG.mdに記録**してから修正に入る
+- 記録→修正の順序を徹底
+- CLAUDE.mdやワークフローにこのルールを明文化
+
+---
+
 ## 次のステップ
 
 - [ ] Dockerでの動作確認
 - [ ] TypeScript型チェック
 - [ ] テスト実行・カバレッジ確認
-- [ ] PR作成
+- [ ] PR更新
 
 ---
 

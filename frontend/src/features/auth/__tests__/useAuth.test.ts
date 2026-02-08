@@ -2,13 +2,14 @@
  * useAuthフックのテスト。
  *
  * CLAUDE.md § テスト戦略に準拠。
+ *
+ * @vitest-environment jsdom
  */
-import { renderHook, waitFor, act } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import * as authApi from '../api/authApi';
 import { useAuth } from '../hooks/useAuth';
-import { STORAGE_KEYS } from '@/lib/constants';
 
 // authApiをモック
 vi.mock('../api/authApi');
@@ -58,10 +59,6 @@ describe('useAuth', () => {
     mockUser = null;
     mockIsAuthenticated = false;
     mockIsLoading = true;
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   it('トークンがない場合、ローディングを終了する', async () => {

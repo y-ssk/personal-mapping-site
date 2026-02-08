@@ -17,7 +17,6 @@ import type {
   RefreshTokenRequest,
   RegisterRequest,
   User,
-  toUser,
 } from '../types/auth';
 import { toUser as convertToUser } from '../types/auth';
 
