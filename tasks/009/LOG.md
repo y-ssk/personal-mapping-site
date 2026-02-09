@@ -163,3 +163,28 @@ Locationモデル実装前の設計レビュー。SPEC.md § 3.3.3準拠確認�
 ```
 35 passed, 2 skipped（全体: 76 passed, 2 skipped）
 ```
+
+---
+
+## CI修正（2026-02-09）
+
+### 問題
+1. Blackフォーマット未適用
+2. flake8: 未使用変数 `location_id`（F841）
+3. CI環境でPostGIS接続エラー（test.pyがDATABASE_URL未対応）
+
+### 修正内容
+- Blackフォーマット適用 - 7f396c8
+- 未使用変数削除 - 01241ad
+- test.py: `dj_database_url.parse`使用でCI/ローカル両対応 - 01241ad
+
+### 反省点
+- コミット前に`docker compose exec backend black --check .`を実行すべきだった
+- `docker compose exec backend flake8 .`も実行すべきだった
+- マイグレーション適用確認を怠っていた
+
+### CI結果
+```
+✅ lint: success
+✅ test: success
+```
