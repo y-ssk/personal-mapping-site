@@ -272,3 +272,99 @@ class TestLocationModel:
         root_category.delete()
         location.refresh_from_db()
         assert location.category is None
+
+    # === 境界値テスト ===
+
+    def test_name_max_length_boundary(self, user, tokyo_point):
+        """nameフィールドの最大長（255文字）で正常保存できる。"""
+        max_name = "あ" * LocationConstants.NAME_MAX_LENGTH
+        location = Location.objects.create(
+            user=user,
+            name=max_name,
+            point=tokyo_point,
+        )
+        assert len(location.name) == LocationConstants.NAME_MAX_LENGTH
+
+    def test_name_exceeds_max_length(self, user, tokyo_point):
+        """nameフィールドが最大長を超えるとエラー。"""
+        from django.db import DataError
+
+        over_max_name = "あ" * (LocationConstants.NAME_MAX_LENGTH + 1)
+        with pytest.raises(DataError):
+            Location.objects.create(
+                user=user,
+                name=over_max_name,
+                point=tokyo_point,
+            )
+
+    def test_website_valid_url(self, user, tokyo_point):
+        """有効なURLを保存できる。"""
+        location = Location.objects.create(
+            user=user,
+            name="URLテスト",
+            point=tokyo_point,
+            website="https://example.com/path?query=1",
+        )
+        assert location.website == "https://example.com/path?query=1"
+
+    def test_website_invalid_url(self, user, tokyo_point):
+        """無効なURLはバリデーションエラー。"""
+        from django.core.exceptions import ValidationError
+
+        location = Location(
+            user=user,
+            name="無効URLテスト",
+            point=tokyo_point,
+            website="not-a-valid-url",
+        )
+        with pytest.raises(ValidationError):
+            location.full_clean()
+
+    def test_point_longitude_boundary(self, user):
+        """経度の境界値（-180, 180）で正常保存できる。"""
+        # 経度 -180（日付変更線西側）
+        loc1 = Location.objects.create(
+            user=user,
+            name="経度-180",
+            point=Point(-180, 0, srid=LocationConstants.POINT_SRID),
+        )
+        assert loc1.point.x == -180
+
+        # 経度 180（日付変更線東側）
+        loc2 = Location.objects.create(
+            user=user,
+            name="経度180",
+            point=Point(180, 0, srid=LocationConstants.POINT_SRID),
+        )
+        assert loc2.point.x == 180
+
+    def test_point_latitude_boundary(self, user):
+        """緯度の境界値（-90, 90）で正常保存できる。"""
+        # 緯度 -90（南極点）
+        loc1 = Location.objects.create(
+            user=user,
+            name="南極点",
+            point=Point(0, -90, srid=LocationConstants.POINT_SRID),
+        )
+        assert loc1.point.y == -90
+
+        # 緯度 90（北極点）
+        loc2 = Location.objects.create(
+            user=user,
+            name="北極点",
+            point=Point(0, 90, srid=LocationConstants.POINT_SRID),
+        )
+        assert loc2.point.y == 90
+
+    def test_status_invalid_choice(self, user, tokyo_point):
+        """無効なステータス値はバリデーションエラー。"""
+        from django.core.exceptions import ValidationError
+
+        location = Location(
+            user=user,
+            name="無効ステータス",
+            point=tokyo_point,
+            status="invalid_status",
+        )
+        with pytest.raises(ValidationError):
+            location.full_clean()

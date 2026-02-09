@@ -103,3 +103,63 @@ Locationモデル実装前の設計レビュー。SPEC.md § 3.3.3準拠確認�
 ```
 26 passed, 2 skipped, 1 warning in 4.32s
 ```
+
+---
+
+## エージェントレビュー（2026-02-09）
+
+### 実装レビュー（code-reviewer）
+**総合評価:** 条件付き承認
+
+#### 良い点
+- SPEC.md § 3.3.3 完全準拠
+- Locationモデルの定数化徹底
+- Docstring完備
+- N+1問題への意識（Docstringに注意書き）
+
+#### 指摘事項
+| 重要度 | 内容 | 場所 | 対応方針 |
+|--------|------|------|----------|
+| Should Fix | Categoryモデルでmax_lengthにマジックナンバー使用 | models.py:37,47 | TECH-006で対応 / #003スコープ外 |
+| Should Fix | SlugFieldのmax_length未定数化 | models.py:38 | TECH-006で対応 / #003スコープ外 |
+| Nice to Have | テスト座標値の定数化 | test_models.py | 任意 / 可読性は現状でも許容範囲 |
+
+### テストレビュー（qa-test-engineer）
+**総合評価:** 条件付き承認
+
+#### 指摘事項
+| 重要度 | 内容 | 対応方針 |
+|--------|------|----------|
+| Should Fix | nameフィールド境界値テスト不足 | 今回対応 / max_length制約検証は基本 |
+| Should Fix | websiteのURLバリデーションテスト不足 | 今回対応 / URLField検証は必要 |
+| Should Fix | 座標境界値テスト不足 | 今回対応 / 地理座標は根幹機能 |
+| Should Fix | 無効ステータス値テスト不足 | 今回対応 / choices検証 |
+| Nice to Have | phone境界値テスト | 任意 |
+| Nice to Have | インデックス存在確認テスト | 任意 |
+
+### レビュー結果への対応
+
+#### 即時対応
+- 境界値テスト追加（name, website, 座標, status）→ 完了
+
+#### 次回タスクで対応
+- #TECH-006 Categoryモデル定数化（Should Fix 2件）→ TASKS.mdに追加済み
+
+---
+
+## 追加実装（2026-02-09）
+
+### 境界値テスト追加
+レビュー指摘を受けて以下のテストを追加:
+- `test_name_max_length_boundary`: 255文字で正常保存
+- `test_name_exceeds_max_length`: 256文字でDataError
+- `test_website_valid_url`: 有効URL保存
+- `test_website_invalid_url`: 無効URLでValidationError
+- `test_point_longitude_boundary`: 経度-180〜180
+- `test_point_latitude_boundary`: 緯度-90〜90
+- `test_status_invalid_choice`: 無効ステータスでValidationError
+
+### テスト結果
+```
+35 passed, 2 skipped（全体: 76 passed, 2 skipped）
+```
