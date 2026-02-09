@@ -205,11 +205,45 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 - 自動化時の一貫性
 
 **13. コミット前チェック**
-- コミット前に `git status` で未コミットファイルを確認する
-- 特に `.claude/settings.local.json` は変更があれば別コミットでpush
-- 意図しないファイルの取り残しを防ぐ
 
-**チェック対象:**
+コミット前に以下のチェックを**必ず**実行する。pre-commitがホスト環境にインストールされていない場合があるため、Dockerコンテナ上で手動確認する。
+
+**必須チェックコマンド（バックエンド変更時）:**
+```bash
+# 1. Black フォーマットチェック
+docker compose exec backend black --check .
+
+# 2. flake8 Lintチェック
+docker compose exec backend flake8 .
+
+# 3. isort インポート順チェック
+docker compose exec backend isort --check-only .
+
+# 4. テスト実行
+docker compose exec backend pytest
+
+# 5. マイグレーション適用確認（モデル変更時）
+docker compose exec backend python manage.py migrate
+```
+
+**必須チェックコマンド（フロントエンド変更時）:**
+```bash
+# 1. ESLint チェック
+docker compose exec frontend npm run lint
+
+# 2. TypeScript 型チェック
+docker compose exec frontend npm run type-check
+
+# 3. テスト実行
+docker compose exec frontend npm test
+```
+
+**⚠️ 重要:**
+- 上記チェックがすべてパスしてからコミットする
+- CI失敗の多くはこのチェック漏れが原因
+- pre-commitに依存せず、手動で確認する習慣をつける
+
+**ファイル確認:**
 | ファイル | 対応 |
 |----------|------|
 | `.claude/settings.local.json` | 変更あれば別コミット |
