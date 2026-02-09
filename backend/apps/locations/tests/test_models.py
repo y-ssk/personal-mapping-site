@@ -266,7 +266,6 @@ class TestLocationModel:
 
     def test_location_set_null_category(self, location, root_category):
         """カテゴリ削除時にLocationのcategoryがNULLになる。"""
-        location_id = location.id
         root_category.delete()
         location.refresh_from_db()
         assert location.category is None
