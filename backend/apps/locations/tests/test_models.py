@@ -247,9 +247,7 @@ class TestLocationModel:
 
     def test_location_ordering(self, user, tokyo_point):
         """Locationがcreated_atの降順でソートされる。"""
-        loc1 = Location.objects.create(
-            user=user, name="場所1", point=tokyo_point
-        )
+        loc1 = Location.objects.create(user=user, name="場所1", point=tokyo_point)
         loc2 = Location.objects.create(
             user=user,
             name="場所2",

@@ -189,7 +189,5 @@ class Location(TimestampedModel):
             一覧取得時はN+1問題を避けるため、
             Service層でannotate(average_rating=Avg('visits__rating'))を使用すること。
         """
-        ratings = self.visits.exclude(rating__isnull=True).values_list(
-            "rating", flat=True
-        )
+        ratings = self.visits.exclude(rating__isnull=True).values_list("rating", flat=True)
         return sum(ratings) / len(ratings) if ratings else None
