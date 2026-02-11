@@ -11,7 +11,7 @@
 |---------|----------|--------|
 | フェーズ0: ドキュメント整備 | 10/17 | 58% |
 | Claude Code Skills | 8/8 | 100% |
-| 技術的負債 | 0/5 | 0% |
+| 技術的負債 | 0/6 | 0% |
 | フェーズ1: 環境構築 | 1/5 | 20% |
 | フェーズ2: 認証システム | 0/3 | 0% |
 | フェーズ3: コア機能（Location） | 0/7 | 0% |
@@ -142,7 +142,7 @@
   - [ ] 全スキーマ定義完成
   - [ ] バリデーション通過
 
-### ✅ #D009 依存パッケージ定義
+### 🔄 #D009 依存パッケージ定義
 - **優先度:** 最高
 - **見積:** 0.5h
 - **依存:** #D001
@@ -400,7 +400,7 @@
 
 ---
 
-## 技術的負債 [0/5]
+## 技術的負債 [0/6]
 
 レビューで「次回対応」と判断された項目のタスク化。
 
@@ -483,6 +483,19 @@
   - [ ] SPEC.md § 9.7 E2Eテスト戦略追加
   - [ ] SPEC.md § 9.8 セキュリティテスト方針追加
   - [ ] 対象ユースケースの優先度付け
+
+### ⬜ #TECH-006 Categoryモデル定数化
+- **優先度:** 低
+- **見積:** 0.5h
+- **発生元:** #009（Locationモデル実装）
+- **ブランチ:** refactor/category-constants
+- **内容:**
+  - Categoryモデルのmax_lengthをCategoryConstants参照に変更
+  - SlugFieldのmax_lengthを明示的に定数化
+- **チェックリスト:**
+  - [ ] models.py: name max_length → CategoryConstants.NAME_MAX_LENGTH
+  - [ ] models.py: icon max_length → CategoryConstants.ICON_MAX_LENGTH
+  - [ ] models.py: slug max_length → CategoryConstants.SLUG_MAX_LENGTH
 
 ---
 
@@ -625,7 +638,7 @@
 
 ## フェーズ3: コア機能（Location） [0/7]
 
-### ⬜ #009 Locationモデル実装
+### 🔄 #009 Locationモデル実装
 - **優先度:** 最高
 - **見積:** 3h
 - **依存:** #002, #003

@@ -204,12 +204,44 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 - ベースブランチ指定漏れの防止
 - 自動化時の一貫性
 
-**13. コミット前チェック**
-- コミット前に `git status` で未コミットファイルを確認する
-- 特に `.claude/settings.local.json` は変更があれば別コミットでpush
-- 意図しないファイルの取り残しを防ぐ
+**13. コミット前チェック（pre-commit）**
 
-**チェック対象:**
+pre-commitを使用してコミット前にlint/formatを自動チェックする。
+
+**初回セットアップ（必須）:**
+```bash
+# pre-commitのインストール（ホスト環境）
+pip install pre-commit
+
+# フックのインストール（リポジトリごとに1回）
+pre-commit install
+```
+
+**動作:**
+- `git commit`実行時に自動でlint/formatチェックが走る
+- チェックに失敗するとコミットが中止される
+- 自動修正された場合は再度`git add`してコミット
+
+**pre-commitでチェックされる内容:**
+| ツール | 対象 | 内容 |
+|--------|------|------|
+| Black | backend/*.py | Pythonフォーマット |
+| flake8 | backend/*.py | Python lint |
+| isort | backend/*.py | インポート順 |
+| ESLint | frontend/*.ts(x) | TypeScript lint |
+| Prettier | frontend/* | フォーマット |
+
+**追加で手動確認が必要な項目:**
+```bash
+# テスト実行（pre-commitには含まれない）
+docker compose exec backend pytest
+docker compose exec frontend npm test
+
+# マイグレーション適用確認（モデル変更時）
+docker compose exec backend python manage.py migrate
+```
+
+**ファイル確認:**
 | ファイル | 対応 |
 |----------|------|
 | `.claude/settings.local.json` | 変更あれば別コミット |
@@ -315,7 +347,21 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 #### 改善提案
 | 重要度 | 内容 | 対応方針 |
 |--------|------|----------|
-| 高/中/低 | ... | ... |
+| 高/中/低 | ... | やること / 根拠・理由・懸念 |
+
+**対応方針の記載ルール:**
+対応方針には以下の情報を必ず併記すること：
+- **やること**: 具体的なアクション（例: 「定数ファイルに移動」「テスト追加」）
+- **根拠・理由**: なぜその対応が必要か（例: 「CLAUDE.md §6 マジックナンバー禁止」）
+- **懸念**: 対応しない場合のリスク（例: 「保守性低下」「仕様変更時に修正漏れ」）
+
+```markdown
+# ✅ 良い例
+| 中 | max_length=50がハードコード | 定数化する / CLAUDE.md §6準拠、変更時に追跡困難になる |
+
+# ❌ 悪い例
+| 中 | max_length=50がハードコード | 対応する |
+```
 
 ### 実装レビュー（code-reviewer）
 **総合評価:** 承認 / 条件付き承認 / 要修正
@@ -323,7 +369,7 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
 #### 指摘事項
 | 重要度 | 内容 | 場所 | 対応方針 |
 |--------|------|------|----------|
-| Blocker/Should Fix/Nice to Have | ... | ... | ... |
+| Blocker/Should Fix/Nice to Have | ... | ... | やること / 根拠・理由・懸念 |
 
 ### レビュー結果への対応
 #### 即時対応
@@ -365,7 +411,17 @@ gh pr create --draft --title "..."  # ベースブランチ指定漏れのリス
     │      └─ 次回対応でOK → TASKS.mdにタスク追加（必須）
     │
     └─ Nice to Have → 任意（タスク化推奨）
+
+    ↓（対応完了後）
+
+    /design-review実行確認 → ユーザーに確認
 ```
+
+**設計レビュードキュメント作成:**
+- 実装後レビュー完了後、ユーザーに`/design-review`実行の要否を確認する
+- 確認メッセージ例: 「`/design-review`で設計レビューの詳細ドキュメントを作成しますか？(y/N)」
+- 作成する場合: `docs/local/<id>_design_review.md`に詳細解説を出力
+- 作成しない場合: LOG.mdへの記録のみで完了
 
 **Should Fixの対応判断基準:**
 

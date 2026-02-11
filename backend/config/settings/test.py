@@ -2,17 +2,23 @@
 テスト環境用Django設定。
 """
 
+import dj_database_url
+from decouple import config
+
 from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
-# テスト用データベース - SQLite（高速化のため）
-# PostGISが必要なテストはlocal.pyを使用
+# テスト用データベース - PostGIS対応
+# LocationモデルがPointFieldを使用するため、PostGISが必要
+# CI環境: DATABASE_URL環境変数を使用
+# ローカルDocker環境: デフォルトのDB接続を使用
+DATABASE_URL = config(
+    "DATABASE_URL", default="postgresql://postgres:postgres@db:5432/personal_mapping_test"
+)
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-    }
+    "default": dj_database_url.parse(DATABASE_URL, engine="django.contrib.gis.db.backends.postgis")
 }
 
 # パスワードハッシュ化の高速化

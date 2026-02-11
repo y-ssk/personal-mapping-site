@@ -15,11 +15,13 @@ WSL上で実行するか、Claude Code上で実行するかを明確に区別し
 [2.5] 実装前設計レビュー → Claude Code ★実装タスクのみ
 [3] Claude Code実行    → Claude Code
 [4] 変更レビュー       → WSL（対話形式）
-[5] コミット&Push      → WSL または Claude Code
-[6] Test Plan実行      → Claude Code ★PR作成前に必須
-[7] Draft PR作成       → WSL または Claude Code
-[8] TASKS.md更新       → Claude Code
-[9] ログ記録           → Claude Code
+[5] コミット前チェック → Claude Code ★必須
+[6] コミット&Push      → WSL または Claude Code
+[7] CI結果確認         → Claude Code ★必須
+[8] Test Plan実行      → Claude Code ★PR作成前に必須
+[9] Draft PR作成       → WSL または Claude Code
+[10] TASKS.md更新      → Claude Code
+[11] ログ記録          → Claude Code
 ```
 
 ---
@@ -151,7 +153,55 @@ Claude Codeで以下を入力:
 
 ---
 
-### Step 5: コミット & Push
+### Step 5: コミット前チェック（pre-commit）
+
+**実行環境:** ホスト環境
+
+**⚠️ 重要:** pre-commitを使用してコミット前にlint/formatを自動チェックする。
+
+**初回セットアップ（必須）:**
+```bash
+# pre-commitのインストール（ホスト環境で1回のみ）
+pip install pre-commit
+
+# フックのインストール（リポジトリごとに1回）
+pre-commit install
+```
+
+**動作:**
+- `git commit`実行時に自動でlint/formatチェックが走る
+- チェックに失敗するとコミットが中止される
+- 自動修正された場合は再度`git add`してコミット
+
+**pre-commitでチェックされる内容:**
+| ツール | 対象 | 内容 |
+|--------|------|------|
+| Black | backend/*.py | Pythonフォーマット |
+| flake8 | backend/*.py | Python lint |
+| isort | backend/*.py | インポート順 |
+| ESLint | frontend/*.ts(x) | TypeScript lint |
+| Prettier | frontend/* | フォーマット |
+
+**追加で手動確認が必要な項目（pre-commitには含まれない）:**
+```bash
+# テスト実行
+docker compose exec backend pytest
+docker compose exec frontend npm test
+
+# マイグレーション適用確認（モデル変更時）
+docker compose exec backend python manage.py migrate
+
+# TypeScript 型チェック
+docker compose exec frontend npm run type-check
+```
+
+**チェックに失敗した場合:**
+- pre-commitが自動修正した場合: `git add .` して再コミット
+- 手動修正が必要な場合: エラー内容を確認して修正後、再コミット
+
+---
+
+### Step 6: コミット & Push
 
 **実行環境:** WSL または Claude Code
 
@@ -167,15 +217,44 @@ Claude Codeで以下を入力:
 ```
 
 **実行内容:**
-1. pre-commit実行（インストール済みの場合）
-2. Conventional Commitメッセージ生成
-3. `git add .`
-4. `git commit`
-5. `git push origin <branch>`
+1. Conventional Commitメッセージ生成
+2. `git add .`
+3. `git commit`
+4. `git push origin <branch>`
+
+**注意:** Step 5のチェックが完了していることを確認してからコミットする。
 
 ---
 
-### Step 6: Test Plan実行
+### Step 7: CI結果確認
+
+**実行環境:** Claude Code
+
+**⚠️ 重要:** pushした後、PRを作成する前にCIが通過していることを確認する。
+
+**確認コマンド:**
+```bash
+# 最新のCI実行結果を確認
+gh run list --limit 1
+
+# CI実行中の場合は待機
+gh run watch
+
+# 詳細を確認
+gh run view <run-id> --json conclusion,status
+```
+
+**CIが失敗した場合:**
+1. `gh run view <run-id> --log-failed` でエラー内容を確認
+2. エラー原因を特定
+3. 修正してコミット＆プッシュ
+4. 再度CI結果を確認
+
+**CI通過後にPR作成に進む。**
+
+---
+
+### Step 8: Test Plan実行（旧Step 6）
 
 **実行環境:** Claude Code
 
@@ -208,7 +287,7 @@ ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
 
 ---
 
-### Step 7: Draft PR作成
+### Step 9: Draft PR作成（旧Step 7）
 
 **実行環境:** WSL または Claude Code
 
@@ -246,7 +325,7 @@ ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
 
 ---
 
-### Step 8: TASKS.md更新
+### Step 10: TASKS.md更新（旧Step 8）
 
 **実行環境:** Claude Code
 
@@ -263,7 +342,7 @@ ls -la docs/setup/LOCAL_SETUP.md docs/setup/RENDER_DEPLOYMENT.md
 
 ---
 
-### Step 9: ログ記録
+### Step 11: ログ記録（旧Step 9）
 
 **実行環境:** Claude Code
 

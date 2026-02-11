@@ -1,11 +1,16 @@
 """
 locationsアプリのデータモデル。
 
-SPEC.md § 3.3.2に基づくCategoryモデルを定義。
+SPEC.md § 3.3.2 Categoryモデル、§ 3.3.3 Locationモデルを定義。
 """
 
+from django.conf import settings
+from django.contrib.gis.db import models as gis_models
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
+
+from apps.locations.constants import LocationConstants
+from core.models import TimestampedModel
 
 
 class Category(MPTTModel):
@@ -67,3 +72,122 @@ class Category(MPTTModel):
         """
         ancestors = self.get_ancestors(include_self=True)
         return " / ".join([cat.name for cat in ancestors])
+
+
+class Location(TimestampedModel):
+    """
+    場所（ブックマーク）。
+
+    ユーザーが保存した場所を管理する。PostGISを使用して地理空間データを格納。
+
+    Attributes:
+        user: この場所を所有するユーザー。
+        name: 場所の名前（例: 'スターバックス 渋谷店'）。
+        point: 地理座標（PostGIS PointField、WGS84座標系）。
+        address: 住所（オプション）。
+        category: 場所のカテゴリ（外部キー）。
+        tags: タグのリスト（JSONField）。
+        status: ステータス（'行きたい' or '興味なし'）。
+        notes: メモ（オプション）。
+        website: WebサイトURL（オプション）。
+        phone: 電話番号（オプション）。
+
+    Example:
+        >>> from django.contrib.gis.geos import Point
+        >>> location = Location.objects.create(
+        ...     user=user,
+        ...     name='東京タワー',
+        ...     point=Point(139.7454, 35.6586, srid=4326),
+        ...     category=Category.objects.get(slug='tourism'),
+        ...     status='want_to_visit'
+        ... )
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="locations",
+        verbose_name="ユーザー",
+    )
+    name = models.CharField(
+        max_length=LocationConstants.NAME_MAX_LENGTH,
+        verbose_name="場所名",
+    )
+
+    # 地理空間（PostGIS）
+    point = gis_models.PointField(
+        srid=LocationConstants.POINT_SRID,
+        verbose_name="座標",
+    )
+    address = models.TextField(blank=True, verbose_name="住所")
+
+    # 分類
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="locations",
+        verbose_name="カテゴリ",
+    )
+    tags = models.JSONField(default=list, blank=True, verbose_name="タグ")
+
+    # ステータス
+    status = models.CharField(
+        max_length=LocationConstants.STATUS_MAX_LENGTH,
+        choices=LocationConstants.STATUS_CHOICES,
+        null=True,
+        blank=True,
+        verbose_name="ステータス",
+    )
+
+    # メタデータ
+    notes = models.TextField(blank=True, verbose_name="メモ")
+    website = models.URLField(blank=True, verbose_name="Webサイト")
+    phone = models.CharField(
+        max_length=LocationConstants.PHONE_MAX_LENGTH,
+        blank=True,
+        verbose_name="電話番号",
+    )
+
+    class Meta:
+        db_table = "locations"
+        verbose_name = "場所"
+        verbose_name_plural = "場所"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "category"]),
+            models.Index(fields=["user", "status"]),
+        ]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def visit_count(self):
+        """
+        訪問回数を取得。
+
+        Returns:
+            int: この場所への訪問回数。
+
+        Note:
+            一覧取得時はN+1問題を避けるため、
+            Service層でannotate(visit_count=Count('visits'))を使用すること。
+        """
+        return self.visits.count()
+
+    @property
+    def average_rating(self):
+        """
+        平均評価を取得。
+
+        Returns:
+            float | None: 平均評価（1-5）。評価がない場合はNone。
+
+        Note:
+            一覧取得時はN+1問題を避けるため、
+            Service層でannotate(average_rating=Avg('visits__rating'))を使用すること。
+        """
+        ratings = self.visits.exclude(rating__isnull=True).values_list("rating", flat=True)
+        return sum(ratings) / len(ratings) if ratings else None
