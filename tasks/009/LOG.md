@@ -204,13 +204,13 @@ Locationモデル実装前の設計レビュー。SPEC.md § 3.3.3準拠確認�
 
 ### 発見した仕組みの問題
 
-1. **pre-commitに依存したワークフロー**
-   - `.pre-commit-config.yaml`は存在するが、ホスト環境にpre-commitがインストールされていない
-   - pre-commitフックに依存すると、インストールされていない環境で品質チェックがスキップされる
+1. **pre-commitがインストールされていなかった**
+   - `.pre-commit-config.yaml`は存在するが、`pip install pre-commit && pre-commit install`が実行されていなかった
+   - 初回セットアップ手順がドキュメント化されていなかった
 
 2. **コミット前チェック手順の不足**
    - CLAUDE.md「13. コミット前チェック」は`git status`確認のみ
-   - lint/format/migration確認の具体的なコマンドがなかった
+   - pre-commitの初回セットアップ手順がなかった
 
 3. **CI結果確認ステップの欠如**
    - ワークフローにpush後のCI結果確認ステップがなかった
@@ -218,18 +218,28 @@ Locationモデル実装前の設計レビュー。SPEC.md § 3.3.3準拠確認�
 
 ### 対策として実施した変更
 
-1. **CLAUDE.md「13. コミット前チェック」を拡充**
-   - Dockerコンテナ上での具体的なチェックコマンドを追加
-   - バックエンド: black, flake8, isort, pytest, migrate
-   - フロントエンド: eslint, type-check, test
+1. **pre-commitをインストール**
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
 
-2. **WORKFLOW.mdにステップ追加**
-   - Step 5: コミット前チェック（新規）
+2. **CLAUDE.md「13. コミット前チェック」を改訂**
+   - pre-commitの初回セットアップ手順を追加
+   - pre-commitでチェックされる内容を明記
+   - pre-commitに含まれない追加確認項目（テスト、マイグレーション等）を明記
+
+3. **WORKFLOW.md Step 5を改訂**
+   - 「手動確認」から「pre-commit使用」に変更
+   - 初回セットアップ手順を追加
+   - pre-commitでチェックされる内容と追加確認項目を分離
+
+4. **WORKFLOW.mdにCI結果確認ステップ追加**
    - Step 7: CI結果確認（新規）
    - 全体フローを9ステップから11ステップに拡張
 
 ### 今後の教訓
 
-- pre-commitに依存せず、手動でのチェックを習慣化する
-- コミット前に必ずDockerコンテナ上でlint/test/migrationを確認する
+- pre-commitを正しくインストールして活用する
+- 初回セットアップ手順をドキュメント化する
 - push後はCI結果を確認してからPRを作成する

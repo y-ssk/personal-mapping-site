@@ -153,45 +153,51 @@ Claude Codeで以下を入力:
 
 ---
 
-### Step 5: コミット前チェック
+### Step 5: コミット前チェック（pre-commit）
 
-**実行環境:** Claude Code
+**実行環境:** ホスト環境
 
-**⚠️ 重要:** コミット前に以下のチェックを**必ず**実行する。pre-commitがホスト環境にインストールされていない場合があるため、Dockerコンテナ上で手動確認する。
+**⚠️ 重要:** pre-commitを使用してコミット前にlint/formatを自動チェックする。
 
-**バックエンド変更時:**
+**初回セットアップ（必須）:**
 ```bash
-# 1. Black フォーマットチェック
-docker compose exec backend black --check .
+# pre-commitのインストール（ホスト環境で1回のみ）
+pip install pre-commit
 
-# 2. flake8 Lintチェック
-docker compose exec backend flake8 .
-
-# 3. isort インポート順チェック
-docker compose exec backend isort --check-only .
-
-# 4. テスト実行
-docker compose exec backend pytest
-
-# 5. マイグレーション適用確認（モデル変更時）
-docker compose exec backend python manage.py migrate
+# フックのインストール（リポジトリごとに1回）
+pre-commit install
 ```
 
-**フロントエンド変更時:**
+**動作:**
+- `git commit`実行時に自動でlint/formatチェックが走る
+- チェックに失敗するとコミットが中止される
+- 自動修正された場合は再度`git add`してコミット
+
+**pre-commitでチェックされる内容:**
+| ツール | 対象 | 内容 |
+|--------|------|------|
+| Black | backend/*.py | Pythonフォーマット |
+| flake8 | backend/*.py | Python lint |
+| isort | backend/*.py | インポート順 |
+| ESLint | frontend/*.ts(x) | TypeScript lint |
+| Prettier | frontend/* | フォーマット |
+
+**追加で手動確認が必要な項目（pre-commitには含まれない）:**
 ```bash
-# 1. ESLint チェック
-docker compose exec frontend npm run lint
-
-# 2. TypeScript 型チェック
-docker compose exec frontend npm run type-check
-
-# 3. テスト実行
+# テスト実行
+docker compose exec backend pytest
 docker compose exec frontend npm test
+
+# マイグレーション適用確認（モデル変更時）
+docker compose exec backend python manage.py migrate
+
+# TypeScript 型チェック
+docker compose exec frontend npm run type-check
 ```
 
 **チェックに失敗した場合:**
-- フォーマット修正: `docker compose exec backend black .`
-- エラー修正後、再度チェックを実行
+- pre-commitが自動修正した場合: `git add .` して再コミット
+- 手動修正が必要な場合: エラー内容を確認して修正後、再コミット
 
 ---
 
