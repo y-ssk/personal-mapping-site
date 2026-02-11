@@ -411,7 +411,17 @@ docker compose exec backend python manage.py migrate
     │      └─ 次回対応でOK → TASKS.mdにタスク追加（必須）
     │
     └─ Nice to Have → 任意（タスク化推奨）
+
+    ↓（対応完了後）
+
+    /design-review実行確認 → ユーザーに確認
 ```
+
+**設計レビュードキュメント作成:**
+- 実装後レビュー完了後、ユーザーに`/design-review`実行の要否を確認する
+- 確認メッセージ例: 「`/design-review`で設計レビューの詳細ドキュメントを作成しますか？(y/N)」
+- 作成する場合: `docs/local/<id>_design_review.md`に詳細解説を出力
+- 作成しない場合: LOG.mdへの記録のみで完了
 
 **Should Fixの対応判断基準:**
 
