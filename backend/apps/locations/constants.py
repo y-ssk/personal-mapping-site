@@ -42,3 +42,4 @@ class LocationMessages:
     NOT_FOUND = "指定された場所が見つかりません"
     PERMISSION_DENIED = "この場所を編集する権限がありません"
     INVALID_POINT = "無効な座標が指定されました"
+    INVALID_STATUS = "ステータスは{valid_statuses}のいずれかである必要があります"

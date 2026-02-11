@@ -14,6 +14,8 @@ urlpatterns = [
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     # 認証（SPEC.md § 4.2 準拠）
     path("api/v1/auth/", include("apps.users.urls")),
+    # 場所（SPEC.md § 4.3 準拠）
+    path("api/v1/locations/", include("apps.locations.urls")),
 ]
 
 # デバッグツールバー（デバッグモード時のみ）
