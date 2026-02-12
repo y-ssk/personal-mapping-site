@@ -110,7 +110,7 @@ Open Questions: [Any remaining uncertainties]
 ```
 Decision: LocationServiceにfind_nearbyメソッドを実装、PostGISのdistance_lteを使用
 Reason: SPEC.md 4.3.1で指定された地理空間検索要件に準拠
-Referenced Docs: 
+Referenced Docs:
   - SPEC.md 4.3.1 近傍検索仕様
   - CLAUDE.md Service層パターン
   - TASKS.md D007 実装要件

@@ -54,7 +54,7 @@ docker-compose exec backend python manage.py createsuperuser
 # Django管理画面: http://localhost:8000/admin/
 ```
 
-詳細な環境構築手順: **[docs/setup/LOCAL_SETUP.md](docs/setup/LOCAL_SETUP.md)**（作成予定）
+詳細な環境構築手順: **[docs/setup/LOCAL_SETUP.md](docs/setup/LOCAL_SETUP.md)**
 
 ---
 
@@ -65,15 +65,18 @@ docker-compose exec backend python manage.py createsuperuser
 | ドキュメント | 目的 | いつ読む？ |
 |------------|------|-----------|
 | **[SPEC.md](SPEC.md)** | 技術仕様書（63KB） | 実装前に必ず読む |
-| **[CLAUDE.md](CLAUDE.md)** | 開発ガイド（17KB） | コード書く前に読む |
+| **[CLAUDE.md](CLAUDE.md)** | 開発ガイド（20KB） | コード書く前に読む |
 | **[docs/WORKFLOW.md](docs/WORKFLOW.md)** | タスク実行フロー | タスク実行時（必読） |
-| **[docs/AGENTS.md](docs/AGENTS.md)** | CI/CD・自動化戦略 | スクリプト詳細確認時 |
-| **[docs/TASKS.md](docs/TASKS.md)** | タスク管理（全46タスク） | タスク選択時 |
+| **[docs/AGENTS.md](docs/AGENTS.md)** | エージェント・自動化戦略 | Sub Agent詳細確認時 |
+| **[docs/TASKS.md](docs/TASKS.md)** | タスク管理（全56タスク） | タスク選択時 |
 
 ### その他ドキュメント
 
 - **[docs/api/openapi.yml](docs/api/openapi.yml)** - OpenAPI 3.0仕様
-- **docs/setup/** - セットアップガイド（今後作成）
+- **[docs/setup/LOCAL_SETUP.md](docs/setup/LOCAL_SETUP.md)** - ローカル環境構築
+- **[docs/setup/RENDER_DEPLOYMENT.md](docs/setup/RENDER_DEPLOYMENT.md)** - Renderデプロイ手順
+- **[docs/setup/RAILWAY_MIGRATION.md](docs/setup/RAILWAY_MIGRATION.md)** - Railway移行手順
+- **[docs/SKILL.md](docs/SKILL.md)** - スキル管理ドキュメント
 
 ---
 
@@ -101,7 +104,8 @@ docker-compose exec backend python manage.py createsuperuser
 
 ### インフラ・開発
 - **開発環境:** Docker + Docker Compose
-- **CI/CD:** GitHub Actions + pre-commit
+- **CI/CD:** GitHub Actions
+- **コミット前チェック:** pre-commit（Black, flake8, isort, ESLint, Prettier）
 - **MVP:** Render無料枠（$0/月）
 - **本番:** Railway Hobby（$5/月）
 
@@ -137,15 +141,17 @@ docker-compose exec backend python manage.py createsuperuser
 
 ## 📊 開発進捗
 
-**全体:** 5/46タスク完了（11%）
+**全体:** 19/56タスク完了（34%）
 
 | フェーズ | 進捗 | 状態 |
 |---------|-----|------|
-| フェーズ0: ドキュメント整備 | 5/17 | 進行中 |
-| フェーズ1: 環境構築 | 0/5 | ⬜ 未着手 |
+| フェーズ0: ドキュメント整備 | 10/17 | 🔄 進行中 |
+| Claude Code Skills | 8/8 | ✅ 完了 |
+| 技術的負債 | 0/6 | ⬜ 未着手 |
+| フェーズ1: 環境構築 | 1/5 | 🔄 進行中 |
 | フェーズ2: 認証システム | 0/3 | ⬜ 未着手 |
-| フェーズ3: コア機能（Location） | 0/7 | ⬜ 未着手 |
-| フェーズ4: 訪問記録（Visit） | 0/4 | ⬜ 未着手 |
+| フェーズ3: コア機能（Location） | 0/9 | ⬜ 未着手 |
+| フェーズ4: 訪問記録（Visit） | 0/3 | ⬜ 未着手 |
 | フェーズ5: 旅行計画（Trip） | 0/6 | ⬜ 未着手 |
 | フェーズ6: ダッシュボード | 0/3 | ⬜ 未着手 |
 | フェーズ7: 共有機能 | 0/1 | ⬜ 未着手 |
@@ -156,51 +162,52 @@ docker-compose exec backend python manage.py createsuperuser
 
 ## 🤝 開発ワークフロー
 
-### Claude Codeでタスクを実行する
+### Claude Codeスキルでタスクを実行する
 
 **詳細ガイド: [docs/WORKFLOW.md](docs/WORKFLOW.md)**
 
 ```
-[WSL/Claude Code] タスク準備
-    ./scripts/claude/setup_task.sh <task-id>
+[Claude Code] タスク実行
+    /task <id>
          |
          v
-[WSL/Claude Code] プロンプト生成
-    ./scripts/claude/run_task.sh <task-id>
+[Claude Code] 設計レビュー（自動）
+    senior-architect-reviewer による SPEC/CLAUDE 準拠確認
          |
          v
 [Claude Code] 実装
-    > tasks/<task-id>/claude_prompt.md を読んでタスクを実行
+    implementation-engineer または手動実装
          |
          v
-[WSL] 変更レビュー（対話形式）
-    ./scripts/claude/review_changes.sh <task-id>
+[Claude Code] 実装後レビュー（自動）
+    code-reviewer + qa-test-engineer
          |
          v
-[WSL/Claude Code] コミット & Push
-    ./scripts/claude/commit_and_push.sh <task-id>
+[Claude Code] 変更レビュー
+    /review
          |
          v
-[WSL/Claude Code] Draft PR作成
-    ./scripts/claude/create_draft_pr.sh <task-id>
+[Claude Code] PR作成
+    /pr <id>
          |
          v
-[Claude Code] TASKS.md更新 & ログ記録
-    > docs/TASKS.mdを更新、docs/tasks/<task-id>.log を作成
+[Claude Code] ログ記録
+    /log <id>
 ```
 
-### クイックスタート（Claude Code中心）
+### 利用可能なスキル
 
-```
-Claude Codeで以下を実行:
-
-1. > ./scripts/claude/setup_task.sh D006 を実行
-2. > tasks/D006/claude_prompt.md を読んでタスクを実行
-3. （実装完了後）
-4. > 変更をコミットしてpush
-5. > Draft PRを作成
-6. > docs/TASKS.mdを更新、docs/tasks/D006.log を作成
-```
+| コマンド | 説明 |
+|----------|------|
+| `/task <id>` | タスク実行 |
+| `/spec <section>` | SPEC.md参照 |
+| `/guide [keyword]` | CLAUDE.md参照 |
+| `/progress` | 進捗サマリー |
+| `/review` | 変更レビュー |
+| `/pr <id>` | PR作成 |
+| `/log <id>` | ログ記録 |
+| `/checklist <id>` | チェックリスト管理 |
+| `/design-review <id>` | 設計レビュー詳細 |
 
 ### 仕様駆動開発（SDD）
 
@@ -215,14 +222,16 @@ Claude Codeで以下を実行:
 - 仕様に厳密に従う
 - テストを必ず作成
 - 不明点は質問する
+- 設計レビューを受ける
 
 **❌ してはいけないこと:**
 - 仕様にない機能の追加
 - 勝手な改善や最適化
 - アーキテクチャの変更
 - 仕様を読まずに実装
+- **暫定対応（プレースホルダー実装）**
 
-詳細: **[SPEC.md（冒頭の重要原則）](SPEC.md)**
+詳細: **[SPEC.md（冒頭の重要原則）](SPEC.md)** | **[CLAUDE.md](CLAUDE.md)**
 
 ---
 
@@ -376,4 +385,4 @@ MIT License
 
 ---
 
-**最終更新:** 2025年1月23日
+**最終更新:** 2026年2月12日

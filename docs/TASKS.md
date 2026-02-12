@@ -1,7 +1,7 @@
 # Personal Mapping Site - タスク管理
 
-**最終更新:** 2025-01-29
-**全体進捗:** 19/55タスク完了 (35%)
+**最終更新:** 2026-02-12
+**全体進捗:** 19/56タスク完了 (34%)
 
 ---
 
@@ -14,8 +14,8 @@
 | 技術的負債 | 0/6 | 0% |
 | フェーズ1: 環境構築 | 1/5 | 20% |
 | フェーズ2: 認証システム | 0/3 | 0% |
-| フェーズ3: コア機能（Location） | 0/7 | 0% |
-| フェーズ4: 訪問記録（Visit） | 0/4 | 0% |
+| フェーズ3: コア機能（Location） | 0/9 | 0% |
+| フェーズ4: 訪問記録（Visit） | 0/3 | 0% |
 | フェーズ5: 旅行計画（Trip） | 0/6 | 0% |
 | フェーズ6: ダッシュボード | 0/3 | 0% |
 | フェーズ7: 共有機能 | 0/1 | 0% |
@@ -158,7 +158,7 @@
   - [ ] バージョン固定
   - [ ] インストール確認
 
-### ✅ #D010 LOCAL_SETUP.md作成
+### 🔄 #D010 LOCAL_SETUP.md作成
 - **優先度:** 中
 - **見積:** 1h
 - **トリガー:** 環境構築完了後
@@ -636,7 +636,7 @@
 
 ---
 
-## フェーズ3: コア機能（Location） [0/7]
+## フェーズ3: コア機能（Location） [0/9]
 
 ### 🔄 #009 Locationモデル実装
 - **優先度:** 最高
@@ -655,7 +655,7 @@
   - `backend/apps/locations/models.py`（Location）
   - マイグレーションファイル
 
-### ⬜ #010 Location CRUD API
+### 🔄 #010 Location CRUD API
 - **優先度:** 最高
 - **見積:** 4h
 - **依存:** #009
@@ -674,10 +674,41 @@
   - `backend/apps/locations/views.py`
   - `backend/apps/locations/urls.py`
 
+### ⬜ #016 Visitモデル実装 ⚠️ 先行実施
+- **優先度:** 最高（タスク順序変更: Location暫定実装解消のため先行）
+- **見積:** 2h
+- **依存:** #009
+- **ブランチ:** feature/visit-model
+- **SPEC参照:** SPEC.md § 3.3.4
+- **チェックリスト:**
+  - [ ] Visitモデル作成
+  - [ ] Rating バリデーション
+  - [ ] 管理画面設定
+  - [ ] マイグレーション
+  - [ ] テスト作成
+- **成果物:**
+  - `backend/apps/visits/models.py`
+
+### ⬜ #010-A Location暫定実装解消
+- **優先度:** 最高
+- **見積:** 1h
+- **依存:** #016
+- **ブランチ:** feature/location-visit-integration
+- **内容:** #010で暫定実装した visit_count/average_rating を本実装に変更
+- **チェックリスト:**
+  - [ ] services.py: _annotate_visit_stats を Count/Avg に変更
+  - [ ] models.py: プロパティを本実装に変更
+  - [ ] filters.py: visited_at ソート追加（オプション）
+  - [ ] 既存テスト更新
+  - [ ] 新規テスト追加（Visit連携）
+- **成果物:**
+  - `backend/apps/locations/services.py`（更新）
+  - `backend/apps/locations/models.py`（更新）
+
 ### ⬜ #011 近傍検索API
 - **優先度:** 最高
 - **見積:** 3h
-- **依存:** #010
+- **依存:** #010, #010-A
 - **ブランチ:** feature/nearby-search
 - **SPEC参照:** SPEC.md § 4.3.1（nearby/）
 - **チェックリスト:**
@@ -762,22 +793,9 @@
 
 ---
 
-## フェーズ4: 訪問記録（Visit） [0/4]
+## フェーズ4: 訪問記録（Visit） [0/3]
 
-### ⬜ #016 Visitモデル実装
-- **優先度:** 高
-- **見積:** 2h
-- **依存:** #009
-- **ブランチ:** feature/visit-model
-- **SPEC参照:** SPEC.md § 3.3.4
-- **チェックリスト:**
-  - [ ] Visitモデル作成
-  - [ ] Rating バリデーション
-  - [ ] 管理画面設定
-  - [ ] マイグレーション
-  - [ ] テスト作成
-- **成果物:**
-  - `backend/apps/visits/models.py`
+> **Note:** #016 Visitモデル実装は、暫定実装解消のためフェーズ3に移動しました。
 
 ### ⬜ #017 Visit CRUD API
 - **優先度:** 高
