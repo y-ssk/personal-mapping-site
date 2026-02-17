@@ -57,6 +57,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.users",
     "apps.locations",
+    "apps.trips",  # NOTE: 暫定実装 - #019, #020で本実装
+    "apps.visits",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
