@@ -1,7 +1,7 @@
 # Personal Mapping Site - タスク管理
 
-**最終更新:** 2026-02-12
-**全体進捗:** 19/56タスク完了 (34%)
+**最終更新:** 2026-02-18
+**全体進捗:** 22/56タスク完了 (39%)
 
 ---
 
@@ -14,7 +14,7 @@
 | 技術的負債 | 0/6 | 0% |
 | フェーズ1: 環境構築 | 1/5 | 20% |
 | フェーズ2: 認証システム | 0/3 | 0% |
-| フェーズ3: コア機能（Location） | 0/9 | 0% |
+| フェーズ3: コア機能（Location） | 3/9 | 33% |
 | フェーズ4: 訪問記録（Visit） | 0/3 | 0% |
 | フェーズ5: 旅行計画（Trip） | 0/6 | 0% |
 | フェーズ6: ダッシュボード | 0/3 | 0% |
@@ -703,20 +703,24 @@
 - **成果物:**
   - `backend/apps/locations/models.py`（更新）
 
-### ⬜ #011 近傍検索API
+### ✅ #011 近傍検索API
 - **優先度:** 最高
 - **見積:** 3h
 - **依存:** #010, #010-A
-- **ブランチ:** feature/nearby-search
+- **ブランチ:** feature/visit-model（#016と統合）
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/23
+- **完了日:** 2026-02-18
 - **SPEC参照:** SPEC.md § 4.3.1（nearby/）
 - **チェックリスト:**
-  - [ ] LocationService.find_nearby()実装
-  - [ ] nearby/エンドポイント実装
-  - [ ] PostGISクエリ実装
-  - [ ] フィルタリング実装
-  - [ ] テスト作成
-  - [ ] OpenAPI更新
+  - [x] LocationService.find_nearby()実装
+  - [x] nearby/エンドポイント実装
+  - [x] PostGISクエリ実装
+  - [x] フィルタリング実装
+  - [x] テスト作成（26件追加）
+  - [ ] OpenAPI更新（別タスクで対応）
 - **成果物:**
+  - `backend/apps/locations/constants.py`（更新）
+  - `backend/apps/locations/serializers.py`（更新）
   - `backend/apps/locations/services.py`（更新）
   - `backend/apps/locations/views.py`（更新）
 
