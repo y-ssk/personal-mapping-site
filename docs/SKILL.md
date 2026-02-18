@@ -25,6 +25,7 @@ Claude Code Skillsは、スラッシュコマンド（`/command`）で呼び出�
 | `/checklist <id>` | チェックリスト管理 | `.claude/commands/checklist.md` | `check_item.sh` |
 | `/review` | 変更レビュー | `.claude/commands/review.md` | `review_changes.sh` |
 | `/pr <id>` | PR作成 | `.claude/commands/pr.md` | `create_draft_pr.sh` |
+| `/pr-feedback <pr>` | PRレビュー対応 | `.claude/commands/pr-feedback.md` | - |
 
 ---
 
@@ -62,6 +63,47 @@ run_task.sh実行（プロンプト生成）
 - ドキュメント系タスク（D001-D017）
 - バグ修正タスク（F001等）
 - 技術的負債タスク（TECH-XXX）
+
+---
+
+### /pr-feedback - PRレビュー対応
+
+PRのレビューコメントを取得し、対応を支援します。
+
+**フロー:**
+```
+/pr-feedback <pr-number>
+    ↓
+コメント取得・一覧表示
+    ↓
+各コメントに対応選択（E/F/D/S）
+    ↓
+エージェントが対応案を提示 → ユーザー承認
+    ↓
+返信投稿 + コード修正（必要な場合）
+    ↓
+LOG.md更新
+```
+
+**対応種別:**
+| 選択 | 意味 |
+|------|------|
+| E | 説明（Explain）- コメントで返信 |
+| F | 修正（Fix）- コード修正を実施 |
+| D | 保留（Defer）- 次回タスク化 |
+| S | スキップ - 対応不要 |
+
+**判断者の表記:**
+| 判断者 | 表記 |
+|--------|------|
+| ユーザー手動 | `@{username}（手動判断）` |
+| エージェント承認済み | `Claude Code（@{username} 承認）` |
+| エージェント自動 | `Claude Code（自動判断: {根拠}）` |
+
+**責務明確化:**
+- コメント返信には必ず判断者と根拠を明記
+- 原因（なぜ指摘が発生したか）と対応内容を明記
+- 自動判断はSPEC/CLAUDE準拠の明確なケースのみ
 
 ---
 

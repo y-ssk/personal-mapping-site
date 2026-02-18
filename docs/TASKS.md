@@ -674,35 +674,33 @@
   - `backend/apps/locations/views.py`
   - `backend/apps/locations/urls.py`
 
-### 🔄 #016 Visitモデル実装 ⚠️ 先行実施
+### ✅ #016 Visitモデル実装 ⚠️ 先行実施
 - **優先度:** 最高（タスク順序変更: Location暫定実装解消のため先行）
 - **見積:** 2h
 - **依存:** #009
 - **ブランチ:** feature/visit-model
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/23
 - **SPEC参照:** SPEC.md § 3.3.4
 - **チェックリスト:**
-  - [ ] Visitモデル作成
-  - [ ] Rating バリデーション
-  - [ ] 管理画面設定
-  - [ ] マイグレーション
-  - [ ] テスト作成
+  - [x] Visitモデル作成
+  - [x] Rating バリデーション
+  - [x] 管理画面設定
+  - [x] マイグレーション
+  - [x] テスト作成（24件、96%カバレッジ）
 - **成果物:**
   - `backend/apps/visits/models.py`
+  - `backend/apps/trips/models.py`（スケルトン）
 
-### ⬜ #010-A Location暫定実装解消
+### ✅ #010-A Location暫定実装解消
 - **優先度:** 最高
 - **見積:** 1h
 - **依存:** #016
-- **ブランチ:** feature/location-visit-integration
+- **ブランチ:** feature/visit-model（#016と同時実施）
 - **内容:** #010で暫定実装した visit_count/average_rating を本実装に変更
 - **チェックリスト:**
-  - [ ] services.py: _annotate_visit_stats を Count/Avg に変更
-  - [ ] models.py: プロパティを本実装に変更
-  - [ ] filters.py: visited_at ソート追加（オプション）
-  - [ ] 既存テスト更新
-  - [ ] 新規テスト追加（Visit連携）
+  - [x] models.py: プロパティを本実装に変更
+  - [x] 既存テスト更新（スキップ解除）
 - **成果物:**
-  - `backend/apps/locations/services.py`（更新）
   - `backend/apps/locations/models.py`（更新）
 
 ### ⬜ #011 近傍検索API
