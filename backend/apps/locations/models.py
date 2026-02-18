@@ -173,14 +173,11 @@ class Location(TimestampedModel):
 
         Note:
             一覧取得時はN+1問題を避けるため、
-            Service層でannotate(visit_count=Count('visits'))を使用すること。
-            Visitモデル実装（#016）まではダミー値を返す。
+            Service層でannotate(_visit_count=Count('visits'))を使用すること。
         """
-        # NOTE: Visitモデル実装後（#016）に以下に変更:
-        # return self.visits.count()
         if hasattr(self, "_visit_count"):
             return self._visit_count
-        return 0
+        return self.visits.count()
 
     @property
     def average_rating(self):
@@ -192,12 +189,9 @@ class Location(TimestampedModel):
 
         Note:
             一覧取得時はN+1問題を避けるため、
-            Service層でannotate(average_rating=Avg('visits__rating'))を使用すること。
-            Visitモデル実装（#016）まではダミー値を返す。
+            Service層でannotate(_average_rating=Avg('visits__rating'))を使用すること。
         """
-        # NOTE: Visitモデル実装後（#016）に以下に変更:
-        # ratings = self.visits.exclude(rating__isnull=True).values_list("rating", flat=True)
-        # return sum(ratings) / len(ratings) if ratings else None
         if hasattr(self, "_average_rating"):
             return self._average_rating
-        return None
+        ratings = list(self.visits.exclude(rating__isnull=True).values_list("rating", flat=True))
+        return sum(ratings) / len(ratings) if ratings else None

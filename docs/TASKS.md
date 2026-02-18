@@ -223,7 +223,7 @@
 - **完了日:** 2025-01-26
 - **成果物:** `scripts/deploy/backup_database.sh`
 
-### ⬜ #D016 restore_database.sh作成
+### 🔄 #D016 restore_database.sh作成
 - **優先度:** 中
 - **見積:** 1h
 - **依存:** #D015
@@ -674,7 +674,7 @@
   - `backend/apps/locations/views.py`
   - `backend/apps/locations/urls.py`
 
-### ⬜ #016 Visitモデル実装 ⚠️ 先行実施
+### 🔄 #016 Visitモデル実装 ⚠️ 先行実施
 - **優先度:** 最高（タスク順序変更: Location暫定実装解消のため先行）
 - **見積:** 2h
 - **依存:** #009

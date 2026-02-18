@@ -235,12 +235,10 @@ class TestLocationModel:
         assert location.created_at is not None
         assert location.updated_at is not None
 
-    @pytest.mark.skip(reason="Visitモデル未実装（#016で実装予定）")
     def test_visit_count_no_visits(self, location):
         """訪問がない場合visit_countが0を返す。"""
         assert location.visit_count == 0
 
-    @pytest.mark.skip(reason="Visitモデル未実装（#016で実装予定）")
     def test_average_rating_no_visits(self, location):
         """訪問がない場合average_ratingがNoneを返す。"""
         assert location.average_rating is None
