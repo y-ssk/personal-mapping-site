@@ -707,8 +707,8 @@
 - **優先度:** 最高
 - **見積:** 3h
 - **依存:** #010, #010-A
-- **ブランチ:** feature/visit-model（#016と統合）
-- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/23
+- **ブランチ:** feature/nearby-search-and-workflow
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/24
 - **完了日:** 2026-02-18
 - **SPEC参照:** SPEC.md § 4.3.1（nearby/）
 - **チェックリスト:**

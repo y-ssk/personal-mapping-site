@@ -4,12 +4,12 @@
 
 | 項目 | 状態 |
 |------|------|
-| **PR** | #23 https://github.com/y-ssk/personal-mapping-site/pull/23 |
+| **PR** | #24 https://github.com/y-ssk/personal-mapping-site/pull/24 |
 | **状態** | 🔄 レビュー待ち |
 
 > **レビューコメント対応時:**
 > ```
-> /pr-feedback 23
+> /pr-feedback 24
 > ```
 
 ---
@@ -97,5 +97,5 @@ GET /api/v1/locations/nearby/ エンドポイントの実装
 
 ## 備考
 
-- #016 Visitモデル実装と同じPR（#23）に統合
-- PRレビュー対応スキル（/pr-feedback）も同PRに含む
+- PRレビュー対応スキル（/pr-feedback）も同PR（#24）に含む
+- #016 Visitモデル実装は別PR（#23、マージ済み）
