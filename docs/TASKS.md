@@ -717,7 +717,7 @@
   - [x] PostGISクエリ実装
   - [x] フィルタリング実装
   - [x] テスト作成（26件追加）
-  - [ ] OpenAPI更新（別タスクで対応）
+  - [x] OpenAPI更新（#D008で定義済み）
 - **成果物:**
   - `backend/apps/locations/constants.py`（更新）
   - `backend/apps/locations/serializers.py`（更新）
