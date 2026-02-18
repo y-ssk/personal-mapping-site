@@ -26,6 +26,10 @@ class LocationConstants:
     PHONE_MAX_LENGTH = 20
     POINT_SRID = 4326  # WGS84座標系
 
+    # 近傍検索の半径制限（km）
+    MAX_RADIUS_KM = 100
+    MIN_RADIUS_KM = 0.1
+
     # ステータス値
     STATUS_WANT_TO_VISIT = "want_to_visit"
     STATUS_NOT_INTERESTED = "not_interested"
@@ -43,3 +47,7 @@ class LocationMessages:
     PERMISSION_DENIED = "この場所を編集する権限がありません"
     INVALID_POINT = "無効な座標が指定されました"
     INVALID_STATUS = "ステータスは{valid_statuses}のいずれかである必要があります"
+    RADIUS_TOO_LARGE = "半径は{max_km}km以下にしてください"
+    RADIUS_TOO_SMALL = "半径は{min_km}km以上にしてください"
+    INVALID_COORDINATES = "無効な座標が指定されました（緯度: -90〜90、経度: -180〜180）"
+    MISSING_PARAMETER = "{param}は必須パラメータです"

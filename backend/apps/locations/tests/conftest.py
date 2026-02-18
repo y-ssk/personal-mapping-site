@@ -152,3 +152,66 @@ def multiple_locations(user: User, category: Category, category_restaurant: Cate
         ),
     ]
     return locations
+
+
+# ========================================
+# 近傍検索用フィクスチャ
+# ========================================
+@pytest.fixture
+def tokyo_center() -> Point:
+    """東京駅を中心点として返す。"""
+    return TOKYO_STATION
+
+
+@pytest.fixture
+def nearby_locations(
+    user: User, category: Category, category_restaurant: Category
+) -> list[Location]:
+    """
+    近傍検索テスト用に異なる距離に配置された場所を作成。
+
+    東京駅からの距離:
+    - 場所1: 約0.5km（東京駅すぐ近く）
+    - 場所2: 約2km（銀座方面）
+    - 場所3: 約5km（渋谷方面）
+    - 場所4: 約10km（新宿方面）
+    - 場所5: 約50km（横浜方面）
+    """
+    locations = [
+        Location.objects.create(
+            user=user,
+            name="東京駅近くカフェ",
+            point=Point(139.7700, 35.6830, srid=LocationConstants.POINT_SRID),
+            category=category,
+            tags=["wifi", "駅近"],
+        ),
+        Location.objects.create(
+            user=user,
+            name="銀座のレストラン",
+            point=Point(139.7650, 35.6710, srid=LocationConstants.POINT_SRID),
+            category=category_restaurant,
+            tags=["静か"],
+        ),
+        Location.objects.create(
+            user=user,
+            name="渋谷のカフェ",
+            point=Point(139.7016, 35.6580, srid=LocationConstants.POINT_SRID),
+            category=category,
+            tags=["wifi", "おしゃれ"],
+        ),
+        Location.objects.create(
+            user=user,
+            name="新宿のレストラン",
+            point=Point(139.7000, 35.6900, srid=LocationConstants.POINT_SRID),
+            category=category_restaurant,
+            tags=["にぎやか"],
+        ),
+        Location.objects.create(
+            user=user,
+            name="横浜のカフェ",
+            point=Point(139.6380, 35.4440, srid=LocationConstants.POINT_SRID),
+            category=category,
+            tags=["海が見える"],
+        ),
+    ]
+    return locations
