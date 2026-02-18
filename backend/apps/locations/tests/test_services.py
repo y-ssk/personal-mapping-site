@@ -7,6 +7,7 @@ CLAUDE.md Service層テストパターンに準拠。
 
 import pytest
 from django.contrib.gis.geos import Point
+from rest_framework.exceptions import ValidationError
 
 from apps.locations.constants import LocationConstants
 from apps.locations.models import Location
@@ -234,3 +235,140 @@ class TestLocationServiceDeleteLocation:
         service.delete_location(location)
 
         assert Location.objects.filter(id=other_user_location.id).exists()
+
+
+@pytest.mark.django_db
+class TestLocationServiceFindNearby:
+    """find_nearbyのテスト。"""
+
+    def test_returns_locations_within_radius(self, user, tokyo_center, nearby_locations):
+        """指定半径内の場所を返す。"""
+        service = LocationService()
+
+        # 3km以内を検索（東京駅近くと銀座のみ）
+        result = service.find_nearby(user, tokyo_center, radius_km=3.0)
+
+        assert result.count() == 2
+        names = [loc.name for loc in result]
+        assert "東京駅近くカフェ" in names
+        assert "銀座のレストラン" in names
+
+    def test_returns_locations_sorted_by_distance(self, user, tokyo_center, nearby_locations):
+        """距離順でソートされている。"""
+        service = LocationService()
+
+        result = service.find_nearby(user, tokyo_center, radius_km=10.0)
+
+        # 距離順にソートされているか確認
+        distances = [loc.distance.km for loc in result]
+        assert distances == sorted(distances)
+
+    def test_includes_distance_annotation(self, user, tokyo_center, nearby_locations):
+        """distanceがannotateされている。"""
+        service = LocationService()
+
+        result = service.find_nearby(user, tokyo_center, radius_km=5.0)
+        loc = result.first()
+
+        assert hasattr(loc, "distance")
+        assert loc.distance is not None
+        assert loc.distance.km > 0
+
+    def test_filters_by_category(self, user, tokyo_center, nearby_locations, category):
+        """カテゴリでフィルタできる。"""
+        service = LocationService()
+
+        # カフェカテゴリのみ（3件: 東京駅近く、渋谷、横浜）
+        result = service.find_nearby(user, tokyo_center, radius_km=100.0, category_id=category.id)
+
+        assert result.count() == 3
+        for loc in result:
+            assert loc.category_id == category.id
+
+    def test_filters_by_tags_or_condition(self, user, tokyo_center, nearby_locations):
+        """タグでフィルタできる（OR条件）。"""
+        service = LocationService()
+
+        # "wifi" タグを持つ場所（東京駅近く、渋谷）
+        result = service.find_nearby(user, tokyo_center, radius_km=100.0, tags=["wifi"])
+
+        assert result.count() >= 2
+        for loc in result:
+            assert "wifi" in loc.tags
+
+    def test_filters_by_multiple_tags(self, user, tokyo_center, nearby_locations):
+        """複数タグでフィルタできる（OR条件）。"""
+        service = LocationService()
+
+        # "wifi" または "静か" タグを持つ場所
+        result = service.find_nearby(user, tokyo_center, radius_km=100.0, tags=["wifi", "静か"])
+
+        # OR条件なので、どちらかのタグを持つ場所が含まれる
+        for loc in result:
+            assert "wifi" in loc.tags or "静か" in loc.tags
+
+    def test_excludes_other_users_locations(
+        self, user, tokyo_center, nearby_locations, other_user_location
+    ):
+        """他ユーザーの場所は含まれない。"""
+        service = LocationService()
+
+        result = service.find_nearby(user, tokyo_center, radius_km=100.0)
+
+        location_ids = [loc.id for loc in result]
+        assert other_user_location.id not in location_ids
+
+    def test_raises_error_for_radius_too_large(self, user, tokyo_center):
+        """半径が大きすぎる場合エラー。"""
+        service = LocationService()
+
+        with pytest.raises(ValidationError) as exc_info:
+            service.find_nearby(user, tokyo_center, radius_km=150.0)
+
+        assert "100km以下" in str(exc_info.value.detail)
+
+    def test_raises_error_for_radius_too_small(self, user, tokyo_center):
+        """半径が小さすぎる場合エラー。"""
+        service = LocationService()
+
+        with pytest.raises(ValidationError) as exc_info:
+            service.find_nearby(user, tokyo_center, radius_km=0.01)
+
+        assert "0.1km以上" in str(exc_info.value.detail)
+
+    def test_returns_empty_for_no_locations_in_radius(self, user, nearby_locations):
+        """半径内に場所がない場合は空のQuerySetを返す。"""
+        service = LocationService()
+        # 沖縄を中心点にする（近くに場所がない）
+        okinawa = Point(127.6809, 26.2124, srid=LocationConstants.POINT_SRID)
+
+        result = service.find_nearby(user, okinawa, radius_km=10.0)
+
+        assert result.count() == 0
+
+    def test_includes_visit_stats_annotations(self, user, tokyo_center, nearby_locations):
+        """visit_count, average_ratingがannotateされている。"""
+        service = LocationService()
+
+        result = service.find_nearby(user, tokyo_center, radius_km=5.0)
+        loc = result.first()
+
+        assert hasattr(loc, "visit_count")
+        assert hasattr(loc, "average_rating")
+
+    def test_combined_filters(self, user, tokyo_center, nearby_locations, category):
+        """カテゴリとタグの複合フィルタが動作する。"""
+        service = LocationService()
+
+        # カフェカテゴリかつwifiタグ
+        result = service.find_nearby(
+            user,
+            tokyo_center,
+            radius_km=100.0,
+            category_id=category.id,
+            tags=["wifi"],
+        )
+
+        for loc in result:
+            assert loc.category_id == category.id
+            assert "wifi" in loc.tags

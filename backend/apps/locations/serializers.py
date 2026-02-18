@@ -216,3 +216,41 @@ class LocationCreateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance: Location) -> dict:
         """作成・更新後のレスポンスはLocationSerializerを使用。"""
         return LocationSerializer(instance).data
+
+
+class LocationWithDistanceSerializer(LocationSerializer):
+    """
+    距離情報付き場所のシリアライザ。
+
+    近傍検索（nearby/）のレスポンスで使用。
+    LocationSerializerを継承し、distanceフィールドを追加。
+
+    Attributes:
+        distance: 検索中心点からの距離（km）。
+        （LocationSerializerの全フィールドを継承）
+
+    Example:
+        >>> serializer = LocationWithDistanceSerializer(location_with_distance)
+        >>> serializer.data['distance']
+        1.234
+    """
+
+    distance = serializers.SerializerMethodField()
+
+    class Meta(LocationSerializer.Meta):
+        fields = LocationSerializer.Meta.fields + ["distance"]
+
+    def get_distance(self, obj: Location) -> float | None:
+        """
+        距離をkm単位で取得。
+
+        Args:
+            obj: annotateされたLocationオブジェクト。
+
+        Returns:
+            距離（km）。annotateされていない場合はNone。
+        """
+        if hasattr(obj, "distance") and obj.distance is not None:
+            # GeoDjangoのDistanceオブジェクトから km を取得
+            return round(obj.distance.km, 3)
+        return None

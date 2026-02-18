@@ -5,11 +5,16 @@ CLAUDE.md Service層パターンに従い、ビジネスロジックをここに
 View層は薄く保ち、このService層に処理を委譲する。
 """
 
-from typing import Any
+from typing import Any, Optional
 
 from django.contrib.auth import get_user_model
-from django.db.models import FloatField, IntegerField, QuerySet, Value
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
+from django.db.models import Avg, Count, QuerySet
+from rest_framework.exceptions import ValidationError
 
+from apps.locations.constants import LocationConstants, LocationMessages
 from apps.locations.models import Location
 
 User = get_user_model()
@@ -32,9 +37,7 @@ class LocationService:
         """
         訪問統計をannotateする。
 
-        NOTE: Visitモデル実装後（#016）に以下に変更:
-        - _visit_count: Count("visits")
-        - _average_rating: Avg("visits__rating")
+        Visitモデル（#016）を使用して、訪問回数と平均評価を計算。
 
         Args:
             queryset: annotate対象のQuerySet。
@@ -43,8 +46,8 @@ class LocationService:
             _visit_count, _average_ratingがannotateされたQuerySet。
         """
         return queryset.annotate(
-            _visit_count=Value(0, output_field=IntegerField()),
-            _average_rating=Value(None, output_field=FloatField()),
+            _visit_count=Count("visits"),
+            _average_rating=Avg("visits__rating"),
         )
 
     def get_base_queryset(self, user: User) -> QuerySet[Location]:
@@ -157,3 +160,78 @@ class LocationService:
             >>> service.delete_location(location)
         """
         location.delete()
+
+    def find_nearby(
+        self,
+        user: User,
+        point: Point,
+        radius_km: float,
+        category_id: Optional[int] = None,
+        tags: Optional[list[str]] = None,
+    ) -> QuerySet[Location]:
+        """
+        PostGISを使用して指定半径内の場所を検索。
+
+        この関数はPostGISの距離演算子を使用して地理空間検索を実行。
+        結果は中心点からの距離順にソート。
+
+        Args:
+            user: 場所を所有するユーザー。
+            point: 検索の中心点（PostGIS Point、SRID 4326）。
+            radius_km: 検索半径（km）。最大は{MAX_RADIUS_KM}km。
+            category_id: 結果をフィルタするカテゴリID（任意）。
+            tags: 結果をフィルタするタグリスト（任意、OR条件）。
+
+        Returns:
+            'distance'フィールドがannotateされたLocationのQuerySet。
+            中心点からの近い順にソート済み。
+
+        Raises:
+            ValidationError: radius_kmが範囲外の場合。
+
+        Example:
+            >>> from django.contrib.gis.geos import Point
+            >>> center = Point(139.7671, 35.6812, srid=4326)
+            >>> service = LocationService()
+            >>> cafes = service.find_nearby(user, center, 5.0, category_id=1)
+            >>> for cafe in cafes[:5]:
+            ...     print(f"{{cafe.name}}: {{cafe.distance.km:.2f}}km")
+        """
+        # 半径バリデーション
+        if radius_km < LocationConstants.MIN_RADIUS_KM:
+            raise ValidationError(
+                LocationMessages.RADIUS_TOO_SMALL.format(min_km=LocationConstants.MIN_RADIUS_KM)
+            )
+        if radius_km > LocationConstants.MAX_RADIUS_KM:
+            raise ValidationError(
+                LocationMessages.RADIUS_TOO_LARGE.format(max_km=LocationConstants.MAX_RADIUS_KM)
+            )
+
+        # PostGIS距離クエリ
+        queryset = (
+            Location.objects.filter(
+                user=user,
+                point__distance_lte=(point, D(km=radius_km)),
+            )
+            .select_related("category")
+            .annotate(distance=Distance("point", point))
+            .order_by("distance")
+        )
+
+        # 訪問統計をannotate
+        queryset = self._annotate_visit_stats(queryset)
+
+        # カテゴリフィルタ
+        if category_id is not None:
+            queryset = queryset.filter(category_id=category_id)
+
+        # タグフィルタ（OR条件: 既存LocationFilterと一貫性を保つ）
+        if tags:
+            from django.db.models import Q
+
+            tag_query = Q()
+            for tag in tags:
+                tag_query |= Q(tags__contains=[tag])
+            queryset = queryset.filter(tag_query)
+
+        return queryset

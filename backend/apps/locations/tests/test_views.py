@@ -337,3 +337,139 @@ class TestLocationViewSetFilters:
         results = response.data["results"]
         # 最後に作成されたものが最初
         assert results[0]["name"] == "カフェC渋谷"
+
+
+@pytest.mark.django_db
+class TestLocationViewSetNearby:
+    """GET /api/v1/locations/nearby/ のテスト。"""
+
+    def test_nearby_returns_locations_within_radius(self, authenticated_client, nearby_locations):
+        """半径内の場所を返す。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 3.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        # 3km以内は東京駅近くと銀座
+        assert len(response.data) == 2
+
+    def test_nearby_includes_distance(self, authenticated_client, nearby_locations):
+        """距離が含まれる。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 5.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) > 0
+        assert "distance" in response.data[0]
+        assert response.data[0]["distance"] > 0
+
+    def test_nearby_sorted_by_distance(self, authenticated_client, nearby_locations):
+        """距離順にソートされている。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 100.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        distances = [loc["distance"] for loc in response.data]
+        assert distances == sorted(distances)
+
+    def test_nearby_filters_by_category(self, authenticated_client, nearby_locations, category):
+        """カテゴリでフィルタできる。"""
+        url = reverse("location-nearby")
+        params = {
+            "lat": 35.6812,
+            "lng": 139.7671,
+            "radius": 100.0,
+            "category": category.id,
+        }
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        for loc in response.data:
+            assert loc["category"]["id"] == category.id
+
+    def test_nearby_filters_by_tags(self, authenticated_client, nearby_locations):
+        """タグでフィルタできる。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 100.0, "tags": "wifi"}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        for loc in response.data:
+            assert "wifi" in loc["tags"]
+
+    def test_nearby_requires_lat(self, authenticated_client):
+        """latは必須。"""
+        url = reverse("location-nearby")
+        params = {"lng": 139.7671, "radius": 5.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "lat" in response.data
+
+    def test_nearby_requires_lng(self, authenticated_client):
+        """lngは必須。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "radius": 5.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "lng" in response.data
+
+    def test_nearby_requires_radius(self, authenticated_client):
+        """radiusは必須。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "radius" in response.data
+
+    def test_nearby_validates_radius_max(self, authenticated_client):
+        """半径の最大値をバリデーション。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 150.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_nearby_validates_coordinates(self, authenticated_client):
+        """座標範囲をバリデーション。"""
+        url = reverse("location-nearby")
+        params = {"lat": 999.0, "lng": 139.7671, "radius": 5.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_nearby_requires_authentication(self, api_client):
+        """認証が必要。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 5.0}
+
+        response = api_client.get(url, params)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_nearby_excludes_other_users_locations(
+        self, authenticated_client, nearby_locations, other_user_location
+    ):
+        """他ユーザーの場所は含まない。"""
+        url = reverse("location-nearby")
+        params = {"lat": 35.6812, "lng": 139.7671, "radius": 100.0}
+
+        response = authenticated_client.get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        location_ids = [loc["id"] for loc in response.data]
+        assert other_user_location.id not in location_ids
