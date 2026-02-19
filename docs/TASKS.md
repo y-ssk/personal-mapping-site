@@ -1,7 +1,7 @@
 # Personal Mapping Site - タスク管理
 
-**最終更新:** 2026-02-12
-**全体進捗:** 19/56タスク完了 (34%)
+**最終更新:** 2026-02-18
+**全体進捗:** 22/56タスク完了 (39%)
 
 ---
 
@@ -14,7 +14,7 @@
 | 技術的負債 | 0/6 | 0% |
 | フェーズ1: 環境構築 | 1/5 | 20% |
 | フェーズ2: 認証システム | 0/3 | 0% |
-| フェーズ3: コア機能（Location） | 0/9 | 0% |
+| フェーズ3: コア機能（Location） | 3/9 | 33% |
 | フェーズ4: 訪問記録（Visit） | 0/3 | 0% |
 | フェーズ5: 旅行計画（Trip） | 0/6 | 0% |
 | フェーズ6: ダッシュボード | 0/3 | 0% |
@@ -674,51 +674,53 @@
   - `backend/apps/locations/views.py`
   - `backend/apps/locations/urls.py`
 
-### 🔄 #016 Visitモデル実装 ⚠️ 先行実施
+### ✅ #016 Visitモデル実装 ⚠️ 先行実施
 - **優先度:** 最高（タスク順序変更: Location暫定実装解消のため先行）
 - **見積:** 2h
 - **依存:** #009
 - **ブランチ:** feature/visit-model
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/23
 - **SPEC参照:** SPEC.md § 3.3.4
 - **チェックリスト:**
-  - [ ] Visitモデル作成
-  - [ ] Rating バリデーション
-  - [ ] 管理画面設定
-  - [ ] マイグレーション
-  - [ ] テスト作成
+  - [x] Visitモデル作成
+  - [x] Rating バリデーション
+  - [x] 管理画面設定
+  - [x] マイグレーション
+  - [x] テスト作成（24件、96%カバレッジ）
 - **成果物:**
   - `backend/apps/visits/models.py`
+  - `backend/apps/trips/models.py`（スケルトン）
 
-### ⬜ #010-A Location暫定実装解消
+### ✅ #010-A Location暫定実装解消
 - **優先度:** 最高
 - **見積:** 1h
 - **依存:** #016
-- **ブランチ:** feature/location-visit-integration
+- **ブランチ:** feature/visit-model（#016と同時実施）
 - **内容:** #010で暫定実装した visit_count/average_rating を本実装に変更
 - **チェックリスト:**
-  - [ ] services.py: _annotate_visit_stats を Count/Avg に変更
-  - [ ] models.py: プロパティを本実装に変更
-  - [ ] filters.py: visited_at ソート追加（オプション）
-  - [ ] 既存テスト更新
-  - [ ] 新規テスト追加（Visit連携）
+  - [x] models.py: プロパティを本実装に変更
+  - [x] 既存テスト更新（スキップ解除）
 - **成果物:**
-  - `backend/apps/locations/services.py`（更新）
   - `backend/apps/locations/models.py`（更新）
 
-### ⬜ #011 近傍検索API
+### ✅ #011 近傍検索API
 - **優先度:** 最高
 - **見積:** 3h
 - **依存:** #010, #010-A
-- **ブランチ:** feature/nearby-search
+- **ブランチ:** feature/nearby-search-and-workflow
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/24
+- **完了日:** 2026-02-18
 - **SPEC参照:** SPEC.md § 4.3.1（nearby/）
 - **チェックリスト:**
-  - [ ] LocationService.find_nearby()実装
-  - [ ] nearby/エンドポイント実装
-  - [ ] PostGISクエリ実装
-  - [ ] フィルタリング実装
-  - [ ] テスト作成
-  - [ ] OpenAPI更新
+  - [x] LocationService.find_nearby()実装
+  - [x] nearby/エンドポイント実装
+  - [x] PostGISクエリ実装
+  - [x] フィルタリング実装
+  - [x] テスト作成（26件追加）
+  - [x] OpenAPI更新（#D008で定義済み）
 - **成果物:**
+  - `backend/apps/locations/constants.py`（更新）
+  - `backend/apps/locations/serializers.py`（更新）
   - `backend/apps/locations/services.py`（更新）
   - `backend/apps/locations/views.py`（更新）
 
