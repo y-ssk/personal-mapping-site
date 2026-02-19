@@ -63,11 +63,12 @@ gh pr view {pr} --json comments,reviews
 ### 5. コメント返信投稿
 
 ```bash
-# レビューコメントへの返信
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies \
-  -f body="返信内容"
+# レビューコメントへの返信（in_reply_toで元コメントIDを指定）
+gh api repos/{owner}/{repo}/pulls/{pr}/comments \
+  -f body="返信内容" \
+  -F in_reply_to={comment_id}
 
-# 一般コメント
+# 一般コメント（PR全体へのコメント）
 gh pr comment {pr} --body "返信内容"
 ```
 
