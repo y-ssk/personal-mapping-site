@@ -1,7 +1,8 @@
 """
 locationsアプリのフィルタ定義。
 
-SPEC.md § 4.1「django-filterによる柔軟なクエリ」に準拠。
+SPEC.md § 4.3.1「フィルタリング」に準拠。
+django-filterによる柔軟なクエリを実現。
 """
 
 from __future__ import annotations
@@ -9,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import django_filters
-from django.db.models import Q
+from django.db.models import Max, Q
 
 from apps.locations.constants import LocationConstants
 from apps.locations.models import Location
@@ -48,13 +49,31 @@ class LocationFilter(django_filters.FilterSet):
         fields=(
             ("created_at", "created_at"),
             ("name", "name"),
-            # visited_atは#016（Visitモデル実装）後に追加
+            ("latest_visited_at", "visited_at"),
         ),
     )
 
     class Meta:
         model = Location
         fields = ["category", "tags", "status", "search", "ordering"]
+
+    def filter_queryset(self, queryset: "QuerySet[Location]") -> "QuerySet[Location]":
+        """
+        フィルタ適用前にvisited_at用のannotateを追加。
+
+        OrderingFilterがvisited_atでソートする際に
+        latest_visited_atフィールドが必要なため、
+        フィルタ適用前にannotateする。
+
+        Args:
+            queryset: フィルタ対象のQuerySet。
+
+        Returns:
+            annotate済み・フィルタ済みのQuerySet。
+        """
+        # visited_at ソート用: 最新の訪問日をannotate（フィルタ適用前）
+        queryset = queryset.annotate(latest_visited_at=Max("visits__visited_at"))
+        return super().filter_queryset(queryset)
 
     def filter_tags(
         self, queryset: "QuerySet[Location]", name: str, value: str

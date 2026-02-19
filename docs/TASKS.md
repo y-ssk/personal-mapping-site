@@ -190,7 +190,7 @@
 - **ブランチ:** docs/render-deploy
 - **成果物:** `docs/setup/RENDER_DEPLOYMENT.md`
 
-### ✅ #D012 RAILWAY_MIGRATION.md作成
+### 🔄 #D012 RAILWAY_MIGRATION.md作成
 - **優先度:** 低
 - **見積:** 1h
 - **トリガー:** Render→Railway移行時
@@ -724,7 +724,7 @@
   - `backend/apps/locations/services.py`（更新）
   - `backend/apps/locations/views.py`（更新）
 
-### ⬜ #012 検索・フィルタ機能
+### 🔄 #012 検索・フィルタ機能
 - **優先度:** 高
 - **見積:** 3h
 - **依存:** #010
