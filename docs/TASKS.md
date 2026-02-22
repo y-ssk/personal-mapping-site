@@ -199,7 +199,7 @@
 - **完了日:** 2025-01-25
 - **成果物:** `docs/setup/RAILWAY_MIGRATION.md`
 
-### ✅ #D013 GOOGLE_MAPS_MIGRATION.md作成
+### 🔄 #D013 GOOGLE_MAPS_MIGRATION.md作成
 - **優先度:** 低
 - **見積:** 1h
 - **トリガー:** Leaflet→Google Maps移行時
@@ -744,7 +744,7 @@
   - `backend/apps/locations/filters.py`
   - `backend/apps/locations/tests/test_filters.py`
 
-### ⬜ #013 フロントエンド Location一覧
+### 🔄 #013 フロントエンド Location一覧
 - **優先度:** 最高
 - **見積:** 4h
 - **依存:** #010
