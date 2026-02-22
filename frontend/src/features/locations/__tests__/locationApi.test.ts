@@ -189,9 +189,7 @@ describe('createLocation', () => {
 
   it('400エラー時にバリデーションエラーを含める', async () => {
     const validationErrors = { name: ['名前は必須です'] };
-    vi.mocked(apiClient.post).mockRejectedValueOnce(
-      createAxiosError(400, validationErrors)
-    );
+    vi.mocked(apiClient.post).mockRejectedValueOnce(createAxiosError(400, validationErrors));
 
     try {
       await createLocation({
@@ -239,9 +237,7 @@ describe('findNearbyLocations', () => {
   });
 
   it('近傍の場所を取得してフロントエンド型に変換する', async () => {
-    const mockNearbyLocations = [
-      { ...mockApiLocation, distance: 1.5 },
-    ];
+    const mockNearbyLocations = [{ ...mockApiLocation, distance: 1.5 }];
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockNearbyLocations });
 
     const params = { lat: 35.6812, lng: 139.7671, radius: 5 };

@@ -78,10 +78,7 @@ function SelectFilter({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label
-        htmlFor={`filter-${item.key}`}
-        className="text-sm font-medium text-gray-700"
-      >
+      <label htmlFor={`filter-${item.key}`} className="text-sm font-medium text-gray-700">
         {item.label}
       </label>
       <select
@@ -118,10 +115,7 @@ function TextFilter({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label
-        htmlFor={`filter-${item.key}`}
-        className="text-sm font-medium text-gray-700"
-      >
+      <label htmlFor={`filter-${item.key}`} className="text-sm font-medium text-gray-700">
         {item.label}
       </label>
       <input
@@ -155,10 +149,7 @@ function TagsFilter({
 
   return (
     <div className="flex flex-col gap-1">
-      <label
-        htmlFor={`filter-${item.key}`}
-        className="text-sm font-medium text-gray-700"
-      >
+      <label htmlFor={`filter-${item.key}`} className="text-sm font-medium text-gray-700">
         {item.label}
       </label>
       <input
@@ -172,9 +163,7 @@ function TagsFilter({
         placeholder={item.placeholder ?? 'カンマ区切りで入力'}
         className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
       />
-      <span className="text-xs text-gray-500">
-        複数のタグはカンマで区切ってください
-      </span>
+      <span className="text-xs text-gray-500">複数のタグはカンマで区切ってください</span>
     </div>
   );
 }
@@ -252,9 +241,7 @@ export function FilterBar({
   }, [filters, onFilterChange, onClear]);
 
   // アクティブなフィルタ数をカウント
-  const activeFilterCount = Object.values(values).filter(
-    (v) => v !== undefined && v !== ''
-  ).length;
+  const activeFilterCount = Object.values(values).filter((v) => v !== undefined && v !== '').length;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">

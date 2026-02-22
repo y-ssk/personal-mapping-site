@@ -11,7 +11,12 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
 
 import * as locationApi from '../api/locationApi';
-import { useLocations, useLocation, useCreateLocation, useDeleteLocation } from '../hooks/useLocations';
+import {
+  useLocations,
+  useLocation,
+  useCreateLocation,
+  useDeleteLocation,
+} from '../hooks/useLocations';
 import type { Location, PaginatedResponse } from '../types/location';
 
 // locationApiをモック
@@ -28,11 +33,7 @@ function createWrapper() {
   });
 
   return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    );
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
   };
 }
 

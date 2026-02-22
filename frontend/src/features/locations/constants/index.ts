@@ -49,8 +49,7 @@ export const LOCATION_QUERY_KEYS = {
   /** 一覧クエリキー */
   lists: () => [...LOCATION_QUERY_KEYS.all, 'list'] as const,
   /** フィルタ付き一覧クエリキー */
-  list: (filters?: Record<string, unknown>) =>
-    [...LOCATION_QUERY_KEYS.lists(), filters] as const,
+  list: (filters?: Record<string, unknown>) => [...LOCATION_QUERY_KEYS.lists(), filters] as const,
   /** 詳細クエリキー */
   details: () => [...LOCATION_QUERY_KEYS.all, 'detail'] as const,
   /** 特定IDの詳細クエリキー */

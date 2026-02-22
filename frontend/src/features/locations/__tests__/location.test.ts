@@ -11,7 +11,12 @@ import {
   toLocationWithDistance,
   toPaginatedLocations,
 } from '../types/location';
-import type { ApiCategory, ApiLocation, ApiLocationWithDistance, ApiPaginatedResponse } from '../types/location';
+import type {
+  ApiCategory,
+  ApiLocation,
+  ApiLocationWithDistance,
+  ApiPaginatedResponse,
+} from '../types/location';
 
 // モックデータ
 const mockApiCategory: ApiCategory = {

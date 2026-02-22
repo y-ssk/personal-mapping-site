@@ -31,9 +31,7 @@ function EmptyState() {
   return (
     <div className="text-center py-12">
       <div className="text-gray-400 text-5xl mb-4">📍</div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
-        場所がありません
-      </h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">場所がありません</h3>
       <p className="text-gray-500">
         まだ場所が登録されていません。地図から場所を追加してみましょう。
       </p>
@@ -85,9 +83,11 @@ function Pagination({
         disabled={currentPage === 1}
         className={`
           px-3 py-2 rounded-md text-sm font-medium
-          ${currentPage === 1
-            ? 'text-gray-300 cursor-not-allowed'
-            : 'text-gray-700 hover:bg-gray-100'}
+          ${
+            currentPage === 1
+              ? 'text-gray-300 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+          }
         `}
         aria-label="前のページ"
       >
@@ -103,9 +103,7 @@ function Pagination({
           >
             1
           </button>
-          {visiblePages[0] > 2 && (
-            <span className="px-2 text-gray-400">...</span>
-          )}
+          {visiblePages[0] > 2 && <span className="px-2 text-gray-400">...</span>}
         </>
       )}
 
@@ -116,9 +114,7 @@ function Pagination({
           onClick={() => onPageChange(page)}
           className={`
             px-3 py-2 rounded-md text-sm font-medium
-            ${page === currentPage
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-700 hover:bg-gray-100'}
+            ${page === currentPage ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'}
           `}
           aria-current={page === currentPage ? 'page' : undefined}
         >
@@ -147,9 +143,11 @@ function Pagination({
         disabled={currentPage === totalPages}
         className={`
           px-3 py-2 rounded-md text-sm font-medium
-          ${currentPage === totalPages
-            ? 'text-gray-300 cursor-not-allowed'
-            : 'text-gray-700 hover:bg-gray-100'}
+          ${
+            currentPage === totalPages
+              ? 'text-gray-300 cursor-not-allowed'
+              : 'text-gray-700 hover:bg-gray-100'
+          }
         `}
         aria-label="次のページ"
       >
@@ -218,11 +216,7 @@ export function LocationList({
 
       {/* ページネーション */}
       {onPageChange && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
       )}
     </div>
   );

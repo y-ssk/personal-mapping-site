@@ -56,10 +56,7 @@ function RatingStars({ rating }: { rating: number | null }) {
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}
-        >
+        <span key={star} className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}>
           ★
         </span>
       ))}
@@ -81,12 +78,7 @@ function RatingStars({ rating }: { rating: number | null }) {
  * />
  * ```
  */
-export function LocationCard({
-  location,
-  onClick,
-  onEdit,
-  onDelete,
-}: LocationCardProps) {
+export function LocationCard({ location, onClick, onEdit, onDelete }: LocationCardProps) {
   const handleClick = () => {
     onClick?.(location);
   };
@@ -115,9 +107,7 @@ export function LocationCard({
     >
       {/* ヘッダー: 名前とステータス */}
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
-          {location.name}
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{location.name}</h3>
         <span
           className={`
             px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
@@ -138,19 +128,14 @@ export function LocationCard({
 
       {/* 住所 */}
       {location.address && (
-        <p className="text-sm text-gray-500 mb-2 line-clamp-1">
-          {location.address}
-        </p>
+        <p className="text-sm text-gray-500 mb-2 line-clamp-1">{location.address}</p>
       )}
 
       {/* タグ */}
       {location.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {location.tags.slice(0, LOCATION_UI.MAX_VISIBLE_TAGS).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded"
-            >
+            <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
               {tag}
             </span>
           ))}
@@ -166,9 +151,7 @@ export function LocationCard({
       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
         <RatingStars rating={location.averageRating} />
         <span className="text-sm text-gray-500">
-          {location.visitCount > 0
-            ? `${location.visitCount}回訪問`
-            : '未訪問'}
+          {location.visitCount > 0 ? `${location.visitCount}回訪問` : '未訪問'}
         </span>
       </div>
 
