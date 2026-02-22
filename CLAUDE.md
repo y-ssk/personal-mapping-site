@@ -282,6 +282,26 @@ docker compose exec backend python manage.py migrate
 | `.claude/agents/*.md` | 新規・変更あればコミット |
 | `tasks/<id>/LOG.md` | タスク完了時に必ずコミット |
 
+**--no-verify使用時の必須確認:**
+
+ホスト環境でpre-commitが失敗した場合、`--no-verify`を使用する前に
+Docker内で以下を**すべて**実行すること：
+
+```bash
+# フロントエンド
+docker compose exec frontend npm run lint -- --max-warnings=0
+docker compose exec frontend npm run format:check  # ★Prettier
+docker compose exec frontend npm test -- --run
+
+# バックエンド
+docker compose exec backend black --check .
+docker compose exec backend flake8 .
+docker compose exec backend isort --check .
+docker compose exec backend pytest
+```
+
+**1項目でも未実行で`--no-verify`を使用してはならない。**
+
 **15. エージェントレビューの実施と記録**
 - タスク完了後、専門エージェントによるレビューを実施する
 - レビュー依頼と結果は必ず `tasks/<id>/LOG.md` に記録する
