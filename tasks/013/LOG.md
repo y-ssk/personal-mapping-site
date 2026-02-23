@@ -260,3 +260,74 @@ GitHub Actions CIでPrettierチェック失敗（7ファイル）
 CLAUDE.mdに「--no-verify使用時の必須確認」ルールを追加:
 - `npm run lint` + `npm run format:check` + `npm test` をすべて実行必須
 - 1項目でも未実行で`--no-verify`使用禁止
+
+---
+
+## PRレビュー対応（2026-02-23）
+
+### レビューコメント一覧（@y-ssk）
+
+| # | 種別 | ファイル | 内容 | 対応 |
+|---|------|----------|------|------|
+| 1 | [imo] | locationApi.ts:1 | HTTPステータスコードがマジックナンバー | 修正 |
+| 2 | [Q] | FilterBar.tsx:10 | 共通コンポーネントの型定義配置 | 説明 |
+| 3 | [must] | FilterBar.tsx:260 | トグルをアイコンライブラリから使用 | 修正 |
+| 4 | [Q] | locationApi.ts:31 | エラークラスを同ファイルにまとめる理由 | 説明 |
+| 5 | [Q] | components/index.ts:1 | Barrel Fileの役割 | 説明 |
+| 6 | [Q] | LocationCard.tsx:37 | 色クラス関数をコンポーネント内に配置する理由 | 説明 |
+| 7 | [imo] | LocationCard.tsx:60 | ★記号べた書き | 修正 |
+| 8 | [imo] | LocationCard.tsx:86 | handleEdit/handleDeleteの抽象度 | 説明 |
+| 9 | [imo] | LocationList.tsx:33 | 📍絵文字べた書き | 修正 |
+| 10 | [Q] | LocationList.tsx:36 | UIメッセージべた書き | 修正 |
+| 11 | [Q] | location.ts:160 | ソート順の`-`の意味 | 説明 |
+
+### 修正内容
+
+#### アイコンライブラリ導入（lucide-react）
+
+**調査・選定:**
+
+| ライブラリ | バンドルサイズ | Tree-shaking | 互換性 |
+|-----------|--------------|--------------|--------|
+| lucide-react | 軽量 | ✅ | shadcn/ui標準 |
+| Heroicons | 中程度 | ✅ | Tailwind公式 |
+| react-icons | 大きい | △ | 複数ソース包含 |
+
+**選定:** `lucide-react`
+- Tree-shakingでバンドルサイズ最適化
+- shadcn/ui統合の将来性
+- シンプルなAPI
+
+**修正箇所:**
+- FilterBar.tsx: `ChevronDown`, `ChevronRight`
+- LocationCard.tsx: `Star`
+- LocationList.tsx: `MapPin`
+
+#### HTTP_STATUS定数化
+
+**追加定数（lib/constants/api.ts）:**
+```typescript
+BAD_REQUEST: 400,
+```
+
+**修正（locationApi.ts）:**
+```typescript
+// Before
+if (error.response?.status === 401) {
+
+// After
+if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+```
+
+#### UIテキスト定数分離
+
+**命名議論:**
+- 元: `LOCATION_LABELS`（汎用的すぎる）
+- 分離:
+  - `LOCATION_STATUS_LABELS`: ステータス表示
+  - `LOCATION_SORT_LABELS`: ソート表示
+  - `LOCATION_EMPTY_STATE`: 空状態テキスト
+
+### コミット
+
+- `ea535d2`: refactor(frontend): PRレビュー対応 - アイコン・定数改善
