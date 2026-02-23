@@ -207,7 +207,7 @@
 - **完了日:** 2025-01-25
 - **成果物:** `docs/setup/GOOGLE_MAPS_MIGRATION.md`
 
-### ✅ #D014 migrate_to_railway.sh作成
+### 🔄 #D014 migrate_to_railway.sh作成
 - **優先度:** 低
 - **見積:** 2h
 - **依存:** #D012
@@ -497,6 +497,31 @@
   - [ ] models.py: icon max_length → CategoryConstants.ICON_MAX_LENGTH
   - [ ] models.py: slug max_length → CategoryConstants.SLUG_MAX_LENGTH
 
+### ⬜ #TECH-007 地図テストフィクスチャ共通化
+- **優先度:** 低
+- **見積:** 0.5h
+- **発生元:** #014（地図表示実装）
+- **ブランチ:** refactor/map-test-fixtures
+- **内容:**
+  - テスト用mockLocationの重複定義を解消
+  - 共通フィクスチャファイルを作成
+- **チェックリスト:**
+  - [ ] test/fixtures/location.ts 作成
+  - [ ] leaflet.test.ts のmockLocation共通化
+  - [ ] MapView.test.tsx のmockLocation共通化
+
+### ⬜ #TECH-008 MapServiceインターフェースsetView追加
+- **優先度:** 低
+- **見積:** 0.5h
+- **発生元:** #014（地図表示実装）
+- **ブランチ:** refactor/map-interface-setview
+- **内容:**
+  - MapServiceインターフェースにsetViewメソッドを追加
+  - インターフェース整合性の確保
+- **チェックリスト:**
+  - [ ] interface.ts: setViewメソッド追加
+  - [ ] 型定義の整合性確認
+
 ---
 
 ## フェーズ1: 環境構築 [1/5]
@@ -760,12 +785,12 @@
 - **成果物:**
   - `frontend/src/features/locations/`
 
-### ⬜ #014 地図表示（Leaflet）
+### 🔄 #014 地図表示（Leaflet）
 - **優先度:** 最高
 - **見積:** 4h
 - **依存:** #013
 - **ブランチ:** feature/map-display
-- **SPEC参照:** SPEC.md § 5.1.5
+- **SPEC参照:** SPEC.md § 5.4
 - **チェックリスト:**
   - [ ] Leaflet統合
   - [ ] MapServiceインターフェース作成
