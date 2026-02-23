@@ -808,6 +808,26 @@ frontend/
 - `components/`は2つ以上の機能で使う場合のみ配置
 - グローバル状態は認証と地図中心のみ
 
+**共通コンポーネントの型定義:**
+
+共通コンポーネント（`src/components/`）の型定義は、コンポーネントと同一ファイルに配置する。
+
+| 配置場所 | 型定義の場所 | 理由 |
+|----------|-------------|------|
+| `components/` | 同一ファイル | 再利用範囲が限定的、凝集度重視 |
+| `features/` | `types/`に分離 | ドメインロジックを含み型の再利用性が高い |
+
+```typescript
+// ✅ 共通コンポーネント: 同一ファイルに型定義
+// src/components/FilterBar/FilterBar.tsx
+export interface FilterItem { ... }
+export function FilterBar({ ... }: FilterBarProps) { ... }
+
+// ✅ feature: types/に分離
+// src/features/locations/types/location.ts
+export interface Location { ... }
+```
+
 ### バックエンド
 
 ```
