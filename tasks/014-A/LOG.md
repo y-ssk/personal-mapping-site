@@ -4,7 +4,7 @@
 - **タスクID:** #014-A
 - **ブランチ:** feature/panel-layout
 - **開始日:** 2026-02-23
-- **ステータス:** 作業中
+- **ステータス:** 完了
 - **PR:** #27（#014, #014-A, #014-Bをまとめて含める）
 
 ---
@@ -212,3 +212,26 @@ docker compose exec frontend npm install react-resizable-panels
 - [x] App.tsx ルーティング更新
 - [x] MainLayout を Outlet対応に変更
 - [x] テスト作成
+
+---
+
+## 完了（2026-02-24）
+
+### コミット
+- `0d5c6c7` feat(frontend): PanelLayout基盤 + DashboardPage #014-A
+
+### マージ
+- `feature/panel-layout` → `feature/map-display`
+- PR #27に含める
+
+### 成果物
+| ファイル | 説明 |
+|----------|------|
+| `frontend/src/components/PanelLayout/` | リサイズ可能パネルレイアウト |
+| `frontend/src/components/MainLayout/` | Outlet対応メインレイアウト |
+| `frontend/src/features/dashboard/` | ダッシュボードページ |
+| `frontend/src/lib/constants/ui.ts` | 共通UI定数 |
+| テストファイル3件 | PanelLayout, MainLayout, DashboardPage |
+
+### 次タスク
+- #014-B: 地図-リスト連動 + レスポンシブ
