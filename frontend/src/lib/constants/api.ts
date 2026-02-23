@@ -10,6 +10,8 @@ export const HTTP_STATUS = {
   OK: 200,
   /** 作成成功 */
   CREATED: 201,
+  /** バリデーションエラー */
+  BAD_REQUEST: 400,
   /** 認証エラー */
   UNAUTHORIZED: 401,
   /** 権限エラー */

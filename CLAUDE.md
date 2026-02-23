@@ -282,6 +282,26 @@ docker compose exec backend python manage.py migrate
 | `.claude/agents/*.md` | 新規・変更あればコミット |
 | `tasks/<id>/LOG.md` | タスク完了時に必ずコミット |
 
+**--no-verify使用時の必須確認:**
+
+ホスト環境でpre-commitが失敗した場合、`--no-verify`を使用する前に
+Docker内で以下を**すべて**実行すること：
+
+```bash
+# フロントエンド
+docker compose exec frontend npm run lint -- --max-warnings=0
+docker compose exec frontend npm run format:check  # ★Prettier
+docker compose exec frontend npm test -- --run
+
+# バックエンド
+docker compose exec backend black --check .
+docker compose exec backend flake8 .
+docker compose exec backend isort --check .
+docker compose exec backend pytest
+```
+
+**1項目でも未実行で`--no-verify`を使用してはならない。**
+
 **15. エージェントレビューの実施と記録**
 - タスク完了後、専門エージェントによるレビューを実施する
 - レビュー依頼と結果は必ず `tasks/<id>/LOG.md` に記録する
@@ -465,6 +485,33 @@ PRにレビューコメントが付いた場合、以下のフローで対応す
    - [項目]: [選択内容] で実装（理由: [他選択肢が不可な理由]）
    ```
 
+**エビデンス収集要件:**
+
+設計レビューでは、以下のエビデンスを**必ず**収集・提示する。
+単に引用するだけでなく、「何を読み取ったか」「どう解釈したか」を含めて記録する。
+
+1. **OpenAPI仕様の該当スキーマ**
+   - 対象エンティティの型定義を引用（行番号付き）
+   - フィールドの分類・構造をまとめる（表や図で整理）
+   - フロントエンドで変換が必要なフィールドを特定
+   - ネストした型の依存関係を把握
+
+2. **SPEC.md/CLAUDE.mdの該当セクション**
+   - ディレクトリ構造、アーキテクチャの引用
+   - 判断に関わるルールの引用
+   - 引用した内容の解釈（なぜこのルールが適用されるか）
+
+3. **既存コードのパターン**
+   - 類似機能の実装を読み、パターンを抽出
+   - ファイルパスと該当行番号を明示
+   - 具体的なコード例を引用
+   - パターンの構造を図式化（ディレクトリツリー、処理フロー等）
+
+4. **解釈と設計判断への繋がり**
+   - 収集したエビデンスから何がわかったか
+   - それが設計判断にどう影響するか
+   - 採用する選択肢の根拠
+
 **スキップ条件:**
 - ドキュメント系タスク（D001-D017）は設計レビュー不要
 - 軽微なバグ修正（F001等）は任意
@@ -481,6 +528,26 @@ PRにレビューコメントが付いた場合、以下のフローで対応す
 
    ```markdown
    ## 設計レビュー（YYYY-MM-DD）
+
+   ### 収集エビデンス
+
+   #### 1. [対象エンティティ]の構造（[ソース]:[行番号]）
+
+   [フィールドの分類・構造を表や図で整理]
+
+   **解釈:**
+   - [何を読み取ったか]
+   - [設計判断への影響]
+
+   #### 2. 既存パターン: [類似機能]
+
+   ```
+   [ディレクトリ構造やパターンの図式化]
+   ```
+
+   **解釈:**
+   - [パターンの特徴]
+   - [今回の実装への適用方針]
 
    ### 判断した項目
    | 項目 | 選択 | 理由 |
@@ -740,6 +807,26 @@ frontend/
 - `features/`内のモジュールは互いに直接importしない
 - `components/`は2つ以上の機能で使う場合のみ配置
 - グローバル状態は認証と地図中心のみ
+
+**共通コンポーネントの型定義:**
+
+共通コンポーネント（`src/components/`）の型定義は、コンポーネントと同一ファイルに配置する。
+
+| 配置場所 | 型定義の場所 | 理由 |
+|----------|-------------|------|
+| `components/` | 同一ファイル | 再利用範囲が限定的、凝集度重視 |
+| `features/` | `types/`に分離 | ドメインロジックを含み型の再利用性が高い |
+
+```typescript
+// ✅ 共通コンポーネント: 同一ファイルに型定義
+// src/components/FilterBar/FilterBar.tsx
+export interface FilterItem { ... }
+export function FilterBar({ ... }: FilterBarProps) { ... }
+
+// ✅ feature: types/に分離
+// src/features/locations/types/location.ts
+export interface Location { ... }
+```
 
 ### バックエンド
 
