@@ -7,6 +7,7 @@
 import axios from 'axios';
 
 import { apiClient } from '@/lib/api/client';
+import { HTTP_STATUS } from '@/lib/constants';
 
 import { LOCATION_ENDPOINTS, LOCATION_MESSAGES } from '../constants';
 import type {
@@ -63,8 +64,8 @@ export async function listLocations(
     return toPaginatedLocations(response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.FETCH_FAILED);
@@ -84,11 +85,11 @@ export async function getLocation(id: number): Promise<Location> {
     return toLocation(response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, 404);
+      if (error.response?.status === HTTP_STATUS.NOT_FOUND) {
+        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.FETCH_FAILED);
@@ -108,15 +109,15 @@ export async function createLocation(data: LocationCreateRequest): Promise<Locat
     return toLocation(response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === HTTP_STATUS.BAD_REQUEST) {
         throw new LocationApiError(
           LOCATION_MESSAGES.CREATE_FAILED,
-          400,
+          HTTP_STATUS.BAD_REQUEST,
           error.response.data as Record<string, string[]>
         );
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.NETWORK_ERROR);
@@ -137,18 +138,18 @@ export async function updateLocation(id: number, data: LocationCreateRequest): P
     return toLocation(response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === HTTP_STATUS.BAD_REQUEST) {
         throw new LocationApiError(
           LOCATION_MESSAGES.UPDATE_FAILED,
-          400,
+          HTTP_STATUS.BAD_REQUEST,
           error.response.data as Record<string, string[]>
         );
       }
-      if (error.response?.status === 404) {
-        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, 404);
+      if (error.response?.status === HTTP_STATUS.NOT_FOUND) {
+        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.NETWORK_ERROR);
@@ -169,18 +170,18 @@ export async function patchLocation(id: number, data: LocationPatchRequest): Pro
     return toLocation(response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === HTTP_STATUS.BAD_REQUEST) {
         throw new LocationApiError(
           LOCATION_MESSAGES.UPDATE_FAILED,
-          400,
+          HTTP_STATUS.BAD_REQUEST,
           error.response.data as Record<string, string[]>
         );
       }
-      if (error.response?.status === 404) {
-        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, 404);
+      if (error.response?.status === HTTP_STATUS.NOT_FOUND) {
+        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.NETWORK_ERROR);
@@ -198,11 +199,11 @@ export async function deleteLocation(id: number): Promise<void> {
     await apiClient.delete(LOCATION_ENDPOINTS.DETAIL(id));
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, 404);
+      if (error.response?.status === HTTP_STATUS.NOT_FOUND) {
+        throw new LocationApiError(LOCATION_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.DELETE_FAILED);
@@ -230,15 +231,15 @@ export async function findNearbyLocations(params: {
     return response.data.map(toLocationWithDistance);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 400) {
+      if (error.response?.status === HTTP_STATUS.BAD_REQUEST) {
         throw new LocationApiError(
           LOCATION_MESSAGES.FETCH_FAILED,
-          400,
+          HTTP_STATUS.BAD_REQUEST,
           error.response.data as Record<string, string[]>
         );
       }
-      if (error.response?.status === 401) {
-        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, 401);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        throw new LocationApiError(LOCATION_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       }
     }
     throw new LocationApiError(LOCATION_MESSAGES.NETWORK_ERROR);

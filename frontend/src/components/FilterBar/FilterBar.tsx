@@ -5,6 +5,7 @@
  * SPEC.md § 2.2.1に準拠。
  */
 import { useState, useCallback } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 // ============================================
 // 型定義
@@ -257,7 +258,11 @@ export function FilterBar({
               {activeFilterCount}
             </span>
           )}
-          <span className="text-gray-400">{isExpanded ? '▼' : '▶'}</span>
+          {isExpanded ? (
+            <ChevronDown size={16} className="text-gray-400" />
+          ) : (
+            <ChevronRight size={16} className="text-gray-400" />
+          )}
         </button>
 
         {/* ソート（常に表示） */}

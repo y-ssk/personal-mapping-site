@@ -37,25 +37,41 @@ export const LOCATION_SUCCESS_MESSAGES = {
 } as const;
 
 /**
- * UI表示用ラベル
+ * ステータス表示用ラベル
  */
-export const LOCATION_LABELS = {
-  /** ステータス: 行きたい */
-  STATUS_WANT_TO_VISIT: '行きたい',
-  /** ステータス: 興味なし */
-  STATUS_NOT_INTERESTED: '興味なし',
-  /** ステータス: 未設定 */
-  STATUS_NONE: '未設定',
-  /** ソート: 作成日（新しい順） */
-  SORT_CREATED_DESC: '作成日（新しい順）',
-  /** ソート: 作成日（古い順） */
-  SORT_CREATED_ASC: '作成日（古い順）',
-  /** ソート: 名前（昇順） */
-  SORT_NAME_ASC: '名前（A-Z）',
-  /** ソート: 名前（降順） */
-  SORT_NAME_DESC: '名前（Z-A）',
-  /** ソート: 訪問日（新しい順） */
-  SORT_VISITED_DESC: '訪問日（新しい順）',
-  /** ソート: 訪問日（古い順） */
-  SORT_VISITED_ASC: '訪問日（古い順）',
+export const LOCATION_STATUS_LABELS = {
+  /** 行きたい */
+  WANT_TO_VISIT: '行きたい',
+  /** 興味なし */
+  NOT_INTERESTED: '興味なし',
+  /** 未設定 */
+  NONE: '未設定',
+} as const;
+
+/**
+ * ソート表示用ラベル
+ */
+export const LOCATION_SORT_LABELS = {
+  /** 作成日（新しい順） */
+  CREATED_DESC: '作成日（新しい順）',
+  /** 作成日（古い順） */
+  CREATED_ASC: '作成日（古い順）',
+  /** 名前（昇順） */
+  NAME_ASC: '名前（A-Z）',
+  /** 名前（降順） */
+  NAME_DESC: '名前（Z-A）',
+  /** 訪問日（新しい順） */
+  VISITED_DESC: '訪問日（新しい順）',
+  /** 訪問日（古い順） */
+  VISITED_ASC: '訪問日（古い順）',
+} as const;
+
+/**
+ * 空状態の表示テキスト
+ */
+export const LOCATION_EMPTY_STATE = {
+  /** タイトル */
+  TITLE: '場所がありません',
+  /** 説明 */
+  DESCRIPTION: 'まだ場所が登録されていません。地図から場所を追加してみましょう。',
 } as const;

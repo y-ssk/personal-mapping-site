@@ -3,8 +3,10 @@
  *
  * 場所の概要情報を表示するカード。
  */
+import { Star } from 'lucide-react';
+
 import type { Location } from '../types/location';
-import { LOCATION_LABELS, LOCATION_UI } from '../constants';
+import { LOCATION_STATUS_LABELS, LOCATION_UI } from '../constants';
 
 interface LocationCardProps {
   /** 表示するLocation */
@@ -23,11 +25,11 @@ interface LocationCardProps {
 function getStatusLabel(status: Location['status']): string {
   switch (status) {
     case 'want_to_visit':
-      return LOCATION_LABELS.STATUS_WANT_TO_VISIT;
+      return LOCATION_STATUS_LABELS.WANT_TO_VISIT;
     case 'not_interested':
-      return LOCATION_LABELS.STATUS_NOT_INTERESTED;
+      return LOCATION_STATUS_LABELS.NOT_INTERESTED;
     default:
-      return LOCATION_LABELS.STATUS_NONE;
+      return LOCATION_STATUS_LABELS.NONE;
   }
 }
 
@@ -54,11 +56,14 @@ function RatingStars({ rating }: { rating: number | null }) {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
-        <span key={star} className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}>
-          ★
-        </span>
+        <Star
+          key={star}
+          size={16}
+          className={star <= rating ? 'text-yellow-400' : 'text-gray-300'}
+          fill={star <= rating ? 'currentColor' : 'none'}
+        />
       ))}
       <span className="text-sm text-gray-600 ml-1">{rating.toFixed(1)}</span>
     </div>
