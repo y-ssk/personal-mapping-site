@@ -51,3 +51,23 @@ export const MAP_CONTAINER_STYLE = {
   /** フル高さ */
   FULL_HEIGHT: '100%',
 } as const;
+
+/**
+ * マーカーアイコンサイズ
+ */
+export const MARKER_ICON_SIZE = {
+  /** 通常サイズ */
+  NORMAL: {
+    iconSize: [25, 41] as [number, number],
+    iconAnchor: [12, 41] as [number, number],
+    popupAnchor: [1, -34] as [number, number],
+    shadowSize: [41, 41] as [number, number],
+  },
+  /** ハイライト時（1.3倍） */
+  HIGHLIGHTED: {
+    iconSize: [32, 53] as [number, number],
+    iconAnchor: [16, 53] as [number, number],
+    popupAnchor: [1, -44] as [number, number],
+    shadowSize: [53, 53] as [number, number],
+  },
+} as const;

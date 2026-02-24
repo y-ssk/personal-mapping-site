@@ -10,7 +10,7 @@ import 'leaflet/dist/leaflet.css';
 
 import type { Location, GeoPoint } from '@/features/locations/types/location';
 
-import { MAP_ATTRIBUTION, TILE_URLS, ZOOM_LEVELS } from './constants';
+import { MAP_ATTRIBUTION, TILE_URLS, ZOOM_LEVELS, MARKER_ICON_SIZE } from './constants';
 import { MAP_MESSAGES } from './constants/messages';
 import type { MapService } from './interface';
 import type { LatLng, MapMarker, MarkerClickHandler, Place } from './types';
@@ -64,6 +64,27 @@ export class LeafletMapService implements MapService {
   private map: L.Map | null = null;
   private markers: Map<number, L.Marker> = new Map();
   private markerClickHandler: MarkerClickHandler | null = null;
+  private highlightedMarkerId: number | null = null;
+  private normalIcon: L.Icon;
+  private highlightedIcon: L.Icon;
+
+  constructor() {
+    // 通常アイコン
+    this.normalIcon = new L.Icon({
+      iconUrl: markerIcon,
+      iconRetinaUrl: markerIcon2x,
+      shadowUrl: markerShadow,
+      ...MARKER_ICON_SIZE.NORMAL,
+    });
+
+    // ハイライトアイコン（拡大版）
+    this.highlightedIcon = new L.Icon({
+      iconUrl: markerIcon,
+      iconRetinaUrl: markerIcon2x,
+      shadowUrl: markerShadow,
+      ...MARKER_ICON_SIZE.HIGHLIGHTED,
+    });
+  }
 
   /**
    * マーカークリック時のハンドラを設定。
@@ -109,7 +130,7 @@ export class LeafletMapService implements MapService {
     this.removeMarker(location.id);
 
     const position = geoPointToLatLng(location.point);
-    const marker = L.marker(toLeafletLatLng(position));
+    const marker = L.marker(toLeafletLatLng(position), { icon: this.normalIcon });
 
     // ポップアップを追加
     marker.bindPopup(`<b>${location.name}</b><br>${location.address || ''}`);
@@ -208,6 +229,34 @@ export class LeafletMapService implements MapService {
   }
 
   /**
+   * 指定したマーカーをハイライト表示する。
+   *
+   * ハイライトされたマーカーは通常より大きく表示される。
+   * 前回ハイライトされていたマーカーは自動的に通常サイズに戻る。
+   *
+   * @param locationId - ハイライトするLocationのID、nullで解除
+   */
+  highlightMarker(locationId: number | null): void {
+    // 前回のハイライトを解除
+    if (this.highlightedMarkerId !== null) {
+      const prevMarker = this.markers.get(this.highlightedMarkerId);
+      if (prevMarker) {
+        prevMarker.setIcon(this.normalIcon);
+      }
+    }
+
+    // 新しいマーカーをハイライト
+    if (locationId !== null) {
+      const marker = this.markers.get(locationId);
+      if (marker) {
+        marker.setIcon(this.highlightedIcon);
+      }
+    }
+
+    this.highlightedMarkerId = locationId;
+  }
+
+  /**
    * 地図リソースを解放する。
    */
   destroy(): void {
@@ -217,5 +266,6 @@ export class LeafletMapService implements MapService {
       this.map = null;
     }
     this.markerClickHandler = null;
+    this.highlightedMarkerId = null;
   }
 }

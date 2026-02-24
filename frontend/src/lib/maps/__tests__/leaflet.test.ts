@@ -11,31 +11,44 @@ import { LeafletMapService, geoPointToLatLng, toLeafletLatLng } from '../leaflet
 import { DEFAULT_CENTER } from '../constants';
 import type { LatLng } from '../types';
 
+// モックマーカーのsetIconを追跡するための参照
+const mockMarkerSetIcon = vi.fn();
+
 // Leafletのモック - vi.mockはホイスティングされるため、変数参照を避ける
-vi.mock('leaflet', () => ({
-  default: {
-    map: vi.fn(() => ({
-      setView: vi.fn().mockReturnThis(),
-      setZoom: vi.fn(),
-      getZoom: vi.fn().mockReturnValue(13),
-      remove: vi.fn(),
-    })),
-    marker: vi.fn(() => ({
-      bindPopup: vi.fn().mockReturnThis(),
-      on: vi.fn().mockReturnThis(),
-      addTo: vi.fn().mockReturnThis(),
-      remove: vi.fn(),
-    })),
-    tileLayer: vi.fn(() => ({
-      addTo: vi.fn(),
-    })),
-    Icon: {
-      Default: {
-        mergeOptions: vi.fn(),
-      },
+vi.mock('leaflet', () => {
+  // Iconのモッククラス
+  class MockIcon {
+    options: unknown;
+    constructor(options: unknown) {
+      this.options = options;
+    }
+    static Default = {
+      mergeOptions: vi.fn(),
+    };
+  }
+
+  return {
+    default: {
+      map: vi.fn(() => ({
+        setView: vi.fn().mockReturnThis(),
+        setZoom: vi.fn(),
+        getZoom: vi.fn().mockReturnValue(13),
+        remove: vi.fn(),
+      })),
+      marker: vi.fn(() => ({
+        bindPopup: vi.fn().mockReturnThis(),
+        on: vi.fn().mockReturnThis(),
+        addTo: vi.fn().mockReturnThis(),
+        remove: vi.fn(),
+        setIcon: mockMarkerSetIcon,
+      })),
+      tileLayer: vi.fn(() => ({
+        addTo: vi.fn(),
+      })),
+      Icon: MockIcon,
     },
-  },
-}));
+  };
+});
 
 // Leaflet CSSのモック
 vi.mock('leaflet/dist/leaflet.css', () => ({}));
@@ -310,6 +323,54 @@ describe('LeafletMapService', () => {
 
       // ハンドラが設定されていることを確認（直接テスト困難なため、エラーが起きないことを確認）
       expect(() => mapService.displayMap(container, DEFAULT_CENTER)).not.toThrow();
+    });
+  });
+
+  describe('highlightMarker', () => {
+    const mockLocation: Location = {
+      id: 1,
+      name: 'テスト場所',
+      point: {
+        type: 'Point',
+        coordinates: [139.7671, 35.6812],
+      },
+      address: '東京都千代田区',
+      category: null,
+      tags: [],
+      status: null,
+      notes: '',
+      website: '',
+      phone: '',
+      visitCount: 0,
+      averageRating: null,
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+    };
+
+    it('マーカーをハイライトする', () => {
+      mapService.displayMap(container, DEFAULT_CENTER);
+      mapService.addMarker(mockLocation);
+
+      mapService.highlightMarker(mockLocation.id);
+
+      expect(mockMarkerSetIcon).toHaveBeenCalled();
+    });
+
+    it('ハイライトを解除する', () => {
+      mapService.displayMap(container, DEFAULT_CENTER);
+      mapService.addMarker(mockLocation);
+      mapService.highlightMarker(mockLocation.id);
+      mockMarkerSetIcon.mockClear();
+
+      mapService.highlightMarker(null);
+
+      expect(mockMarkerSetIcon).toHaveBeenCalled();
+    });
+
+    it('存在しないマーカーIDでも何も起きない', () => {
+      mapService.displayMap(container, DEFAULT_CENTER);
+
+      expect(() => mapService.highlightMarker(999)).not.toThrow();
     });
   });
 });

@@ -8,7 +8,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import type { Location, PaginatedResponse } from '@/features/locations';
 import type { LocationApiError } from '@/features/locations/api/locationApi';
 
-// PanelLayoutをモック
+// PanelLayoutとDetailPanelをモック
 vi.mock('@/components/PanelLayout', () => ({
   PanelLayout: ({
     sidePanel,
@@ -22,6 +22,26 @@ vi.mock('@/components/PanelLayout', () => ({
       <div data-testid="main-panel">{mainPanel}</div>
     </div>
   ),
+  DetailPanel: ({
+    isOpen,
+    onClose,
+    title,
+    children,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    title?: string;
+    children: React.ReactNode;
+  }) =>
+    isOpen ? (
+      <div data-testid="detail-panel">
+        <h2>{title}</h2>
+        <button onClick={onClose} data-testid="detail-panel-close">
+          閉じる
+        </button>
+        {children}
+      </div>
+    ) : null,
 }));
 
 // MapViewをモック
@@ -47,13 +67,13 @@ vi.mock('@/components/MapView', () => ({
   ),
 }));
 
-// LocationListをモック
+// LocationListPanelとLocationCardをモック
 vi.mock('@/features/locations', async () => {
   const actual =
     await vi.importActual<typeof import('@/features/locations')>('@/features/locations');
   return {
     ...actual,
-    LocationList: ({
+    LocationListPanel: ({
       data,
       onLocationClick,
       onPageChange,
@@ -64,7 +84,7 @@ vi.mock('@/features/locations', async () => {
       onPageChange?: (page: number) => void;
       currentPage?: number;
     }) => (
-      <div data-testid="location-list" data-page={currentPage}>
+      <div data-testid="location-list-panel" data-page={currentPage}>
         <span data-testid="location-count">{data.count}件</span>
         {data.results.map((loc) => (
           <button
@@ -82,6 +102,9 @@ vi.mock('@/features/locations', async () => {
         )}
       </div>
     ),
+    LocationCard: ({ location }: { location: Location }) => (
+      <div data-testid="location-card">{location.name}</div>
+    ),
     useLocations: vi.fn(),
     LOCATION_PAGINATION: {
       DEFAULT_PAGE_SIZE: 10,
@@ -92,10 +115,13 @@ vi.mock('@/features/locations', async () => {
 
 // mapStoreをモック
 const mockSetCenter = vi.fn();
+const mockSetSelectedLocationId = vi.fn();
 vi.mock('@/stores/mapStore', () => ({
   useMapStore: () => ({
     center: { lat: 35.6812, lng: 139.7671 },
     setCenter: mockSetCenter,
+    selectedLocationId: null,
+    setSelectedLocationId: mockSetSelectedLocationId,
   }),
 }));
 
@@ -229,7 +255,7 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />);
 
-    expect(screen.getByTestId('location-list')).toBeInTheDocument();
+    expect(screen.getByTestId('location-list-panel')).toBeInTheDocument();
     expect(screen.getByTestId('location-count')).toHaveTextContent('2件');
   });
 

@@ -3,6 +3,7 @@
  *
  * SPEC.md § 5.4 地図: Leaflet → Google Maps に準拠。
  * MapServiceインターフェースを使用し、将来のGoogle Maps移行に対応。
+ * ホバー状態に応じてマーカーをハイライト表示する。
  *
  * @example
  * ```tsx
@@ -72,7 +73,7 @@ export function MapView({
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapServiceRef = useRef<LeafletMapService | null>(null);
-  const { center: storeCenter, setCenter } = useMapStore();
+  const { center: storeCenter, setCenter, hoveredLocationId } = useMapStore();
 
   // 初期中心座標を決定（props > store > デフォルト）
   const center = initialCenter ?? storeCenter ?? DEFAULT_CENTER;
@@ -140,6 +141,14 @@ export function MapView({
       mapService.setMarkerClickHandler(handleMarkerClick);
     }
   }, [handleMarkerClick]);
+
+  // ホバー状態に応じてマーカーをハイライト
+  useEffect(() => {
+    const mapService = mapServiceRef.current;
+    if (mapService) {
+      mapService.highlightMarker(hoveredLocationId);
+    }
+  }, [hoveredLocationId]);
 
   return (
     <div

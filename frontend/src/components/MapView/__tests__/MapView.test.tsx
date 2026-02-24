@@ -22,6 +22,7 @@ vi.mock('@/lib/maps', () => ({
     setCenter: vi.fn(),
     setZoom: vi.fn(),
     setMarkerClickHandler: vi.fn(),
+    highlightMarker: vi.fn(),
     destroy: vi.fn(),
     searchPlace: vi.fn(),
   })),
@@ -33,6 +34,7 @@ vi.mock('@/stores/mapStore', () => ({
   useMapStore: vi.fn().mockReturnValue({
     center: { lat: 35.6812, lng: 139.7671 },
     setCenter: vi.fn(),
+    hoveredLocationId: null,
   }),
 }));
 

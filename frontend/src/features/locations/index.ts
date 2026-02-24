@@ -45,7 +45,7 @@ export {
 } from './hooks';
 
 // Components
-export { LocationCard, LocationList } from './components';
+export { LocationCard, LocationList, LocationListPanel } from './components';
 
 // Constants
 export {

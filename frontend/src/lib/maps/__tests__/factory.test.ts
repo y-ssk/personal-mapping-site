@@ -15,6 +15,17 @@ vi.mock('leaflet', () => {
     remove: vi.fn(),
   };
 
+  // Iconのモッククラス
+  class MockIcon {
+    options: unknown;
+    constructor(options: unknown) {
+      this.options = options;
+    }
+    static Default = {
+      mergeOptions: vi.fn(),
+    };
+  }
+
   return {
     default: {
       map: vi.fn().mockReturnValue(mockMap),
@@ -23,15 +34,12 @@ vi.mock('leaflet', () => {
         on: vi.fn().mockReturnThis(),
         addTo: vi.fn().mockReturnThis(),
         remove: vi.fn(),
+        setIcon: vi.fn(),
       }),
       tileLayer: vi.fn().mockReturnValue({
         addTo: vi.fn(),
       }),
-      Icon: {
-        Default: {
-          mergeOptions: vi.fn(),
-        },
-      },
+      Icon: MockIcon,
     },
   };
 });

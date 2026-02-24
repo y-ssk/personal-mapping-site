@@ -73,6 +73,13 @@ export interface MapService {
   searchPlace(query: string): Promise<Place[]>;
 
   /**
+   * 指定したマーカーをハイライト表示する。
+   *
+   * @param locationId - ハイライトするLocationのID、nullで解除
+   */
+  highlightMarker(locationId: number | null): void;
+
+  /**
    * 地図リソースを解放する。
    */
   destroy(): void;
