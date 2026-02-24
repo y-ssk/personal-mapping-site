@@ -9,6 +9,9 @@ import { LocationCard } from './LocationCard';
 import { LOCATION_PAGINATION, LOCATION_EMPTY_STATE } from '../constants';
 import type { Location, PaginatedResponse } from '../types/location';
 
+/**
+ * LocationListコンポーネントのProps。
+ */
 interface LocationListProps {
   /** Location一覧（ページネーション付き） */
   data: PaginatedResponse<Location>;

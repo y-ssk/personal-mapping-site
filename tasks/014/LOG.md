@@ -274,5 +274,116 @@
 - [x] マーカー表示
 - [x] マーカークリックでLocation詳細
 - [x] テスト作成
-- [ ] 実装レビュー
-- [ ] コミット
+- [x] 実装レビュー
+- [x] コミット
+
+---
+
+## #014-A: PanelLayout基盤 + DashboardPage（2026-02-24）
+
+### 実施内容
+D案（パネル分割型）を採用し、以下を実装：
+
+1. **PanelLayout基盤**
+   - react-resizable-panels導入
+   - PanelLayoutコンポーネント作成
+   - レスポンシブ対応（モバイル縦並び）
+
+2. **MainLayout改修**
+   - Outlet pattern採用
+   - ネストルート対応
+
+3. **DashboardPage実装**
+   - 左パネル: LocationList
+   - 右パネル: MapView
+   - 場所クリックで地図中心移動
+
+4. **App.tsx ルーティング統合**
+   - `/` → DashboardPage
+
+### 作成・修正ファイル
+| ファイル | 変更内容 |
+|----------|----------|
+| `frontend/src/components/PanelLayout/PanelLayout.tsx` | 新規作成 |
+| `frontend/src/components/PanelLayout/index.ts` | 新規作成 |
+| `frontend/src/components/MainLayout/MainLayout.tsx` | Outlet対応 |
+| `frontend/src/features/dashboard/pages/DashboardPage.tsx` | 新規作成 |
+| `frontend/src/features/dashboard/index.ts` | 新規作成 |
+| `frontend/src/App.tsx` | ネストルート統合 |
+| `frontend/src/components/PanelLayout/__tests__/PanelLayout.test.tsx` | テスト |
+| `frontend/src/features/dashboard/__tests__/DashboardPage.test.tsx` | テスト |
+
+### テスト結果
+```
+ ✓ src/components/PanelLayout/__tests__/PanelLayout.test.tsx (6 tests)
+ ✓ src/features/dashboard/__tests__/DashboardPage.test.tsx (9 tests)
+
+ Test Files  13 passed (13)
+      Tests  117 passed (117)
+```
+
+### 実装レビュー結果
+
+#### 総合評価: 承認
+
+**良い点:**
+1. SPEC.md準拠: 左パネル/右パネル配置が適切
+2. React Router v6 Outlet pattern活用
+3. CLAUDE.md共通コンポーネント型定義ルール準拠
+
+**Should Fix（対応済み）:**
+- App.tsx読み込み中テキストのハードコード → UI_MESSAGES定数化
+
+---
+
+## PRレビュー対応（2026-02-24）
+
+### PR #27: feat(frontend): 地図表示（Leaflet）+ PanelLayout統合
+
+### レビューコメント（5件）
+
+| # | 投稿者 | 種別 | 内容 |
+|---|--------|------|------|
+| 1 | y-ssk | Q | スピナーが良いのかテキストが良いのか判断してほしい |
+| 2 | y-ssk | imo | JSDoc追加は「今回対応」すべきでは |
+| 3 | y-ssk | must | スピナーのみにすべき |
+| 4 | y-ssk | must | スピナーのみにすべき |
+| 5 | y-ssk | Q | 次回対応にすべきものは本当にあるのか |
+
+### 対応方針検討
+
+ユーザー質問: 「次回対応明記って今回まず本当に次回対応にしないといけないタスクってなに？」
+
+**分析結果:**
+| 元タスク | 内容 | 判断 | 理由 |
+|----------|------|------|------|
+| TECH-009 | MainLayout定数のエクスポート | **対応不要** | featuresからlib/constantsをimportすれば解決。タスク化不要 |
+| TECH-010 | LocationListPropsのJSDoc追加 | **今回対応** | 数行で済む。次回タスク化するより今やるべき |
+
+**結論:** 次回対応にすべきタスクはない。TECH-009/TECH-010はTASKS.mdから削除。
+
+### 実施した修正
+
+1. **LocationListPropsにJSDoc追加**
+   - `frontend/src/features/locations/components/LocationList.tsx`
+
+2. **スピナー統一（LOADING_MESSAGE削除）**
+   - DashboardPage: `<p>{DASHBOARD_CONSTANTS.LOADING_MESSAGE}</p>` 削除
+   - App.tsx: `<p className="ml-3 text-gray-600">{UI_MESSAGES.LOADING}</p>` 削除
+   - `frontend/src/lib/constants/ui.ts` 削除
+
+### 教訓: 「次回対応」の判断基準
+
+**即時対応すべき場合:**
+- 数行〜数十行で済む軽微な修正
+- インターフェースのJSDoc追加
+- 定数化、フォーマット修正
+
+**次回対応でOKな場合:**
+- 別機能への影響範囲が大きい
+- 設計変更を伴う
+- 実装に1時間以上かかる
+
+**タスク化不要な場合:**
+- 既存の仕組みで解決できる
+- 問題の前提が誤っている

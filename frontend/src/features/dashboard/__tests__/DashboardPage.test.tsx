@@ -159,9 +159,11 @@ describe('DashboardPage', () => {
       refetch: mockRefetch,
     });
 
-    render(<DashboardPage />);
+    const { container } = render(<DashboardPage />);
 
-    expect(screen.getByText('場所を読み込み中...')).toBeInTheDocument();
+    // スピナー（SVG）が表示されることを確認
+    const spinner = container.querySelector('svg.animate-spin');
+    expect(spinner).toBeInTheDocument();
   });
 
   it('エラー状態を表示する', async () => {
