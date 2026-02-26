@@ -14,7 +14,7 @@
 | 技術的負債 | 0/6 | 0% |
 | フェーズ1: 環境構築 | 1/5 | 20% |
 | フェーズ2: 認証システム | 0/3 | 0% |
-| フェーズ3: コア機能（Location） | 4/9 | 44% |
+| フェーズ3: コア機能（Location） | 5/11 | 45% |
 | フェーズ4: 訪問記録（Visit） | 0/3 | 0% |
 | フェーズ5: 旅行計画（Trip） | 0/6 | 0% |
 | フェーズ6: ダッシュボード | 0/3 | 0% |
@@ -207,7 +207,7 @@
 - **完了日:** 2025-01-25
 - **成果物:** `docs/setup/GOOGLE_MAPS_MIGRATION.md`
 
-### ✅ #D014 migrate_to_railway.sh作成
+### 🔄 #D014 migrate_to_railway.sh作成
 - **優先度:** 低
 - **見積:** 2h
 - **依存:** #D012
@@ -497,6 +497,31 @@
   - [ ] models.py: icon max_length → CategoryConstants.ICON_MAX_LENGTH
   - [ ] models.py: slug max_length → CategoryConstants.SLUG_MAX_LENGTH
 
+### ⬜ #TECH-007 地図テストフィクスチャ共通化
+- **優先度:** 低
+- **見積:** 0.5h
+- **発生元:** #014（地図表示実装）
+- **ブランチ:** refactor/map-test-fixtures
+- **内容:**
+  - テスト用mockLocationの重複定義を解消
+  - 共通フィクスチャファイルを作成
+- **チェックリスト:**
+  - [ ] test/fixtures/location.ts 作成
+  - [ ] leaflet.test.ts のmockLocation共通化
+  - [ ] MapView.test.tsx のmockLocation共通化
+
+### ⬜ #TECH-008 MapServiceインターフェースsetView追加
+- **優先度:** 低
+- **見積:** 0.5h
+- **発生元:** #014（地図表示実装）
+- **ブランチ:** refactor/map-interface-setview
+- **内容:**
+  - MapServiceインターフェースにsetViewメソッドを追加
+  - インターフェース整合性の確保
+- **チェックリスト:**
+  - [ ] interface.ts: setViewメソッド追加
+  - [ ] 型定義の整合性確認
+
 ---
 
 ## フェーズ1: 環境構築 [1/5]
@@ -636,7 +661,7 @@
 
 ---
 
-## フェーズ3: コア機能（Location） [4/9]
+## フェーズ3: コア機能（Location） [5/11]
 
 ### 🔄 #009 Locationモデル実装
 - **優先度:** 最高
@@ -760,32 +785,68 @@
 - **成果物:**
   - `frontend/src/features/locations/`
 
-### ⬜ #014 地図表示（Leaflet）
+### ✅ #014 地図表示（Leaflet）
 - **優先度:** 最高
 - **見積:** 4h
 - **依存:** #013
 - **ブランチ:** feature/map-display
-- **SPEC参照:** SPEC.md § 5.1.5
+- **PR:** https://github.com/y-ssk/personal-mapping-site/pull/27
+- **SPEC参照:** SPEC.md § 5.4
 - **チェックリスト:**
-  - [ ] Leaflet統合
-  - [ ] MapServiceインターフェース作成
-  - [ ] LeafletMapService実装
-  - [ ] MapView component作成
-  - [ ] マーカー表示
-  - [ ] マーカークリックでLocation詳細
-  - [ ] テスト作成
+  - [x] Leaflet統合
+  - [x] MapServiceインターフェース作成
+  - [x] LeafletMapService実装
+  - [x] MapView component作成
+  - [x] マーカー表示
+  - [x] マーカークリックでLocation詳細
+  - [x] テスト作成
 - **成果物:**
   - `frontend/src/lib/maps/`
   - `frontend/src/components/MapView/`
 
-### ⬜ #015 Location作成・編集UI
+### ⬜ #014-A PanelLayout基盤 + DashboardPage
 - **優先度:** 最高
 - **見積:** 4h
 - **依存:** #014
-- **ブランチ:** feature/location-form
+- **ブランチ:** feature/panel-layout
+- **SPEC参照:** SPEC.md § 1.2 J（ダッシュボード）
+- **設計決定:** D案（パネル分割型）採用 - Google Maps風UI
 - **チェックリスト:**
-  - [ ] LocationForm component作成
-  - [ ] 地図クリックで座標取得
+  - [ ] PanelLayoutコンポーネント作成（リサイズ可能）
+  - [ ] SidePanel / MainPanel / DetailPanel コンポーネント
+  - [ ] DashboardPage作成（PanelLayout + MapView + LocationList）
+  - [ ] App.tsx ルーティング更新
+  - [ ] MainLayout を Outlet対応に変更
+  - [ ] テスト作成
+- **成果物:**
+  - `frontend/src/components/PanelLayout/`
+  - `frontend/src/features/dashboard/pages/DashboardPage.tsx`
+
+### ⬜ #014-B 地図-リスト連動 + レスポンシブ
+- **優先度:** 最高
+- **見積:** 4h
+- **依存:** #014-A
+- **ブランチ:** feature/map-list-sync
+- **チェックリスト:**
+  - [ ] LocationListPanel作成（縦並びリスト表示）
+  - [ ] マーカークリック → リストスクロール連動
+  - [ ] リストホバー → マーカーハイライト
+  - [ ] レスポンシブ対応（モバイル: 縦並び切り替え）
+  - [ ] DetailPanel オーバーレイ表示
+  - [ ] テスト作成
+- **成果物:**
+  - `frontend/src/features/locations/components/LocationListPanel.tsx`
+  - `frontend/src/components/PanelLayout/DetailPanel.tsx`
+
+### ⬜ #015 Location作成・編集UI
+- **優先度:** 最高
+- **見積:** 3h
+- **依存:** #014-B
+- **ブランチ:** feature/location-form
+- **設計方針:** DetailPanel内で表示（パネル分割UIと統一）
+- **チェックリスト:**
+  - [ ] LocationForm component作成（DetailPanel内表示前提）
+  - [ ] 地図クリックで座標取得（MapViewとの連携）
   - [ ] カテゴリ選択UI
   - [ ] タグ入力UI
   - [ ] useCreateLocation hook
@@ -793,7 +854,7 @@
   - [ ] バリデーション
   - [ ] テスト作成
 - **成果物:**
-  - LocationForm関連コンポーネント
+  - `frontend/src/features/locations/components/LocationForm.tsx`
 
 ---
 
@@ -819,14 +880,15 @@
 
 ### ⬜ #018 フロントエンド Visit一覧
 - **優先度:** 高
-- **見積:** 3h
-- **依存:** #017
+- **見積:** 2h
+- **依存:** #017, #014-B
 - **ブランチ:** feature/visit-list-frontend
+- **設計方針:** PanelLayout再利用（Location一覧と同じUI構成）
 - **チェックリスト:**
   - [ ] Visit型定義
   - [ ] visitApi作成
   - [ ] useVisits hook作成
-  - [ ] VisitList component
+  - [ ] VisitListPanel component（PanelLayout再利用）
   - [ ] VisitCard component
   - [ ] テスト作成
 - **成果物:**
@@ -834,18 +896,19 @@
 
 ### ⬜ #019 Visit作成・編集UI
 - **優先度:** 高
-- **見積:** 3h
+- **見積:** 2h
 - **依存:** #018
 - **ブランチ:** feature/visit-form
+- **設計方針:** DetailPanel内表示（パネル分割UIと統一）
 - **チェックリスト:**
-  - [ ] VisitForm component
+  - [ ] VisitForm component（DetailPanel内表示前提）
   - [ ] Rating入力UI（星5つ）
   - [ ] レビュー入力（テキストエリア）
   - [ ] 日時入力
   - [ ] useCreateVisit hook
   - [ ] テスト作成
 - **成果物:**
-  - VisitForm関連コンポーネント
+  - `frontend/src/features/visits/components/VisitForm.tsx`
 
 ---
 
