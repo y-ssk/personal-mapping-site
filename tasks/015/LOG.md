@@ -19,7 +19,7 @@ DetailPanel内にLocation作成・編集フォームを実装する。
 - [x] テスト（153 passed, 17 test files）
 - [x] コードレビュー
 - [x] CI lint/型エラー修正
-- [ ] コミット・PR
+- [x] コミット・PR（PR #28）
 
 ## 実装詳細（2026-02-27）
 
