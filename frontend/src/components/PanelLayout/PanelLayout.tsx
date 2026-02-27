@@ -6,7 +6,7 @@
  *
  * CLAUDE.md「共通コンポーネントの型定義は同一ファイルに配置」に準拠。
  */
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Panel, Group, Separator } from 'react-resizable-panels';
 
 /** パネルサイズの定数 */
 const PANEL_SIZES = {
@@ -43,12 +43,12 @@ export interface PanelLayoutProps {
  */
 function ResizeHandle() {
   return (
-    <PanelResizeHandle className="group relative w-1 bg-gray-200 hover:bg-blue-400 transition-colors">
+    <Separator className="group relative w-1 bg-gray-200 hover:bg-blue-400 transition-colors">
       {/* ドラッグ時のビジュアルフィードバック */}
       <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
         <div className="w-0.5 h-8 bg-blue-500 rounded" />
       </div>
-    </PanelResizeHandle>
+    </Separator>
   );
 }
 
@@ -78,7 +78,7 @@ export function PanelLayout({
     <div className={`h-full w-full ${className}`}>
       {/* デスクトップ: 横並びパネル（lg以上） */}
       <div className="hidden lg:block h-full">
-        <PanelGroup direction="horizontal" className="h-full">
+        <Group orientation="horizontal" className="h-full">
           {/* サイドパネル（リスト） */}
           <Panel
             defaultSize={defaultSideSize}
@@ -96,7 +96,7 @@ export function PanelLayout({
           <Panel className="overflow-hidden">
             <div className="h-full">{mainPanel}</div>
           </Panel>
-        </PanelGroup>
+        </Group>
       </div>
 
       {/* モバイル/タブレット: 縦並び（lg未満） */}

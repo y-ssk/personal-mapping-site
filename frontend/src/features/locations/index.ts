@@ -41,11 +41,12 @@ export {
   useUpdateLocation,
   usePatchLocation,
   useDeleteLocation,
+  useCategories,
   LOCATION_QUERY_KEYS,
 } from './hooks';
 
 // Components
-export { LocationCard, LocationList, LocationListPanel } from './components';
+export { LocationCard, LocationForm, LocationList, LocationListPanel } from './components';
 
 // Constants
 export {
@@ -58,4 +59,9 @@ export {
   LOCATION_STATUS_LABELS,
   LOCATION_SORT_LABELS,
   LOCATION_EMPTY_STATE,
+  CATEGORY_ENDPOINTS,
+  CATEGORY_QUERY_KEYS,
+  LOCATION_FORM_CONSTANTS,
+  LOCATION_FORM_MESSAGES,
+  CATEGORY_MESSAGES,
 } from './constants';

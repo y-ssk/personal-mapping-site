@@ -15,7 +15,9 @@ from rest_framework.response import Response
 
 from apps.locations.constants import LocationConstants, LocationMessages
 from apps.locations.filters import LocationFilter
+from apps.locations.models import Category
 from apps.locations.serializers import (
+    CategorySerializer,
     LocationCreateSerializer,
     LocationSerializer,
     LocationWithDistanceSerializer,
@@ -214,3 +216,20 @@ class LocationViewSet(viewsets.ModelViewSet):
         # シリアライズ
         serializer = LocationWithDistanceSerializer(locations, many=True)
         return Response(serializer.data)
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    カテゴリの読み取り専用エンドポイント。
+
+    OpenAPI仕様のカテゴリエンドポイントに準拠。
+    カテゴリツリーの一覧取得と詳細取得を提供。
+
+    Endpoints:
+        GET /api/v1/categories/ - カテゴリ一覧取得
+        GET /api/v1/categories/{id}/ - カテゴリ詳細取得
+    """
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]

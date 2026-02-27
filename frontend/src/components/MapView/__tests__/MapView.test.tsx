@@ -22,6 +22,7 @@ vi.mock('@/lib/maps', () => ({
     setCenter: vi.fn(),
     setZoom: vi.fn(),
     setMarkerClickHandler: vi.fn(),
+    setMapClickHandler: vi.fn(),
     highlightMarker: vi.fn(),
     destroy: vi.fn(),
     searchPlace: vi.fn(),

@@ -57,7 +57,7 @@ interface UseLocationsResult {
  */
 export function useLocations(filters?: LocationFilters): UseLocationsResult {
   const query = useQuery({
-    queryKey: LOCATION_QUERY_KEYS.list(filters),
+    queryKey: LOCATION_QUERY_KEYS.list(filters as Record<string, unknown> | undefined),
     queryFn: () => listLocations(filters),
     staleTime: LOCATION_CACHE.STALE_TIME_MS,
   });

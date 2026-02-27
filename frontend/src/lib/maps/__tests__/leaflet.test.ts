@@ -34,6 +34,7 @@ vi.mock('leaflet', () => {
         setZoom: vi.fn(),
         getZoom: vi.fn().mockReturnValue(13),
         remove: vi.fn(),
+        on: vi.fn().mockReturnThis(),
       })),
       marker: vi.fn(() => ({
         bindPopup: vi.fn().mockReturnThis(),

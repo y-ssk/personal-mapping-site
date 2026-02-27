@@ -16,6 +16,8 @@ urlpatterns = [
     path("api/v1/auth/", include("apps.users.urls")),
     # 場所（SPEC.md § 4.3 準拠）
     path("api/v1/locations/", include("apps.locations.urls")),
+    # カテゴリ（OpenAPI仕様準拠）
+    path("api/v1/categories/", include("apps.locations.category_urls")),
 ]
 
 # デバッグツールバー（デバッグモード時のみ）

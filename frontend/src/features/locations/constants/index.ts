@@ -66,3 +66,33 @@ export const LOCATION_CACHE = {
   /** データの鮮度期間（5分） */
   STALE_TIME_MS: 5 * 60 * 1000,
 } as const;
+
+/**
+ * カテゴリAPIエンドポイント
+ */
+export const CATEGORY_ENDPOINTS = {
+  /** 一覧取得 */
+  LIST: '/api/v1/categories/',
+  /** 詳細取得 */
+  DETAIL: (id: number) => `/api/v1/categories/${id}/`,
+} as const;
+
+/**
+ * カテゴリTanStack Queryキー
+ */
+export const CATEGORY_QUERY_KEYS = {
+  /** すべてのカテゴリクエリのベースキー */
+  all: ['categories'] as const,
+  /** 一覧クエリキー */
+  list: () => [...CATEGORY_QUERY_KEYS.all, 'list'] as const,
+} as const;
+
+/**
+ * フォームバリデーション定数
+ */
+export const LOCATION_FORM_CONSTANTS = {
+  /** 場所名の最大文字数 */
+  NAME_MAX_LENGTH: 255,
+  /** 電話番号の最大文字数 */
+  PHONE_MAX_LENGTH: 20,
+} as const;
