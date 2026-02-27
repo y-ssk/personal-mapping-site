@@ -68,3 +68,10 @@ export interface MapOptions {
  * マーカークリック時のコールバック型。
  */
 export type MarkerClickHandler = (location: Location) => void;
+
+/**
+ * 地図クリック時のコールバック型。
+ *
+ * マーカーではなく地図の空白部分をクリックした際に呼び出される。
+ */
+export type MapClickHandler = (latlng: LatLng) => void;

@@ -6,33 +6,27 @@ import { render, screen, cleanup } from '@testing-library/react';
 
 import { PanelLayout, PANEL_SIZES } from '../PanelLayout';
 
-// react-resizable-panelsをモック
+// react-resizable-panelsをモック（v4.6.5 API: Group, Panel, Separator）
 vi.mock('react-resizable-panels', () => ({
   Panel: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid="panel" className={className}>
       {children}
     </div>
   ),
-  PanelGroup: ({
+  Group: ({
     children,
-    direction,
+    orientation,
     className,
   }: {
     children: React.ReactNode;
-    direction: string;
+    orientation: string;
     className?: string;
   }) => (
-    <div data-testid="panel-group" data-direction={direction} className={className}>
+    <div data-testid="panel-group" data-orientation={orientation} className={className}>
       {children}
     </div>
   ),
-  PanelResizeHandle: ({
-    children,
-    className,
-  }: {
-    children?: React.ReactNode;
-    className?: string;
-  }) => (
+  Separator: ({ children, className }: { children?: React.ReactNode; className?: string }) => (
     <div data-testid="resize-handle" className={className}>
       {children}
     </div>
@@ -68,7 +62,7 @@ describe('PanelLayout', () => {
 
     const panelGroup = screen.getByTestId('panel-group');
     expect(panelGroup).toBeInTheDocument();
-    expect(panelGroup).toHaveAttribute('data-direction', 'horizontal');
+    expect(panelGroup).toHaveAttribute('data-orientation', 'horizontal');
   });
 
   it('リサイズハンドルをレンダリングする', () => {

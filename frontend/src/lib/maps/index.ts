@@ -5,7 +5,14 @@
  */
 
 // 型
-export type { LatLng, MapMarker, Place, MapOptions, MarkerClickHandler } from './types';
+export type {
+  LatLng,
+  MapMarker,
+  Place,
+  MapOptions,
+  MarkerClickHandler,
+  MapClickHandler,
+} from './types';
 
 // インターフェース
 export type { MapService } from './interface';

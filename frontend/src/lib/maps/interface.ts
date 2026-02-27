@@ -13,7 +13,7 @@
 
 import type { Location } from '@/features/locations/types/location';
 
-import type { LatLng, MapMarker, Place } from './types';
+import type { LatLng, MapClickHandler, MapMarker, Place } from './types';
 
 /**
  * 地図サービスの抽象インターフェース。
@@ -71,6 +71,15 @@ export interface MapService {
    * @throws {Error} MVP Leafletでは未実装
    */
   searchPlace(query: string): Promise<Place[]>;
+
+  /**
+   * 地図クリック時のハンドラを設定する。
+   *
+   * マーカーではなく地図の空白部分をクリックした際に呼び出される。
+   *
+   * @param handler - クリック時に呼び出される関数
+   */
+  setMapClickHandler(handler: MapClickHandler): void;
 
   /**
    * 指定したマーカーをハイライト表示する。

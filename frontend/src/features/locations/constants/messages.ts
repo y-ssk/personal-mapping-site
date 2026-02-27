@@ -75,3 +75,45 @@ export const LOCATION_EMPTY_STATE = {
   /** 説明 */
   DESCRIPTION: 'まだ場所が登録されていません。地図から場所を追加してみましょう。',
 } as const;
+
+/**
+ * カテゴリ関連のメッセージ
+ */
+export const CATEGORY_MESSAGES = {
+  /** 取得失敗 */
+  FETCH_FAILED: 'カテゴリの取得に失敗しました',
+  /** 認証エラー */
+  UNAUTHORIZED: 'ログインが必要です',
+} as const;
+
+/**
+ * LocationFormのバリデーションメッセージ
+ */
+export const LOCATION_FORM_MESSAGES = {
+  /** 場所名必須 */
+  NAME_REQUIRED: '場所名を入力してください',
+  /** 場所名文字数超過 */
+  NAME_TOO_LONG: '場所名は255文字以内で入力してください',
+  /** 座標必須 */
+  POINT_REQUIRED: '座標を選択してください（地図をクリック）',
+  /** 電話番号文字数超過 */
+  PHONE_TOO_LONG: '電話番号は20文字以内で入力してください',
+  /** URL形式エラー */
+  WEBSITE_INVALID: '有効なURLを入力してください',
+  /** 送信中 */
+  SUBMITTING: '保存中...',
+  /** 作成ボタン */
+  CREATE_BUTTON: '場所を作成',
+  /** 更新ボタン */
+  UPDATE_BUTTON: '場所を更新',
+  /** キャンセルボタン */
+  CANCEL_BUTTON: 'キャンセル',
+  /** フォームタイトル（新規） */
+  CREATE_TITLE: '新しい場所を追加',
+  /** フォームタイトル（編集） */
+  EDIT_TITLE: '場所を編集',
+  /** 座標ヒント */
+  POINT_HINT: '地図をクリックして座標を設定',
+  /** タグ入力ヒント */
+  TAG_HINT: 'Enterまたはカンマで追加',
+} as const;

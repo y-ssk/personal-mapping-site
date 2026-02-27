@@ -13,7 +13,7 @@ import type { Location, GeoPoint } from '@/features/locations/types/location';
 import { MAP_ATTRIBUTION, TILE_URLS, ZOOM_LEVELS, MARKER_ICON_SIZE } from './constants';
 import { MAP_MESSAGES } from './constants/messages';
 import type { MapService } from './interface';
-import type { LatLng, MapMarker, MarkerClickHandler, Place } from './types';
+import type { LatLng, MapClickHandler, MapMarker, MarkerClickHandler, Place } from './types';
 
 // Leafletのデフォルトアイコンパス修正（Vite/Webpack対応）
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -64,6 +64,7 @@ export class LeafletMapService implements MapService {
   private map: L.Map | null = null;
   private markers: Map<number, L.Marker> = new Map();
   private markerClickHandler: MarkerClickHandler | null = null;
+  private mapClickHandler: MapClickHandler | null = null;
   private highlightedMarkerId: number | null = null;
   private normalIcon: L.Icon;
   private highlightedIcon: L.Icon;
@@ -96,6 +97,17 @@ export class LeafletMapService implements MapService {
   }
 
   /**
+   * 地図クリック時のハンドラを設定。
+   *
+   * マーカーではなく地図の空白部分をクリックした際に呼び出される。
+   *
+   * @param handler - クリック時に呼び出される関数
+   */
+  setMapClickHandler(handler: MapClickHandler): void {
+    this.mapClickHandler = handler;
+  }
+
+  /**
    * 地図を初期化して表示する。
    *
    * @param container - 地図を表示するHTML要素
@@ -113,6 +125,13 @@ export class LeafletMapService implements MapService {
       maxZoom: ZOOM_LEVELS.MAX,
       minZoom: ZOOM_LEVELS.MIN,
     }).addTo(this.map);
+
+    // 地図クリックイベントを設定
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      if (this.mapClickHandler) {
+        this.mapClickHandler({ lat: e.latlng.lat, lng: e.latlng.lng });
+      }
+    });
   }
 
   /**
@@ -266,6 +285,7 @@ export class LeafletMapService implements MapService {
       this.map = null;
     }
     this.markerClickHandler = null;
+    this.mapClickHandler = null;
     this.highlightedMarkerId = null;
   }
 }

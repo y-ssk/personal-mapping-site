@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { createMapService, DEFAULT_CENTER, MAP_CONTAINER_STYLE } from '@/lib/maps';
-import type { LatLng, MarkerClickHandler } from '@/lib/maps';
+import type { LatLng, MapClickHandler, MarkerClickHandler } from '@/lib/maps';
 import type { LeafletMapService } from '@/lib/maps/leaflet';
 import type { Location } from '@/features/locations/types/location';
 import { useMapStore } from '@/stores/mapStore';
@@ -31,6 +31,8 @@ export interface MapViewProps {
   locations?: Location[];
   /** マーカークリック時のコールバック */
   onMarkerClick?: MarkerClickHandler;
+  /** 地図クリック時のコールバック（マーカー以外の空白部分クリック） */
+  onMapClick?: MapClickHandler;
   /** 初期中心座標（省略時はmapStoreまたはデフォルト） */
   initialCenter?: LatLng;
   /** コンテナの高さ（CSSの値、例: '400px', '100vh'） */
@@ -67,6 +69,7 @@ export interface MapViewProps {
 export function MapView({
   locations = [],
   onMarkerClick,
+  onMapClick,
   initialCenter,
   height = MAP_CONTAINER_STYLE.DEFAULT_HEIGHT,
   className = '',
@@ -134,13 +137,21 @@ export function MapView({
     });
   }, [locations]);
 
-  // クリックハンドラの更新
+  // マーカークリックハンドラの更新
   useEffect(() => {
     const mapService = mapServiceRef.current;
     if (mapService) {
       mapService.setMarkerClickHandler(handleMarkerClick);
     }
   }, [handleMarkerClick]);
+
+  // 地図クリックハンドラの更新（undefinedになった場合はno-opハンドラで解除）
+  useEffect(() => {
+    const mapService = mapServiceRef.current;
+    if (mapService) {
+      mapService.setMapClickHandler(onMapClick ?? (() => {}));
+    }
+  }, [onMapClick]);
 
   // ホバー状態に応じてマーカーをハイライト
   useEffect(() => {

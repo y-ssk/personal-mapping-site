@@ -10,3 +10,5 @@ export {
   useDeleteLocation,
   LOCATION_QUERY_KEYS,
 } from './useLocations';
+
+export { useCategories } from './useCategories';
